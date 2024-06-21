@@ -33,7 +33,7 @@ function Header() {
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <a href="#" className="flex items-center space-x-3 ">
           <Image src={Logo} width={32} alt="Eventastic Logo" />
-          <span className="self-center text-2xl font-semibold whitespace-nowrap text-darkTangerine">
+          <span className="self-center text-2xl font-semibold whitespace-nowrap text-purple-800">
             Eventastic
           </span>
         </a>
@@ -41,9 +41,16 @@ function Header() {
           <button
             type="button"
             onClick={handleRegisterClick}
-            className="text-white bg-darkTangerine hover:bg-darkerTangerine focus:ring-4 focus:outline-none focus:ring-darkTangerine font-medium rounded-lg text-sm px-4 py-2 text-center"
+            className=" text-gray-900 font-medium rounded-lg text-sm px-4 py-2 text-center"
           >
-            Register
+            Log in
+          </button>
+          <button
+            type="button"
+            onClick={handleRegisterClick}
+            className="text-white bg-purple-800 hover:text-gray-200 focus:ring-4 focus:outline-none focus:ring-purple-800 font-medium rounded-lg text-sm px-4 py-2 text-center"
+          >
+            Sign up
           </button>
           <button
             onClick={handleClickButton}

@@ -9,8 +9,6 @@ function Menu() {
     {name: "Find Events", path:"/events"},
     {name: "Create Events", path:"/organizer"},
     {name: "FAQ", path:"/faq"},
-    {name: "Log In", path:"/login"},
-    {name: "Sign Up", path:"/signup"},
 ];
 
   return (
@@ -22,9 +20,9 @@ function Menu() {
         <li key={item.path}>
           <a
             href={item.path}
-            className={`block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent
-              md:hover:text-darkTangerine md:p-0 ${
-                pathname === item.path ? " text-tangerine" : ""
+            className={`block py-2 px-3 text-gray-900 hover:bg-gray-100 md:hover:bg-transparent
+              md:hover:text-purple-800 md:p-0 ${
+                pathname === item.path ? " border-b border-purple-600" : ""
               }`}
           >
             {item.name}

@@ -22,7 +22,7 @@ export default function RootLayout({
       <MenuProvider>
         <body className={inter.className}>
           <Header/>
-          <main className=" m-0 p-0 pt-20">{children}</main>
+          <main className=" m-0 p-0 pt-10">{children}</main>
           <Footer/>
         </body>
       </MenuProvider>
