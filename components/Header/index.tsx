@@ -37,7 +37,7 @@ function Header() {
             Eventastic
           </span>
         </a>
-        <div className="flex md:order-2 space-x-3 md:space-x-0">
+        <div className="flex md:order-2 space-x-3 md:space-x-0 md:ju">
           <button
             type="button"
             onClick={handleRegisterClick}
