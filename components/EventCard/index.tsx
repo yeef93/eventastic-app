@@ -8,8 +8,9 @@ interface EventProps {
   dateTime: string;
   hostedBy: string;
   totalAttendees: number;
-  maxAttendees:number;
+  maxAttendees: number;
   ticketType: string;
+  category: string; // New property for category
 }
 
 function EventCard({
@@ -20,13 +21,14 @@ function EventCard({
   totalAttendees,
   maxAttendees,
   ticketType,
+  category, // Include category in props
 }: EventProps) {
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-lg w-full sm:w-80 md:w-96 lg:w-96 xl:w-96 mx-auto m-4">
       <Image
         src={imageUrl}
         alt={title}
-        className="w-full h-40 object-cover object-center"
+        className="w-full h-48 object-cover object-center"
         width={200}
         height={200}
       />
@@ -45,6 +47,11 @@ function EventCard({
         <div className="flex items-center text-sm text-gray-600 mt-2">
           <TicketIcon className="w-4 h-4 mr-1 text-gray-500" />
           <p>{ticketType}</p>
+        </div>
+        <div className="flex items-center text-sm text-gray-600 mt-2">
+          <span className="inline-block bg-gray-200 text-gray-800 rounded-full px-3 py-1 text-xs font-semibold mr-2">
+            {category}
+          </span>
         </div>
       </div>
     </div>
