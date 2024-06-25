@@ -1,13 +1,13 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import Link from "next/link";
 
 interface SignUpModalProps {
   onClose: () => void;
+  openLogin: () => void;
 }
 
-const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
+function SignUpModal({onClose, openLogin}:SignUpModalProps) {
   const initialValues = {
     fullName: "",
     username: "",
@@ -26,6 +26,9 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
     password: Yup.string()
       .required("Password is required")
       .min(6, "Password must be at least 6 characters"),
+    retypePassword: Yup.string()
+      .oneOf([Yup.ref("password"), undefined], "Passwords must match")
+      .required("Retype Password is required"),
     referralCode: Yup.string(),
   });
 
@@ -193,9 +196,15 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
                 <div className="flex items-center justify-between">
                   <p className="inline-block">
                     Already a member?{" "}
-                    <Link href="/login" className="text-purple-800 font-bold">
+                    <a
+                      onClick={() => {
+                        onClose();
+                        openLogin();
+                      }}
+                      className="text-purple-800 font-bold cursor-pointer"
+                    >
                       Log in
-                    </Link>
+                    </a>
                   </p>
                   <button
                     className="bg-purple-800 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"

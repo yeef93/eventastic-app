@@ -4,11 +4,13 @@ import Image from "next/image";
 import Logo from "@/public/assets/logo.png";
 import MenuContext from "@/context/MenuContext";
 import Menu from "../Menu";
-import SignUpModal from "@/components/Signup"; // Import the SignUpModal component
+import SignUpModal from "@/components/SignupModal";
+import LoginModal from "@/components/LoginModal";
 
 function Header() {
   const [showing, setShowing] = useState<boolean>(false);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // State for modal visibility
+  const [isSignupModalOpen, setIsSignupModalOpen] = useState<boolean>(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
   const { setShowing: setGlobalMenuShowing } = useContext(MenuContext);
 
   useEffect(() => {
@@ -21,11 +23,21 @@ function Header() {
   };
 
   const handleSignUpClick = () => {
-    setIsModalOpen(true); // Open the modal
+    setIsSignupModalOpen(true);
+    setIsLoginModalOpen(false); // Close login modal when opening sign up modal
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false); // Close the modal
+  const handleCloseSignupModal = () => {
+    setIsSignupModalOpen(false);
+  };
+
+  const handleLoginClick = () => {
+    setIsLoginModalOpen(true);
+    setIsSignupModalOpen(false); // Close sign up modal when opening login modal
+  };
+
+  const handleCloseLoginModal = () => {
+    setIsLoginModalOpen(false);
   };
 
   return (
@@ -42,13 +54,14 @@ function Header() {
             <button
               type="button"
               className=" text-gray-900 font-medium rounded-lg text-sm px-4 py-2 text-center"
+              onClick={handleLoginClick}
             >
               Log in
             </button>
             <button
               type="button"
               className="text-white bg-purple-800 hover:text-gray-200 focus:ring-4 focus:outline-none focus:ring-purple-800 font-medium rounded-lg text-sm px-4 py-2 text-center"
-              onClick={handleSignUpClick} // Add onClick handler
+              onClick={handleSignUpClick}
             >
               Sign up
             </button>
@@ -87,7 +100,18 @@ function Header() {
           </div>
         </div>
       </nav>
-      {isModalOpen && <SignUpModal onClose={handleCloseModal} />}{" "}
+      {isSignupModalOpen && (
+        <SignUpModal
+          onClose={handleCloseSignupModal}
+          openLogin={handleLoginClick}
+        />
+      )}{" "}
+      {isLoginModalOpen && (
+        <LoginModal
+          onClose={handleCloseLoginModal}
+          openSignUp={handleSignUpClick}
+        />
+      )}{" "}
     </>
   );
 }
