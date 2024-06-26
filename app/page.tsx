@@ -9,10 +9,11 @@ export default function Home() {
     <>
       <Hero />
       <Categories />
-      <div className="flex flex-wrap justify-center px-28">
+      <div className="flex flex-wrap justify-center xl:px-28 xl:gap-10 md:px-4">
         {events.map((event) => (
           <EventCard
             key={event.id}
+            id={event.id}
             imageUrl={event.imageUrl}
             title={event.title}
             dateTime={event.dateTime}

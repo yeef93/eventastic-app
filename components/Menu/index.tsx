@@ -6,7 +6,7 @@ function Menu() {
   const pathname = usePathname();
 
   const menuItems = [
-    {name: "Find Events", path:"/events"},
+    {name: "Find Events", path:"/test"},
     {name: "Create Events", path:"/organizer"},
     {name: "FAQ", path:"/faq"},
 ];
