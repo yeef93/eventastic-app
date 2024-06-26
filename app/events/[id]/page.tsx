@@ -12,7 +12,7 @@ const EventDetail = () => {
     return <p>Loading...</p>;
   }
 
-  const eventId = parseInt(id, 10);
+  const eventId = Array.isArray(id) ? parseInt(id[0], 10) : parseInt(id, 10);
   console.log("Event ID:", eventId);
 
   const event = !isNaN(eventId)
