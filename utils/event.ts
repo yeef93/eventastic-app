@@ -46,7 +46,7 @@ export default [
       "https://images.pexels.com/photos/1547813/pexels-photo-1547813.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
     dateTime: "Saturday, June 25, 2024 | 10:00 AM - 2:00 PM",
     hostedBy: "Nature Lovers Club",
-    location: "Batam",
+    location: "Jakarta",
     totalAttendees: 50,
     maxAttendees: 100,
     ticketType: "Free",
