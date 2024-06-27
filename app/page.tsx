@@ -4,6 +4,7 @@ import Hero from "@/components/Hero";
 import Categories from "@/components/Categories";
 import EventCard from "@/components/EventCard";
 import events from "@/utils/event";
+import CallToAction from "@/components/CallToAction";
 
 const uniqueCategories = [
   "Any Category",
@@ -102,6 +103,7 @@ export default function Home() {
           />
         ))}
       </div>
+      <CallToAction/>
     </>
   );
 }
