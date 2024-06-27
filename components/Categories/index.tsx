@@ -14,22 +14,25 @@ const categories = [
 
 function Categories() {
   return (
-    <div className="flex flex-wrap justify-center gap-20 py-10">
-      {categories.map((category) => (
-        <a
-          key={category.id}
-          href={`/events?category=${category.name}`}
-          className="rounded-full overflow-hidden border border-gray-200 hover:border-green-800 hover:shadow-lg transition duration-300 block w-20 h-20"
-        >
-          <Image
-            src={category.imageUrl}
-            alt={category.name}
-            objectFit="cover"
-            width={200}
-            height={200}
-          />
-        </a>
-      ))}
+    <div className="text-left xl:px-40 pt-6">
+      <h2 className="text-2xl font-bold mb-6">Explore Categories</h2>
+      <div className="flex flex-wrap justify-center gap-20">
+        {categories.map((category) => (
+          <a
+            key={category.id}
+            href={`/events?category=${category.name}`}
+            className="rounded-full overflow-hidden border border-gray-200 hover:border-green-800 hover:shadow-lg transition duration-300 block w-20 h-20"
+          >
+            <Image
+              src={category.imageUrl}
+              alt={category.name}
+              objectFit="cover"
+              width={200}
+              height={200}
+            />
+          </a>
+        ))}
+      </div>
     </div>
   );
 }

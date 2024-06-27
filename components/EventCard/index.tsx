@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { CalendarIcon, TicketIcon, UserIcon } from "@heroicons/react/outline";
+import { CalendarIcon, LocationMarkerIcon, TicketIcon, UserIcon } from "@heroicons/react/outline";
 import Link from "next/link";
 
 interface EventProps {
@@ -10,6 +10,7 @@ interface EventProps {
   title: string;
   dateTime: string;
   hostedBy: string;
+  location: string;
   totalAttendees: number;
   maxAttendees: number;
   ticketType: string;
@@ -22,6 +23,7 @@ function EventCard({
   title,
   dateTime,
   hostedBy,
+  location,
   totalAttendees,
   maxAttendees,
   ticketType,
@@ -30,13 +32,19 @@ function EventCard({
   return (
     <Link href={`/events/${id}`}>
       <div className="bg-white rounded-lg overflow-hidden shadow-lg w-full sm:w-80 md:w-96 lg:w-96 xl:w-96 mx-auto m-4">
-        <Image
-          src={imageUrl}
-          alt={title}
-          className="w-full h-48 object-cover object-center"
-          width={200}
-          height={200}
-        />
+        <div className="relative w-full h-48">
+          <Image
+            src={imageUrl}
+            alt={title}
+            className="w-full h-48 object-cover object-center"
+            layout="fill"
+            objectFit="cover"
+          />
+          <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded">
+            <LocationMarkerIcon className="w-4 h-4 inline-block mr-1 text-white" />
+            {location}
+          </div>
+        </div>
         <div className="p-4">
           <h2 className="text-xl font-bold">{title}</h2>
           <p className="text-sm text-gray-600 mt-2">Hosted by: {hostedBy}</p>
