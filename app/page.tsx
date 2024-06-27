@@ -5,6 +5,7 @@ import Categories from "@/components/Categories";
 import EventCard from "@/components/EventCard";
 import events from "@/utils/event";
 import CallToAction from "@/components/CallToAction";
+import EventCreationCTA from "@/components/EventCreationCTA";
 
 const uniqueCategories = [
   "Any Category",
@@ -104,6 +105,7 @@ export default function Home() {
         ))}
       </div>
       <CallToAction/>
+      <EventCreationCTA/>
     </>
   );
 }
