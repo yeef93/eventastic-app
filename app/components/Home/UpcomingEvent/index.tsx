@@ -58,7 +58,7 @@ function UpcomingEvent() {
               <select
                 value={selectedDay}
                 onChange={(e) => setSelectedDay(e.target.value)}
-                className="p-2 border border-gray-300 rounded-full bg-gray-100 text-gray-700"
+                className="p-2 border border-gray-300 rounded-full bg-gray-100 text-gray-700 ml-4"
               >
                 {days.map((day) => (
                   <option key={day} value={day}>
@@ -79,7 +79,10 @@ function UpcomingEvent() {
               </select>
             </div>
           </div>
-          <div>Explore more events &gt; </div>
+          <p className="text-sm font-semibold text-purple-800 relative w-max link">
+            <a href={"/events"}>Explore more events &gt; </a>
+            <span className="absolute -bottom-1 left-0 w-0 transition-all h-1 bg-green-400"></span>
+          </p>
         </div>
       </div>
       <div className="flex flex-wrap justify-center xl:px-28 xl:gap-8 md:px-4">

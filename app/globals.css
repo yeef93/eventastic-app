@@ -9,3 +9,7 @@ body {
 main {
   padding: 10vh;
 }
+
+.link:hover span:last-child {
+  width: 100%;
+}
