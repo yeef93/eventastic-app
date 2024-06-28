@@ -26,19 +26,22 @@ function EventbyLocation() {
   return (
     <>
       <div className="xl:px-40 xl:pt-16">
-        <div className="flex justify-start items-center mb-8">
-          <h2 className="text-2xl font-bold">Events Near</h2>
-          <select
-            value={selectedLocation}
-            onChange={(e) => setSelectedLocation(e.target.value)}
-            className="p-2 border border-gray-300 rounded-full bg-gray-100 text-gray-700 ml-4"
-          >
-            {uniqueLocations.map((location) => (
-              <option key={location} value={location}>
-                {location}
-              </option>
-            ))}
-          </select>
+        <div className="flex justify-between items-center mb-8">
+          <div className="flex flex-row">
+            <h2 className="text-2xl font-bold">Events Near</h2>
+            <select
+              value={selectedLocation}
+              onChange={(e) => setSelectedLocation(e.target.value)}
+              className="p-2 border border-gray-300 rounded-full bg-gray-100 text-gray-700 ml-4"
+            >
+              {uniqueLocations.map((location) => (
+                <option key={location} value={location}>
+                  {location}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>Explore more events &gt; </div>
         </div>
       </div>
       <div className="flex flex-wrap justify-center xl:px-28 xl:gap-8 md:px-4">

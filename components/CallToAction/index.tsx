@@ -7,7 +7,7 @@ function CallToAction() {
         Events specially curated for you!
       </h2>
       <p className="mb-6">
-        Get event suggestions tailored to your interests! Don`&apos;`t let your
+        Get event suggestions tailored to your interests! Don&apos;t let your
         favorite events slip away.
       </p>
 

@@ -3,14 +3,13 @@ import events from "@/utils/event";
 import EventCard from "@/components/EventCard";
 
 const uniqueCategories = [
-    "Any Category",
-    ...new Set(events.map((event) => event.category)),
-  ];
-  const days = ["Weekdays", "Today", "Tomorrow", "This Week", "This Month"];
+  "Any Category",
+  ...new Set(events.map((event) => event.category)),
+];
+const days = ["Weekdays", "Today", "Tomorrow", "This Week", "This Month"];
 
-  
 function UpcomingEvent() {
-    const [selectedCategory, setSelectedCategory] = useState("Any Category");
+  const [selectedCategory, setSelectedCategory] = useState("Any Category");
   const [selectedDay, setSelectedDay] = useState("Weekdays");
 
   const filterEvents = (event: {
@@ -51,33 +50,36 @@ function UpcomingEvent() {
   const filteredEvents = events.filter(filterEvents);
   return (
     <>
-    <div className="xl:px-40 xl:pt-16">
+      <div className="xl:px-40 xl:pt-16">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-bold">Upcoming Events</h2>
-          <div className="flex space-x-4">
-            <select
-              value={selectedDay}
-              onChange={(e) => setSelectedDay(e.target.value)}
-              className="p-2 border border-gray-300 rounded-full bg-gray-100 text-gray-700"
-            >
-              {days.map((day) => (
-                <option key={day} value={day}>
-                  {day}
-                </option>
-              ))}
-            </select>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="p-2 border border-gray-300 rounded-full bg-gray-100 text-gray-700"
-            >
-              {uniqueCategories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
+          <div className="flex flex-row">
+            <h2 className="text-2xl font-bold">Upcoming Events</h2>
+            <div className="flex space-x-4">
+              <select
+                value={selectedDay}
+                onChange={(e) => setSelectedDay(e.target.value)}
+                className="p-2 border border-gray-300 rounded-full bg-gray-100 text-gray-700"
+              >
+                {days.map((day) => (
+                  <option key={day} value={day}>
+                    {day}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="p-2 border border-gray-300 rounded-full bg-gray-100 text-gray-700"
+              >
+                {uniqueCategories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
+          <div>Explore more events &gt; </div>
         </div>
       </div>
       <div className="flex flex-wrap justify-center xl:px-28 xl:gap-8 md:px-4">

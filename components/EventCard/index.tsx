@@ -30,7 +30,7 @@ function EventCard({
   category,
 }: EventProps) {
   return (
-    <Link href={`/events/${id}`}>
+    <Link href={`/events/${title.replace(/\s+/g, '-').toLowerCase()}-ticket-${id}`}>
       <div className="bg-white rounded-lg overflow-hidden shadow-lg w-full sm:w-80 md:w-96 lg:w-96 xl:w-96 mx-auto m-4">
         <div className="relative w-full h-48">
           <Image
