@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { SearchIcon } from "@heroicons/react/outline";
 import placeholders from "@/utils/placeholderevent";
-import Categories from "../Categories";
 
 function Hero() {
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
