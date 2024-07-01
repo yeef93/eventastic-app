@@ -40,7 +40,7 @@ function SignUpModal({onClose, openLogin}:SignUpModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 text-gray-500">
+    <div className="fixed inset-0 flex xl:items-center xl:justify-center md:items-start md:justify-start  z-50 text-gray-500">
       <div className="fixed inset-0 bg-gray-600 bg-opacity-50"></div>{" "}
       {/* Modal backdrop */}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden relative z-50 max-w-md w-full">
