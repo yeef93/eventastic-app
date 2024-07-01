@@ -3,19 +3,19 @@ import Image from "next/image";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
 
-const ReviewForm = ({ onSubmit }:any) => {
+const ReviewForm = ({ onSubmit }: any) => {
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
 
-  const handleRatingChange = (e:any) => {
+  const handleRatingChange = (e: any) => {
     setRating(e.target.value);
   };
 
-  const handleReviewChange = (value:any) => {
+  const handleReviewChange = (value: any) => {
     setReview(value);
   };
 
-  const handleSubmit = (e:any) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     if (rating && review) {
       onSubmit({ rating, review });
@@ -27,7 +27,7 @@ const ReviewForm = ({ onSubmit }:any) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-lg max-w-2xl">
+    <div className="bg-white p-6 rounded-2xl shadow-lg">
       <form onSubmit={handleSubmit}>
         <div className="flex items-center mb-4">
           <h2 className="text-xl font-bold">Add a Review</h2>
@@ -47,24 +47,26 @@ const ReviewForm = ({ onSubmit }:any) => {
               placeholder="Add your Review here..."
               modules={{
                 toolbar: [
-                  [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
-                  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                  ['bold', 'italic', 'underline'],
-                  [{ 'align': [] }],
-                  ['link', 'image']
+                  [{ header: "1" }, { header: "2" }, { font: [] }],
+                  [{ list: "ordered" }, { list: "bullet" }],
+                  ["bold", "italic", "underline"],
+                  [{ align: [] }],
+                  ["link", "image"],
                 ],
               }}
             />
           </div>
         </div>
-        <div className="mb-4 pl-10">
+        <div className="mb-4 pl-14">
           <select
             id="rating"
             value={rating}
             onChange={handleRatingChange}
-            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
           >
-            <option value={0} disabled>Select a rating</option>
+            <option value={0} disabled>
+              Select a rating
+            </option>
             <option value={1}>1 - Poor</option>
             <option value={2}>2 - Fair</option>
             <option value={3}>3 - Good</option>
@@ -75,7 +77,7 @@ const ReviewForm = ({ onSubmit }:any) => {
         <div className="flex items-center justify-end">
           <button
             type="submit"
-            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline text-sm"
           >
             Submit
           </button>

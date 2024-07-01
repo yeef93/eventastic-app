@@ -12,7 +12,7 @@ function CallToAction() {
       </p>
 
       <a
-        href="/"
+        href="/events"
         className="inline-block bg-gray-800 text-white text-lg font-semibold py-2 px-4 rounded-full hover:bg-gray-700 transition duration-300"
       >
         Get Started &rarr;

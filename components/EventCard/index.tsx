@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { CalendarIcon, LocationMarkerIcon, TicketIcon, UserIcon } from "@heroicons/react/outline";
+import { CalendarIcon, LocationMarkerIcon, TicketIcon, UserIcon, UsersIcon } from "@heroicons/react/outline";
 import Link from "next/link";
 
 interface EventProps {
@@ -53,7 +53,7 @@ function EventCard({
             <p>{dateTime}</p>
           </div>
           <div className="flex items-center text-sm text-gray-600 mt-2">
-            <UserIcon className="w-4 h-4 mr-1 text-gray-500" />
+            <UsersIcon className="w-4 h-4 mr-1 text-gray-500" />
             <p>
               {totalAttendees}/{maxAttendees} Attendees
             </p>

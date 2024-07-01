@@ -31,8 +31,8 @@ export default [
     maxAttendees: 100,
     ticketType: "Paid",
     prices: [
-      { name: "vip", price: 100000 },
-      { name: "reguler", price: 50000 }
+      { name: "vip", price: 300000 },
+      { name: "reguler", price: 70000 }
     ],
     category: "Sport",
     about: "A simple test description about the event.",
@@ -51,8 +51,8 @@ export default [
     maxAttendees: 100,
     ticketType: "Paid",
     prices: [
-      { name: "vip", price: 100000 },
-      { name: "reguler", price: 50000 }
+      { name: "vip", price: 800000 },
+      { name: "reguler", price: 40000 }
     ],
     category: "Technology",
     about: "A simple test description about the event.",
@@ -71,8 +71,8 @@ export default [
     maxAttendees: 100,
     ticketType: "Paid",
     prices: [
-      { name: "vip", price: 100000 },
-      { name: "reguler", price: 50000 }
+      { name: "vip", price: 750000 },
+      { name: "reguler", price: 60000 }
     ],
     category: "Sport",
     about: "A simple test description about the event.",
@@ -91,7 +91,7 @@ export default [
     maxAttendees: 100,
     ticketType: "Paid",
     prices: [
-      { name: "vip", price: 100000 },
+      { name: "vip", price: 800000 },
       { name: "reguler", price: 50000 }
     ],
     category: "Technology",
@@ -111,8 +111,8 @@ export default [
     maxAttendees: 100,
     ticketType: "Paid",
     prices: [
-      { name: "vip", price: 100000 },
-      { name: "reguler", price: 50000 }
+      { name: "vip", price: 900000 },
+      { name: "reguler", price: 45000 }
     ],
     category: "Sport",
     about: "A simple test description about the event.",

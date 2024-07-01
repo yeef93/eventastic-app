@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import events from "@/utils/event";
+import events from "@/utils/events";
 import EventCard from "@/components/EventCard";
 
 const uniqueCategories = [
@@ -50,15 +50,15 @@ function UpcomingEvent() {
   const filteredEvents = events.filter(filterEvents);
   return (
     <>
-      <div className="xl:px-40 xl:pt-16">
-        <div className="flex justify-between items-center mb-8">
-          <div className="flex flex-row">
-            <h2 className="text-2xl font-bold">Upcoming Events</h2>
-            <div className="flex space-x-4">
+      <div className="px-4 pt-8 xl:px-40 xl:pt-16">
+        <div className="flex flex-col lg:flex-row justify-between items-center mb-8">
+          <div className="flex flex-col lg:flex-row">
+            <h2 className="text-xl md:text-2xl font-bold mb-4 lg:mb-0">Upcoming Events</h2>
+            <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
               <select
                 value={selectedDay}
                 onChange={(e) => setSelectedDay(e.target.value)}
-                className="p-2 border border-gray-300 rounded-full bg-gray-100 text-gray-700 ml-4"
+                className="p-2 border border-gray-300 rounded-full bg-gray-100 text-gray-700"
               >
                 {days.map((day) => (
                   <option key={day} value={day}>
@@ -79,13 +79,13 @@ function UpcomingEvent() {
               </select>
             </div>
           </div>
-          <p className="text-sm font-semibold text-purple-800 relative w-max link">
+          <p className="text-sm font-semibold text-purple-800 relative w-max link mt-4 lg:mt-0">
             <a href={"/events"}>Explore more events &gt; </a>
             <span className="absolute -bottom-1 left-0 w-0 transition-all h-1 bg-green-400"></span>
           </p>
         </div>
       </div>
-      <div className="flex flex-wrap justify-center xl:px-28 xl:gap-8 md:px-4">
+      <div className="flex flex-wrap justify-center gap-4 md:gap-8 px-2 md:px-4 xl:px-28">
         {filteredEvents.map((event) => (
           <EventCard
             key={event.id}

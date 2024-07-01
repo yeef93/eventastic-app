@@ -2,9 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import events from "@/utils/event";
+import events from "@/utils/events";
 import ImageCard from "@/components/ImageCard";
-import { CalendarIcon, ClockIcon, UserIcon } from "@heroicons/react/outline";
+import {
+  CalendarIcon,
+  ClockIcon,
+  LocationMarkerIcon,
+  TicketIcon,
+  UserIcon,
+} from "@heroicons/react/outline";
 import ReviewForm from "@/app/components/Events/ReviewForm";
 
 type Event = {
@@ -90,39 +96,32 @@ const EventDetail = () => {
       <div className="px-4 sm:px-8 md:px-12 lg:px-20 xl:px-32">
         <div className="mt-6 md:flex md:justify-between md:items-start">
           <div className="md:w-2/3 md:pr-8">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 border-b-2 pb-2">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 border-b-2 pb-2">
               {event.title}
             </h1>
             <div className="mt-4">
+              <h2 className="text-xl sm:text-2xl font-bold mb-2">
+                Date and time
+              </h2>
               <p className="text-sm sm:text-base">{date}</p>
-              <p className="text-sm sm:text-base">
-                Hosted by: {event.hostedBy}
-              </p>
-              <p className="text-sm sm:text-base">
-                Attendees: {event.totalAttendees}/{event.maxAttendees}
-              </p>
-              <p className="text-sm sm:text-base">
-                Ticket Type: {event.ticketType}
-              </p>
-
-              {event.ticketType !== "Free" && (
-                <p className="text-sm sm:text-base">
-                  Prices:{" "}
-                  {event.prices.map((price, index) => (
-                    <span key={index}>
-                      {price.name} - ${price.price}{" "}
-                    </span>
-                  ))}
-                </p>
-              )}
-              {event.ticketType !== "Free" && (
-                <p className="text-sm sm:text-base">
-                  Minimum Price: ${minimumPrice}
-                </p>
-              )}
             </div>
             <div className="mt-4">
-              <h2 className="text-xl sm:text-2xl font-bold mb-2">About</h2>
+              <h2 className="text-xl sm:text-2xl font-bold mb-2">Location</h2>
+              <div className="flex items-center text-sm sm:text-base">
+                <p className="mr-2">{event.location}</p>
+                <a
+                  href={event.detailLocation}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:underline"
+                >
+                  maps
+                </a>
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <h2 className="text-xl sm:text-2xl font-bold mb-2">Details</h2>
               <p className="text-sm sm:text-base">{event.about}</p>
             </div>
             <div className="mt-4">
@@ -135,9 +134,6 @@ const EventDetail = () => {
               <a className="inline-block px-3 py-1 border border-gray-300 rounded-full bg-gray-100 text-gray-700 text-sm sm:text-base">
                 {event.category}
               </a>
-            </div>
-            <div>
-              <ReviewForm onSubmit={handleReviewSubmit} />
             </div>
           </div>
           <div className="md:w-1/3 md:mt-0 mt-8 md:px-8 sticky top-16">
@@ -153,6 +149,34 @@ const EventDetail = () => {
               <ClockIcon className="w-4 h-4 mr-1 text-gray-500" />
               <p className="whitespace-nowrap">{time}</p>
             </div>
+            <div className="flex items-center text-sm sm:text-base text-gray-600 mt-2">
+              <LocationMarkerIcon className="w-4 h-4 mr-1 text-gray-500" />
+              <p className="whitespace-nowrap">{event.location}</p>
+              <a
+                href={event.detailLocation}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:underline ml-2"
+              >
+                maps
+              </a>
+            </div>
+            <div className="flex items-center text-sm sm:text-base text-gray-600 mt-2">
+              <TicketIcon className="w-4 h-4 mr-1 text-gray-500" />
+              {event.ticketType === "Free" ? (
+                <p className="text-sm sm:text-base">{event.ticketType}</p>
+              ) : (
+                <p className="text-sm sm:text-base">
+                  Start From{" "}
+                  {minimumPrice.toLocaleString("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 2,
+                  })}
+                </p>
+              )}
+            </div>
+
             <button
               onClick={addToCart}
               className="mt-8 w-full px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 transition text-sm sm:text-base sticky-tickets-button"
@@ -160,6 +184,10 @@ const EventDetail = () => {
               Get tickets
             </button>
           </div>
+        </div>
+
+        <div className=" py-8">
+          <ReviewForm onSubmit={handleReviewSubmit} />
         </div>
       </div>
     </div>

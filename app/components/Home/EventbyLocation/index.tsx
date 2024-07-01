@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import events from "@/utils/event";
+import events from "@/utils/events";
 import EventCard from "@/components/EventCard";
 
 const uniqueLocations = [
@@ -25,10 +25,10 @@ function EventbyLocation() {
 
   return (
     <>
-      <div className="xl:px-40 xl:pt-16">
-        <div className="flex justify-between items-center mb-8">
-          <div className="flex flex-row">
-            <h2 className="text-2xl font-bold">Events Near</h2>
+      <div className="px-4 pt-8 xl:px-40 xl:pt-16">
+        <div className="flex flex-col lg:flex-row justify-between items-center mb-8">
+          <div className="flex flex-col lg:flex-row">
+            <h2 className="text-xl md:text-2xl font-bold mb-4 lg:mb-0">Events Near</h2>
             <select
               value={selectedLocation}
               onChange={(e) => setSelectedLocation(e.target.value)}
