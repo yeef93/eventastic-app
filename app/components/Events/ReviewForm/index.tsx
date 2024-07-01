@@ -3,19 +3,19 @@ import Image from "next/image";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
 
-const ReviewForm = ({ onSubmit }) => {
+const ReviewForm = ({ onSubmit }:any) => {
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
 
-  const handleRatingChange = (e) => {
+  const handleRatingChange = (e:any) => {
     setRating(e.target.value);
   };
 
-  const handleReviewChange = (value) => {
+  const handleReviewChange = (value:any) => {
     setReview(value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e:any) => {
     e.preventDefault();
     if (rating && review) {
       onSubmit({ rating, review });
