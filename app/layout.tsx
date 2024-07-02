@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import MenuProvider from "@/context/MenuProvider";
+import { AuthProvider } from "@/context/AuthContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -19,13 +20,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <MenuProvider>
-        <body className={inter.className}>
-          <Header/>
-          <main className=" m-0 p-0 pt-10">{children}</main>
-          <Footer/>
-        </body>
-      </MenuProvider>
+      <AuthProvider>
+        <MenuProvider>
+          <body className={inter.className}>
+            <Header />
+            <main className=" m-0 p-0 pt-10">{children}</main>
+            <Footer />
+          </body>
+        </MenuProvider>
+      </AuthProvider>
     </html>
   );
 }

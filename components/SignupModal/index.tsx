@@ -2,6 +2,7 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import roles from "@/utils/role";
+import Modal from "../Modal";
 
 interface SignUpModalProps {
   onClose: () => void;
@@ -43,9 +44,7 @@ function SignUpModal({ onClose, openLogin }: SignUpModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 flex xl:items-center xl:justify-center md:items-start md:justify-start z-50 text-gray-500">
-      <div className="fixed inset-0 bg-gray-600 bg-opacity-50"></div>
-      {/* Modal backdrop */}
+    <Modal>
       <div className="bg-white rounded-lg shadow-lg overflow-hidden relative z-50 max-w-md w-full">
         <button
           className="absolute top-0 right-0 m-4 text-gray-500 hover:text-gray-800 focus:outline-none"
@@ -248,7 +247,7 @@ function SignUpModal({ onClose, openLogin }: SignUpModalProps) {
           </Formik>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }
 

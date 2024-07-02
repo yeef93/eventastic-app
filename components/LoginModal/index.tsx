@@ -1,6 +1,7 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import Modal from "../Modal";
 
 interface LoginModalProps {
   onClose: () => void;
@@ -26,8 +27,7 @@ function LoginModal({ onClose, openSignUp }: LoginModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 text-gray-500">
-      <div className="fixed inset-0 bg-gray-600 bg-opacity-50"></div>{" "}
+    <Modal>
       <div className="bg-white rounded-lg shadow-lg overflow-hidden relative z-50 max-w-md w-full">
         <button
           className="absolute top-0 right-0 m-4 text-gray-500 hover:text-gray-800 focus:outline-none"
@@ -124,7 +124,7 @@ function LoginModal({ onClose, openSignUp }: LoginModalProps) {
           </Formik>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }
 

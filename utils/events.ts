@@ -13,7 +13,7 @@ export default [
     maxAttendees: 100,
     ticketType: "Free",
     prices: [
-      { name: "Free", price: 0 }
+      { name: "Free", price: 0, seat: 500, availseat: 5 }
     ],
     category: "Sport",
     about: "A simple test description about the event.",
@@ -31,8 +31,8 @@ export default [
     maxAttendees: 100,
     ticketType: "Paid",
     prices: [
-      { name: "vip", price: 300000 },
-      { name: "reguler", price: 70000 }
+      { name: "vip", price: 300000, seat: 50, availseat: 3 },
+      { name: "reguler", price: 70000, seat: 100, availseat: 5 }
     ],
     category: "Sport",
     about: "A simple test description about the event.",
@@ -51,8 +51,8 @@ export default [
     maxAttendees: 100,
     ticketType: "Paid",
     prices: [
-      { name: "vip", price: 800000 },
-      { name: "reguler", price: 40000 }
+      { name: "vip", price: 800000, seat: 800, availseat: 50 },
+      { name: "reguler", price: 40000, seat: 500, availseat: 40 }
     ],
     category: "Technology",
     about: "A simple test description about the event.",
@@ -71,8 +71,8 @@ export default [
     maxAttendees: 100,
     ticketType: "Paid",
     prices: [
-      { name: "vip", price: 750000 },
-      { name: "reguler", price: 60000 }
+      { name: "vip", price: 750000, seat: 500, availseat: 58 },
+      { name: "reguler", price: 60000, seat: 100, availseat: 52 }
     ],
     category: "Sport",
     about: "A simple test description about the event.",
@@ -91,8 +91,8 @@ export default [
     maxAttendees: 100,
     ticketType: "Paid",
     prices: [
-      { name: "vip", price: 800000 },
-      { name: "reguler", price: 50000 }
+      { name: "vip", price: 800000, seat: 100, availseat: 45 },
+      { name: "reguler", price: 50000, seat: 500, availseat: 65 }
     ],
     category: "Technology",
     about: "A simple test description about the event.",
@@ -111,8 +111,8 @@ export default [
     maxAttendees: 100,
     ticketType: "Paid",
     prices: [
-      { name: "vip", price: 900000 },
-      { name: "reguler", price: 45000 }
+      { name: "vip", price: 900000, seat: 200, availseat: 75 },
+      { name: "reguler", price: 45000, seat: 100, availseat: 85 }
     ],
     category: "Sport",
     about: "A simple test description about the event.",
