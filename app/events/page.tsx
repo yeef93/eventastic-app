@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import FilterSidebar from "../components/Events/FilterSidebar";
 import EventCard from "@/components/EventCard";
 import events from "@/utils/events";
+import Pagination from "@/components/Pagination";
 
 function Events() {
   const [filters, setFilters] = useState({
@@ -20,6 +21,17 @@ function Events() {
       : true;
     return matchesCategory && matchesLocation;
   });
+
+  // declare for pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const totalItems = 1000; // Assuming you have 100 items
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Handle data fetching or state updates here based on the new page
+  };
 
   return (
     <div className="flex">
@@ -40,6 +52,11 @@ function Events() {
             category={event.category}
           />
         ))}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       </div>
     </div>
   );

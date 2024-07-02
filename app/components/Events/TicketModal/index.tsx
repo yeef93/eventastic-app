@@ -120,7 +120,7 @@ function TicketModal({ onClose, event }: TicketModalProps) {
               </p>
             </div>
             <button className="mt-4 bg-orange-500 text-white py-2 px-4 rounded w-full">
-              Register
+              Checkout
             </button>
           </div>
         </div>
