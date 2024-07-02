@@ -1,13 +1,14 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import roles from "@/utils/role";
 
 interface SignUpModalProps {
   onClose: () => void;
   openLogin: () => void;
 }
 
-function SignUpModal({onClose, openLogin}:SignUpModalProps) {
+function SignUpModal({ onClose, openLogin }: SignUpModalProps) {
   const initialValues = {
     fullName: "",
     username: "",
@@ -15,6 +16,7 @@ function SignUpModal({onClose, openLogin}:SignUpModalProps) {
     password: "",
     retypePassword: "",
     referralCode: "",
+    role: "",
   };
 
   const validationSchema = Yup.object().shape({
@@ -30,6 +32,7 @@ function SignUpModal({onClose, openLogin}:SignUpModalProps) {
       .oneOf([Yup.ref("password"), undefined], "Passwords must match")
       .required("Retype Password is required"),
     referralCode: Yup.string(),
+    role: Yup.string().required("Role is required"),
   });
 
   const handleSubmit = (values: any, { setSubmitting }: any) => {
@@ -40,8 +43,8 @@ function SignUpModal({onClose, openLogin}:SignUpModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 flex xl:items-center xl:justify-center md:items-start md:justify-start  z-50 text-gray-500">
-      <div className="fixed inset-0 bg-gray-600 bg-opacity-50"></div>{" "}
+    <div className="fixed inset-0 flex xl:items-center xl:justify-center md:items-start md:justify-start z-50 text-gray-500">
+      <div className="fixed inset-0 bg-gray-600 bg-opacity-50"></div>
       {/* Modal backdrop */}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden relative z-50 max-w-md w-full">
         <button
@@ -74,6 +77,32 @@ function SignUpModal({onClose, openLogin}:SignUpModalProps) {
             {({ isSubmitting }) => (
               <Form>
                 <div className="mb-4">
+                  <div className="mb-4">
+                    <label
+                      className="block text-gray-700 text-sm font-bold mb-2"
+                      htmlFor="role"
+                    >
+                      Role
+                    </label>
+                    <Field
+                      as="select"
+                      name="role"
+                      id="role"
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                      <option value="" label="Select role" />
+                      {roles.map((role) => (
+                        <option key={role.id} value={role.name}>
+                          {role.name}
+                        </option>
+                      ))}
+                    </Field>
+                    <ErrorMessage
+                      name="role"
+                      component="p"
+                      className="text-red-500 text-xs italic"
+                    />
+                  </div>
                   <label
                     className="block text-gray-700 text-sm font-bold mb-2"
                     htmlFor="fullName"
@@ -221,6 +250,6 @@ function SignUpModal({onClose, openLogin}:SignUpModalProps) {
       </div>
     </div>
   );
-};
+}
 
 export default SignUpModal;

@@ -12,6 +12,7 @@ import {
   UserIcon,
 } from "@heroicons/react/outline";
 import ReviewForm from "@/app/components/Events/ReviewForm";
+import TicketModal from "@/app/components/Events/TicketModal";
 
 type Event = {
   id: number;
@@ -40,6 +41,10 @@ const EventDetail = () => {
   const handleReviewSubmit = (review: any) => {
     console.log("Review submitted:", review);
   };
+
+  const [isGetTicketModalOpen, setIsGetTicketModalOpen] = useState<boolean>(false);
+  const openGetTicketModal = () => setIsGetTicketModalOpen(true);
+  const closeGetTicketModal = () => setIsGetTicketModalOpen(false);
 
   useEffect(() => {
     const slug = pathname.split("/").pop();
@@ -178,14 +183,15 @@ const EventDetail = () => {
             </div>
 
             <button
-              onClick={addToCart}
+              // onClick={addToCart}
+              onClick={openGetTicketModal}
               className="mt-8 w-full px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 transition text-sm sm:text-base sticky-tickets-button"
             >
               Get tickets
             </button>
+            {isGetTicketModalOpen && <TicketModal onClose={closeGetTicketModal} event={event} />}
           </div>
         </div>
-
         <div className=" py-8">
           <ReviewForm onSubmit={handleReviewSubmit} />
         </div>
