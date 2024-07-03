@@ -43,7 +43,9 @@ function Events() {
             id={event.id}
             title={event.title}
             imageUrl={event.imageUrl}
-            dateTime={event.dateTime}
+            eventDate={event.eventDate}
+            startTime={event.startTime}
+            endTime={event.endTime}
             organizer={event.organizer}
             location={event.location}
             availableSeat={event.availableSeat}

@@ -18,7 +18,9 @@ type Event = {
   id: number;
   title: string;
   imageUrl: string;
-  dateTime: string;
+  eventDate: string;
+  startTime: string;
+  endTime: string;
   organizer: string;
   location: string;
   venue: string;
@@ -76,8 +78,6 @@ const EventDetail = () => {
     return <p>Loading...</p>;
   }
 
-  const [date, time] = event.dateTime.split("|").map((str) => str.trim());
-
   const addToCart = () => {
     console.log(`Ticket for event ${event.id} added to cart.`);
   };
@@ -95,6 +95,37 @@ const EventDetail = () => {
 
   const minimumPrice = getMinimumPrice();
 
+  // Format the date and time
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
+  const formatTime = (timeString: string) => {
+    const [hours, minutes] = timeString.split(':');
+    const date = new Date();
+    date.setHours(parseInt(hours, 10), parseInt(minutes, 10));
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
+  };
+
+  const formattedEventDate = formatDate(event.eventDate);
+  const formattedStartTime = formatTime(event.startTime);
+  const formattedEndTime = formatTime(event.endTime);
+
+  // Check if the event date has passed
+  const eventDate = new Date(event.eventDate);
+  const currentDate = new Date();
+  const isEventPast = currentDate > eventDate;
+
   return (
     <div className="py-7">
       <ImageCard src={event.imageUrl} alt={event.title} />
@@ -105,10 +136,8 @@ const EventDetail = () => {
               {event.title}
             </h1>
             <div className="mt-4">
-              <h2 className="text-xl sm:text-2xl font-bold mb-2">
-                Date and time
-              </h2>
-              <p className="text-sm sm:text-base">{date}</p>
+              <h2 className="text-xl sm:text-2xl font-bold mb-2">Date and time</h2>
+              <p className="text-sm sm:text-base">{`${formattedEventDate} | ${formattedStartTime} - ${formattedEndTime}`}</p>
             </div>
             <div className="mt-4">
               <h2 className="text-xl sm:text-2xl font-bold mb-2">Location</h2>
@@ -127,15 +156,12 @@ const EventDetail = () => {
 
             <div className="mt-4">
               <h2 className="text-xl sm:text-2xl font-bold mb-2">Details</h2>
-              <p className="text-sm sm:text-base">{event.about}</p>
             </div>
             <div className="mt-4">
               <p className="text-sm sm:text-base whitespace-pre-line">
                 {event.description}
               </p>
-              <h2 className="text-xl sm:text-2xl font-bold mt-4 mb-2">
-                Category
-              </h2>
+              <h2 className="text-xl sm:text-2xl font-bold mt-4 mb-2">Category</h2>
               <a className="inline-block px-3 py-1 border border-gray-300 rounded-full bg-gray-100 text-gray-700 text-sm sm:text-base">
                 {event.eventCategory}
               </a>
@@ -144,17 +170,15 @@ const EventDetail = () => {
           <div className="md:w-1/3 md:mt-0 mt-8 md:px-8 sticky top-16">
             <div className="flex items-center text-sm sm:text-base text-gray-600 mt-2">
               <UserIcon className="w-4 h-4 mr-1 text-gray-500" />
-              <p className="whitespace-nowrap">
-                Organize by : {event.organizer}
-              </p>
+              <p className="whitespace-nowrap">Organize by : {event.organizer}</p>
             </div>
             <div className="flex items-center text-sm sm:text-base text-gray-600 mt-2">
               <CalendarIcon className="w-4 h-4 mr-1 text-gray-500" />
-              <p className="whitespace-nowrap">{date}</p>
+              <p className="whitespace-nowrap">{formattedEventDate}</p>
             </div>
             <div className="flex items-center text-sm sm:text-base text-gray-600 mt-2">
               <ClockIcon className="w-4 h-4 mr-1 text-gray-500" />
-              <p className="whitespace-nowrap">{time}</p>
+              <p className="whitespace-nowrap">{formattedStartTime} - {formattedEndTime}</p>
             </div>
             <div className="flex items-center text-sm sm:text-base text-gray-600 mt-2">
               <LocationMarkerIcon className="w-4 h-4 mr-1 text-gray-500" />
@@ -185,18 +209,20 @@ const EventDetail = () => {
             </div>
 
             <button
-              // onClick={addToCart}
-              onClick={openGetTicketModal}
-              className="mt-8 w-full px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 transition text-sm sm:text-base sticky-tickets-button"
+              onClick={isEventPast ? undefined : openGetTicketModal}
+              className={`mt-8 w-full px-4 py-2 ${
+                isEventPast ? "bg-gray-500 cursor-not-allowed" : "bg-red-500 hover:bg-red-700"
+              } text-white rounded transition text-sm sm:text-base sticky-tickets-button`}
+              disabled={isEventPast}
             >
-              Get tickets
+              {isEventPast ? "Sales End" : "Get tickets"}
             </button>
             {isGetTicketModalOpen && (
               <TicketModal onClose={closeGetTicketModal} event={event} />
             )}
           </div>
         </div>
-        <div className=" py-8">
+        <div className="py-8">
           <ReviewForm onSubmit={handleReviewSubmit} />
         </div>
       </div>

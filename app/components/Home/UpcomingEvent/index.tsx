@@ -13,11 +13,11 @@ function UpcomingEvent() {
   const [selectedDay, setSelectedDay] = useState("Weekdays");
 
   const filterEvents = (event: {
-    dateTime: string | number | Date;
+    eventDate: string | number | Date;
     eventCategory: string;
   }) => {
     const now = new Date();
-    const eventDate = new Date(event.dateTime);
+    const eventDate = new Date(event.eventDate);
 
     // Filter by category
     if (
@@ -53,7 +53,9 @@ function UpcomingEvent() {
       <div className="px-4 pt-8 xl:px-40 xl:pt-16">
         <div className="flex flex-col lg:flex-row justify-between items-center mb-8">
           <div className="flex flex-col lg:flex-row">
-            <h2 className="text-xl md:text-2xl font-bold mb-4 lg:mb-0">Upcoming Events</h2>
+            <h2 className="text-xl md:text-2xl font-bold mb-4 lg:mb-0">
+              Upcoming Events
+            </h2>
             <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
               <select
                 value={selectedDay}
@@ -92,7 +94,9 @@ function UpcomingEvent() {
             id={event.id}
             imageUrl={event.imageUrl}
             title={event.title}
-            dateTime={event.dateTime}
+            eventDate={event.eventDate}
+            startTime={event.startTime}
+            endTime={event.endTime}
             organizer={event.organizer}
             location={event.location}
             availableSeat={event.availableSeat}

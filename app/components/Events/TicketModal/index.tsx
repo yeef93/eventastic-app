@@ -119,7 +119,7 @@ function TicketModal({ onClose, event }: TicketModalProps) {
                 })}
               </p>
             </div>
-            <button className="mt-4 bg-orange-500 text-white py-2 px-4 rounded w-full">
+            <button className="mt-4 bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded w-full">
               Checkout
             </button>
           </div>

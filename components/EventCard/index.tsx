@@ -5,7 +5,6 @@ import {
   CalendarIcon,
   LocationMarkerIcon,
   TicketIcon,
-  UserIcon,
   UsersIcon,
 } from "@heroicons/react/outline";
 import Link from "next/link";
@@ -14,7 +13,9 @@ interface EventProps {
   id: number;
   imageUrl: string;
   title: string;
-  dateTime: string;
+  eventDate: string;
+  startTime: string;
+  endTime: string;
   organizer: string;
   location: string;
   availableSeat: number;
@@ -27,7 +28,9 @@ function EventCard({
   id,
   imageUrl,
   title,
-  dateTime,
+  eventDate,
+  startTime,
+  endTime,
   organizer,
   location,
   availableSeat,
@@ -35,6 +38,22 @@ function EventCard({
   isFree,
   eventCategory,
 }: EventProps) {
+  const formatDateTime = (eventDate: string, startTime: string, endTime: string) => {
+    const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const timeOptions: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
+
+    const eventDateObj = new Date(eventDate);
+    const formattedDate = eventDateObj.toLocaleDateString('en-US', dateOptions);
+
+    const startTimeObj = new Date(`${eventDate}T${startTime}`);
+    const formattedStartTime = startTimeObj.toLocaleTimeString('en-US', timeOptions);
+
+    const endTimeObj = new Date(`${eventDate}T${endTime}`);
+    const formattedEndTime = endTimeObj.toLocaleTimeString('en-US', timeOptions);
+
+    return `${formattedDate} | ${formattedStartTime} - ${formattedEndTime}`;
+  };
+
   return (
     <Link
       href={`/events/${title.replace(/\s+/g, "-").toLowerCase()}-ticket-${id}`}
@@ -58,7 +77,7 @@ function EventCard({
           <p className="text-sm text-gray-600 mt-2">Hosted by: {organizer}</p>
           <div className="flex items-center text-sm text-gray-600 mt-2">
             <CalendarIcon className="w-4 h-4 mr-1 text-gray-500" />
-            <p>{dateTime}</p>
+            <p>{formatDateTime(eventDate, startTime, endTime)}</p>
           </div>
           <div className="flex items-center text-sm text-gray-600 mt-2">
             <UsersIcon className="w-4 h-4 mr-1 text-gray-500" />

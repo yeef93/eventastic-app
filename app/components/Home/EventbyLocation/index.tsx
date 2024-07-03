@@ -54,7 +54,9 @@ function EventbyLocation() {
             id={event.id}
             imageUrl={event.imageUrl}
             title={event.title}
-            dateTime={event.dateTime}
+            eventDate={event.eventDate}
+            startTime={event.startTime}
+            endTime={event.endTime}
             organizer={event.organizer}
             location={event.location}
             availableSeat={event.availableSeat}
