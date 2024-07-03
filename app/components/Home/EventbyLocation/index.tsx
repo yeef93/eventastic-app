@@ -55,12 +55,12 @@ function EventbyLocation() {
             imageUrl={event.imageUrl}
             title={event.title}
             dateTime={event.dateTime}
-            hostedBy={event.hostedBy}
+            organizer={event.organizer}
             location={event.location}
-            totalAttendees={event.totalAttendees}
-            maxAttendees={event.maxAttendees}
-            ticketType={event.ticketType}
-            category={event.category}
+            availableSeat={event.availableSeat}
+            seatLimit={event.seatLimit}
+            isFree={event.isFree}
+            eventCategory={event.eventCategory}
           />
         ))}
       </div>

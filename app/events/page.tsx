@@ -14,7 +14,7 @@ function Events() {
 
   const filteredEvents = events.filter((event) => {
     const matchesCategory = filters.category
-      ? event.category.includes(filters.category)
+      ? event.eventCategory.includes(filters.category)
       : true;
     const matchesLocation = filters.location
       ? event.location.includes(filters.location)
@@ -44,12 +44,12 @@ function Events() {
             title={event.title}
             imageUrl={event.imageUrl}
             dateTime={event.dateTime}
-            hostedBy={event.hostedBy}
+            organizer={event.organizer}
             location={event.location}
-            totalAttendees={event.totalAttendees}
-            maxAttendees={event.maxAttendees}
-            ticketType={event.ticketType}
-            category={event.category}
+            availableSeat={event.availableSeat}
+            seatLimit={event.seatLimit}
+            isFree={event.isFree}
+            eventCategory={event.eventCategory}
           />
         ))}
         <Pagination

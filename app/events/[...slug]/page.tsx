@@ -19,18 +19,17 @@ type Event = {
   title: string;
   imageUrl: string;
   dateTime: string;
-  hostedBy: string;
+  organizer: string;
   location: string;
-  detailLocation: string;
-  totalAttendees: number;
-  maxAttendees: number;
-  ticketType: string;
-  prices: {
+  venue: string;
+  availableSeat: number;
+  seatLimit: number;
+  isFree: boolean;
+  ticketTypes: {
     name: string;
     price: number;
   }[];
-  category: string;
-  about: string;
+  eventCategory: string;
   description: string;
 };
 
@@ -42,7 +41,8 @@ const EventDetail = () => {
     console.log("Review submitted:", review);
   };
 
-  const [isGetTicketModalOpen, setIsGetTicketModalOpen] = useState<boolean>(false);
+  const [isGetTicketModalOpen, setIsGetTicketModalOpen] =
+    useState<boolean>(false);
   const openGetTicketModal = () => setIsGetTicketModalOpen(true);
   const closeGetTicketModal = () => setIsGetTicketModalOpen(false);
 
@@ -85,7 +85,7 @@ const EventDetail = () => {
   // Function to find minimum price
   const getMinimumPrice = () => {
     let minPrice = Infinity;
-    event.prices.forEach((price) => {
+    event.ticketTypes.forEach((price) => {
       if (price.price < minPrice) {
         minPrice = price.price;
       }
@@ -115,7 +115,7 @@ const EventDetail = () => {
               <div className="flex items-center text-sm sm:text-base">
                 <p className="mr-2">{event.location}</p>
                 <a
-                  href={event.detailLocation}
+                  href={event.venue}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-500 hover:underline"
@@ -137,14 +137,16 @@ const EventDetail = () => {
                 Category
               </h2>
               <a className="inline-block px-3 py-1 border border-gray-300 rounded-full bg-gray-100 text-gray-700 text-sm sm:text-base">
-                {event.category}
+                {event.eventCategory}
               </a>
             </div>
           </div>
           <div className="md:w-1/3 md:mt-0 mt-8 md:px-8 sticky top-16">
             <div className="flex items-center text-sm sm:text-base text-gray-600 mt-2">
               <UserIcon className="w-4 h-4 mr-1 text-gray-500" />
-              <p className="whitespace-nowrap">Hosted by : {event.hostedBy}</p>
+              <p className="whitespace-nowrap">
+                Organize by : {event.organizer}
+              </p>
             </div>
             <div className="flex items-center text-sm sm:text-base text-gray-600 mt-2">
               <CalendarIcon className="w-4 h-4 mr-1 text-gray-500" />
@@ -158,7 +160,7 @@ const EventDetail = () => {
               <LocationMarkerIcon className="w-4 h-4 mr-1 text-gray-500" />
               <p className="whitespace-nowrap">{event.location}</p>
               <a
-                href={event.detailLocation}
+                href={event.venue}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-500 hover:underline ml-2"
@@ -168,10 +170,10 @@ const EventDetail = () => {
             </div>
             <div className="flex items-center text-sm sm:text-base text-gray-600 mt-2">
               <TicketIcon className="w-4 h-4 mr-1 text-gray-500" />
-              {event.ticketType === "Free" ? (
-                <p className="text-sm sm:text-base">{event.ticketType}</p>
+              {event.isFree ? (
+                <p>Free</p>
               ) : (
-                <p className="text-sm sm:text-base">
+                <p>
                   Start From{" "}
                   {minimumPrice.toLocaleString("id-ID", {
                     style: "currency",
@@ -189,7 +191,9 @@ const EventDetail = () => {
             >
               Get tickets
             </button>
-            {isGetTicketModalOpen && <TicketModal onClose={closeGetTicketModal} event={event} />}
+            {isGetTicketModalOpen && (
+              <TicketModal onClose={closeGetTicketModal} event={event} />
+            )}
           </div>
         </div>
         <div className=" py-8">

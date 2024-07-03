@@ -1,7 +1,13 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { CalendarIcon, LocationMarkerIcon, TicketIcon, UserIcon, UsersIcon } from "@heroicons/react/outline";
+import {
+  CalendarIcon,
+  LocationMarkerIcon,
+  TicketIcon,
+  UserIcon,
+  UsersIcon,
+} from "@heroicons/react/outline";
 import Link from "next/link";
 
 interface EventProps {
@@ -9,12 +15,12 @@ interface EventProps {
   imageUrl: string;
   title: string;
   dateTime: string;
-  hostedBy: string;
+  organizer: string;
   location: string;
-  totalAttendees: number;
-  maxAttendees: number;
-  ticketType: string;
-  category: string;
+  availableSeat: number;
+  seatLimit: number;
+  isFree: boolean;
+  eventCategory: string;
 }
 
 function EventCard({
@@ -22,15 +28,17 @@ function EventCard({
   imageUrl,
   title,
   dateTime,
-  hostedBy,
+  organizer,
   location,
-  totalAttendees,
-  maxAttendees,
-  ticketType,
-  category,
+  availableSeat,
+  seatLimit,
+  isFree,
+  eventCategory,
 }: EventProps) {
   return (
-    <Link href={`/events/${title.replace(/\s+/g, '-').toLowerCase()}-ticket-${id}`}>
+    <Link
+      href={`/events/${title.replace(/\s+/g, "-").toLowerCase()}-ticket-${id}`}
+    >
       <div className="bg-white rounded-lg overflow-hidden shadow-lg w-full sm:w-80 md:w-96 lg:w-96 xl:w-96 mx-auto m-4">
         <div className="relative w-full h-48">
           <Image
@@ -47,7 +55,7 @@ function EventCard({
         </div>
         <div className="p-4">
           <h2 className="text-xl font-bold">{title}</h2>
-          <p className="text-sm text-gray-600 mt-2">Hosted by: {hostedBy}</p>
+          <p className="text-sm text-gray-600 mt-2">Hosted by: {organizer}</p>
           <div className="flex items-center text-sm text-gray-600 mt-2">
             <CalendarIcon className="w-4 h-4 mr-1 text-gray-500" />
             <p>{dateTime}</p>
@@ -55,16 +63,16 @@ function EventCard({
           <div className="flex items-center text-sm text-gray-600 mt-2">
             <UsersIcon className="w-4 h-4 mr-1 text-gray-500" />
             <p>
-              {totalAttendees}/{maxAttendees} Attendees
+              {seatLimit - availableSeat}/{seatLimit} Attendees
             </p>
           </div>
           <div className="flex items-center text-sm text-gray-600 mt-2">
             <TicketIcon className="w-4 h-4 mr-1 text-gray-500" />
-            <p>{ticketType}</p>
+            {isFree ? <p>Free</p> : <p>Paid</p>}
           </div>
           <div className="flex items-center text-sm text-gray-600 mt-2">
             <span className="inline-block bg-gray-200 text-gray-800 rounded-full px-3 py-1 text-xs font-semibold mr-2">
-              {category}
+              {eventCategory}
             </span>
           </div>
         </div>

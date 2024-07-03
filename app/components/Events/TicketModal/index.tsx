@@ -8,12 +8,12 @@ interface TicketModalProps {
 
 function TicketModal({ onClose, event }: TicketModalProps) {
   const [ticketQuantities, setTicketQuantities] = useState(
-    event.prices.map(() => 0)
+    event.ticketTypes.map(() => 0)
   );
   const [totalPrice, setTotalPrice] = useState(0);
 
   const handleIncrement = (index: number) => {
-    if (ticketQuantities[index] < event.prices[index].availseat) {
+    if (ticketQuantities[index] < event.ticketTypes[index].availableSeat) {
       const newQuantities = [...ticketQuantities];
       newQuantities[index] += 1;
       setTicketQuantities(newQuantities);
@@ -32,7 +32,7 @@ function TicketModal({ onClose, event }: TicketModalProps) {
 
   const updateTotalPrice = (quantities: number[]) => {
     const newTotalPrice = quantities.reduce((total, quantity, index) => {
-      return total + quantity * event.prices[index].price;
+      return total + quantity * event.ticketTypes[index].price;
     }, 0);
     setTotalPrice(newTotalPrice);
   };
@@ -76,7 +76,7 @@ function TicketModal({ onClose, event }: TicketModalProps) {
                 </button>
               </div>
             </div>
-            {event.prices.map((ticket: any, index: number) => (
+            {event.ticketTypes.map((ticket: any, index: number) => (
               <div key={index} className="mb-4 border rounded p-4">
                 <div className="flex justify-between items-center">
                   <div>

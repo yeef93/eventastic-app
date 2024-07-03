@@ -4,7 +4,7 @@ import EventCard from "@/components/EventCard";
 
 const uniqueCategories = [
   "Any Category",
-  ...new Set(events.map((event) => event.category)),
+  ...new Set(events.map((event) => event.eventCategory)),
 ];
 const days = ["Weekdays", "Today", "Tomorrow", "This Week", "This Month"];
 
@@ -14,7 +14,7 @@ function UpcomingEvent() {
 
   const filterEvents = (event: {
     dateTime: string | number | Date;
-    category: string;
+    eventCategory: string;
   }) => {
     const now = new Date();
     const eventDate = new Date(event.dateTime);
@@ -22,7 +22,7 @@ function UpcomingEvent() {
     // Filter by category
     if (
       selectedCategory !== "Any Category" &&
-      event.category !== selectedCategory
+      event.eventCategory !== selectedCategory
     ) {
       return false;
     }
@@ -93,12 +93,12 @@ function UpcomingEvent() {
             imageUrl={event.imageUrl}
             title={event.title}
             dateTime={event.dateTime}
-            hostedBy={event.hostedBy}
+            organizer={event.organizer}
             location={event.location}
-            totalAttendees={event.totalAttendees}
-            maxAttendees={event.maxAttendees}
-            ticketType={event.ticketType}
-            category={event.category}
+            availableSeat={event.availableSeat}
+            seatLimit={event.seatLimit}
+            isFree={event.isFree}
+            eventCategory={event.eventCategory}
           />
         ))}
       </div>
