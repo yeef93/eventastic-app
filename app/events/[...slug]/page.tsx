@@ -222,9 +222,11 @@ const EventDetail = () => {
             )}
           </div>
         </div>
-        <div className="py-8">
-          <ReviewForm onSubmit={handleReviewSubmit} />
-        </div>
+        {isEventPast && (
+          <div className="py-8">
+            <ReviewForm onSubmit={handleReviewSubmit} />
+          </div>
+        )}
       </div>
     </div>
   );
