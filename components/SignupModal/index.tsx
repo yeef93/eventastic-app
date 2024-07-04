@@ -36,11 +36,41 @@ function SignUpModal({ onClose, openLogin }: SignUpModalProps) {
     role: Yup.string().required("Role is required"),
   });
 
-  const handleSubmit = (values: any, { setSubmitting }: any) => {
-    // Simulate API call or further action with form values
-    console.log(values);
-    // Close modal
-    onClose();
+  const handleSubmit = async (values: any, { setSubmitting }: any) => {
+    const [firstName, lastName] = values.fullName.split(" ");
+
+    const requestData = {
+      username: values.username,
+      email: values.email,
+      password: values.password,
+      firstName: firstName || "",
+      lastName: lastName || "",
+      refCodeUsed: values.referralCode,
+      isOrganizer: values.role === "Organizer",
+    };
+
+    try {
+      const response = await fetch("http://localhost:8080/api/v1/users/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      // Handle successful registration (e.g., show a success message, redirect, etc.)
+      console.log("Registration successful");
+      onClose();
+    } catch (error) {
+      console.error("Error during registration:", error);
+      // Handle registration error (e.g., show an error message)
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

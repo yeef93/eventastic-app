@@ -215,7 +215,7 @@ const EventDetail = () => {
               } text-white rounded transition text-sm sm:text-base sticky-tickets-button`}
               disabled={isEventPast}
             >
-              {isEventPast ? "Sales End" : "Get tickets"}
+              {isEventPast ? "Sales Ended" : "Get tickets"}
             </button>
             {isGetTicketModalOpen && (
               <TicketModal onClose={closeGetTicketModal} event={event} />
