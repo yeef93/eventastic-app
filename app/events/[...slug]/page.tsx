@@ -42,6 +42,7 @@ const EventDetail = () => {
   const handleReviewSubmit = (review: any) => {
     console.log("Review submitted:", review);
   };
+  
 
   const [isGetTicketModalOpen, setIsGetTicketModalOpen] =
     useState<boolean>(false);
