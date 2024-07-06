@@ -76,21 +76,21 @@ function EventCard({
           <h2 className="text-xl font-bold">{title}</h2>
           <p className="text-sm text-gray-600 mt-2">Hosted by: {organizer}</p>
           <div className="flex items-center text-sm text-gray-600 mt-2">
-            <CalendarIcon className="w-4 h-4 mr-1 text-gray-500" />
+            <CalendarIcon className="w-4 h-4 mr-1 text-purple-700" />
             <p>{formatDateTime(eventDate, startTime, endTime)}</p>
           </div>
           <div className="flex items-center text-sm text-gray-600 mt-2">
-            <UsersIcon className="w-4 h-4 mr-1 text-gray-500" />
+            <UsersIcon className="w-4 h-4 mr-1 text-purple-700" />
             <p>
               {seatLimit - availableSeat}/{seatLimit} Attendees
             </p>
           </div>
           <div className="flex items-center text-sm text-gray-600 mt-2">
-            <TicketIcon className="w-4 h-4 mr-1 text-gray-500" />
+            <TicketIcon className="w-4 h-4 mr-1 text-purple-700" />
             {isFree ? <p>Free</p> : <p>Paid</p>}
           </div>
           <div className="flex items-center text-sm text-gray-600 mt-2">
-            <span className="inline-block bg-gray-200 text-gray-800 rounded-full px-3 py-1 text-xs font-semibold mr-2">
+            <span className="inline-block bg-green-200 text-gray-800 rounded-full px-3 py-1 text-xs font-semibold mr-2">
               {eventCategory}
             </span>
           </div>
