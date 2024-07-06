@@ -3,13 +3,15 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import roles from "@/utils/role";
 import Modal from "../Modal";
+import { useAuth } from "@/context/AuthContext";
 
 interface SignUpModalProps {
   onClose: () => void;
   openLogin: () => void;
+  onSuccess: () => void;
 }
 
-function SignUpModal({ onClose, openLogin }: SignUpModalProps) {
+function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const initialValues = {
     fullName: "",
@@ -37,6 +39,8 @@ function SignUpModal({ onClose, openLogin }: SignUpModalProps) {
     role: Yup.string().required("Role is required"),
   });
 
+  const { login } = useAuth();
+
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     const requestData = {
       username: values.username,
@@ -46,7 +50,7 @@ function SignUpModal({ onClose, openLogin }: SignUpModalProps) {
       refCodeUsed: values.referralCode,
       isOrganizer: values.role === "Organizer",
     };
-  
+
     try {
       const response = await fetch(`${apiUrl}/users/register`, {
         method: "POST",
@@ -55,12 +59,15 @@ function SignUpModal({ onClose, openLogin }: SignUpModalProps) {
         },
         body: JSON.stringify(requestData),
       });
-  
+
       if (!response.ok) {
-        const errorMessage = await response.text(); // Read the error message from the response body
+        const errorMessage = await response.text();
         throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorMessage}`);
       }
+
       console.log("Registration successful");
+      login({ avatar: "/assets/avatar.png" }); // Assuming default avatar after signup
+      onSuccess();
       onClose();
     } catch (error) {
       console.error("Error during registration:", error);
@@ -69,7 +76,6 @@ function SignUpModal({ onClose, openLogin }: SignUpModalProps) {
       setSubmitting(false);
     }
   };
-  
 
   return (
     <Modal>

@@ -2,17 +2,21 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Modal from "../Modal";
+import { useAuth } from "@/context/AuthContext";
 
 interface LoginModalProps {
   onClose: () => void;
+  onSuccess: () => void;
   openSignUp: () => void;
 }
 
-function LoginModal({ onClose, openSignUp }: LoginModalProps) {
+function LoginModal({ onClose, onSuccess, openSignUp }: LoginModalProps) {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const initialValues = {
     email: "",
     password: "",
   };
+  const { login } = useAuth();
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -21,9 +25,32 @@ function LoginModal({ onClose, openSignUp }: LoginModalProps) {
     password: Yup.string().required("Password is required"),
   });
 
-  const handleSubmit = (values: any, { setSubmitting }: any) => {
+  const handleSubmit = async (values: any, { setSubmitting }: any) => {
     console.log(values);
-    onClose();
+    const data = {
+      username: values.username,
+      password: values.password,
+    };
+    try {
+      const response = await fetch("/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error("Registration failed");
+
+      const userData = { email: values.email, avatar: "/public/assets/avatar.png" };
+      login(userData);
+      const userAvatar = "/public/assets/avatar.png"; 
+      onSuccess(userAvatar);
+      onClose();
+    } catch (error) {
+      console.error("Error during login:", error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

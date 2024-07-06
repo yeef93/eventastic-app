@@ -1,21 +1,20 @@
 "use client";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import Image from "next/image";
 import Logo from "@/public/assets/logo.png";
 import MenuContext from "@/context/MenuContext";
 import Menu from "../Menu";
-import SignUpModal from "@/components/SignupModal";
+import SignUpModal from "@/components/SignUpModal";
 import LoginModal from "@/components/LoginModal";
+import { useAuth } from "@/context/AuthContext";
 
 function Header() {
   const [showing, setShowing] = useState<boolean>(false);
   const [isSignupModalOpen, setIsSignupModalOpen] = useState<boolean>(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
-  const { setShowing: setGlobalMenuShowing } = useContext(MenuContext);
 
-  useEffect(() => {
-    console.log("showing state:", showing);
-  }, [showing]);
+  const { isAuthenticated, user, logout } = useAuth();
+  const { setShowing: setGlobalMenuShowing } = useContext(MenuContext);
 
   const handleClickButton = () => {
     setShowing((prev) => !prev);
@@ -24,7 +23,7 @@ function Header() {
 
   const handleSignUpClick = () => {
     setIsSignupModalOpen(true);
-    setIsLoginModalOpen(false); // Close login modal when opening sign up modal
+    setIsLoginModalOpen(false);
   };
 
   const handleCloseSignupModal = () => {
@@ -33,7 +32,7 @@ function Header() {
 
   const handleLoginClick = () => {
     setIsLoginModalOpen(true);
-    setIsSignupModalOpen(false); // Close sign up modal when opening login modal
+    setIsSignupModalOpen(false);
   };
 
   const handleCloseLoginModal = () => {
@@ -51,20 +50,41 @@ function Header() {
             </span>
           </a>
           <div className="flex md:order-2 space-x-3 md:space-x-0">
-            <button
-              type="button"
-              className=" text-gray-900 font-medium rounded-lg text-sm px-4 py-2 text-center"
-              onClick={handleLoginClick}
-            >
-              Log in
-            </button>
-            <button
-              type="button"
-              className="text-white bg-purple-800 hover:text-gray-200 focus:ring-4 focus:outline-none focus:ring-purple-800 font-medium rounded-lg text-sm px-4 py-2 text-center"
-              onClick={handleSignUpClick}
-            >
-              Sign up
-            </button>
+            {isAuthenticated ? (
+              <>
+                <Image
+                  src={user?.avatar || "/assets/avatar.png"}
+                  width={32}
+                  height={32}
+                  alt="User Avatar"
+                  className="rounded-full border-2 w-8 h-8"
+                />
+                <button
+                  type="button"
+                  className="text-gray-900 font-medium rounded-lg text-sm px-4 py-2 text-center"
+                  onClick={logout}
+                >
+                  Log out
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  className=" text-gray-900 font-medium rounded-lg text-sm px-4 py-2 text-center"
+                  onClick={handleLoginClick}
+                >
+                  Log in
+                </button>
+                <button
+                  type="button"
+                  className="text-white bg-purple-800 hover:text-gray-200 focus:ring-4 focus:outline-none focus:ring-purple-800 font-medium rounded-lg text-sm px-4 py-2 text-center"
+                  onClick={handleSignUpClick}
+                >
+                  Sign up
+                </button>
+              </>
+            )}
             <button
               onClick={handleClickButton}
               data-collapse-toggle="navbar-sticky"
@@ -103,15 +123,17 @@ function Header() {
       {isSignupModalOpen && (
         <SignUpModal
           onClose={handleCloseSignupModal}
+          onSuccess={() => setIsSignupModalOpen(false)}
           openLogin={handleLoginClick}
         />
-      )}{" "}
+      )}
       {isLoginModalOpen && (
         <LoginModal
           onClose={handleCloseLoginModal}
+          onSuccess={() => setIsLoginModalOpen(false)}
           openSignUp={handleSignUpClick}
         />
-      )}{" "}
+      )}
     </>
   );
 }
