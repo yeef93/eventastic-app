@@ -1,16 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import events from "@/utils/events";
 import ImageCard from "@/components/ImageCard";
-import {
-  CalendarIcon,
-  ClockIcon,
-  LocationMarkerIcon,
-  TicketIcon,
-  UserIcon,
-} from "@heroicons/react/outline";
+import { CalendarIcon, ClockIcon, LocationMarkerIcon, TicketIcon, UserIcon } from "@heroicons/react/outline";
 import ReviewForm from "@/app/components/Events/ReviewForm";
 import TicketModal from "@/app/components/Events/TicketModal";
 
@@ -39,13 +33,13 @@ const EventDetail = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [event, setEvent] = useState<Event | null>(null);
+  const [selectedTicketType, setSelectedTicketType] = useState<string | null>(null);
+  const [ticketQuantities, setTicketQuantities] = useState<{ [key: string]: number }>({});
   const handleReviewSubmit = (review: any) => {
     console.log("Review submitted:", review);
   };
-  
 
-  const [isGetTicketModalOpen, setIsGetTicketModalOpen] =
-    useState<boolean>(false);
+  const [isGetTicketModalOpen, setIsGetTicketModalOpen] = useState<boolean>(false);
   const openGetTicketModal = () => setIsGetTicketModalOpen(true);
   const closeGetTicketModal = () => setIsGetTicketModalOpen(false);
 
@@ -58,9 +52,7 @@ const EventDetail = () => {
       if (!isNaN(eventId)) {
         const foundEvent = events.find((event) => event.id === eventId);
         if (foundEvent) {
-          const expectedSlug = `${foundEvent.title
-            .replace(/\s+/g, "-")
-            .toLowerCase()}-ticket-${foundEvent.id}`;
+          const expectedSlug = `${foundEvent.title.replace(/\s+/g, "-").toLowerCase()}-ticket-${foundEvent.id}`;
           if (slug !== expectedSlug) {
             router.replace(`/events/${expectedSlug}`);
           } else {
@@ -79,14 +71,34 @@ const EventDetail = () => {
     return <p>Loading...</p>;
   }
 
-  const addToCart = () => {
-    console.log(`Ticket for event ${event.id} added to cart.`);
+  const handleQuantityChange = (ticketType: string, quantity: number) => {
+    setTicketQuantities((prevQuantities) => ({
+      ...prevQuantities,
+      [ticketType]: quantity,
+    }));
   };
+
+  const incrementQuantity = (ticketType: string) => {
+    setTicketQuantities((prevQuantities) => ({
+      ...prevQuantities,
+      [ticketType]: (prevQuantities[ticketType] || 0) + 1,
+    }));
+  };
+
+  const decrementQuantity = (ticketType: string) => {
+    setTicketQuantities((prevQuantities) => ({
+      ...prevQuantities,
+      [ticketType]: Math.max((prevQuantities[ticketType] || 0) - 1, 0),
+    }));
+  };
+
+  // Sort ticket types by price
+  const sortedTicketTypes = [...event.ticketTypes].sort((a, b) => a.price - b.price);
 
   // Function to find minimum price
   const getMinimumPrice = () => {
     let minPrice = Infinity;
-    event.ticketTypes.forEach((price) => {
+    sortedTicketTypes.forEach((price) => {
       if (price.price < minPrice) {
         minPrice = price.price;
       }
@@ -171,7 +183,7 @@ const EventDetail = () => {
           <div className="md:w-1/3 md:mt-0 mt-8 md:px-8 sticky top-16">
             <div className="flex items-center text-sm sm:text-base text-gray-600 mt-2">
               <UserIcon className="w-4 h-4 mr-1 text-gray-500" />
-              <p className="whitespace-nowrap">Organize by : {event.organizer}</p>
+              <p className="whitespace-nowrap">Organize by: {event.organizer}</p>
             </div>
             <div className="flex items-center text-sm sm:text-base text-gray-600 mt-2">
               <CalendarIcon className="w-4 h-4 mr-1 text-gray-500" />
@@ -179,7 +191,9 @@ const EventDetail = () => {
             </div>
             <div className="flex items-center text-sm sm:text-base text-gray-600 mt-2">
               <ClockIcon className="w-4 h-4 mr-1 text-gray-500" />
-              <p className="whitespace-nowrap">{formattedStartTime} - {formattedEndTime}</p>
+              <p className="whitespace-nowrap">
+                {formattedStartTime} - {formattedEndTime}
+              </p>
             </div>
             <div className="flex items-center text-sm sm:text-base text-gray-600 mt-2">
               <LocationMarkerIcon className="w-4 h-4 mr-1 text-gray-500" />
@@ -208,7 +222,57 @@ const EventDetail = () => {
                 </p>
               )}
             </div>
-
+            <div className="mt-4">
+              {sortedTicketTypes.map((ticketType) => (
+                <div key={ticketType.name} className="mb-4 p-4 border rounded">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        name="ticketType"
+                        value={ticketType.name}
+                        onChange={() => setSelectedTicketType(ticketType.name)}
+                        checked={selectedTicketType === ticketType.name}
+                        className="mr-2"
+                        disabled={isEventPast}
+                      />
+                      <span className="font-bold text-lg uppercase">{ticketType.name}</span>
+                    </div>
+                    <div className="flex items-center ml-4">
+                      <button
+                        onClick={() => decrementQuantity(ticketType.name)}
+                        className="px-2 py-1 bg-gray-300 rounded-l text-gray-700"
+                        disabled={!selectedTicketType || selectedTicketType !== ticketType.name || isEventPast}
+                      >
+                        -
+                      </button>
+                      <input
+                        type="number"
+                        min="0"
+                        value={ticketQuantities[ticketType.name] || 0}
+                        readOnly
+                        className="w-16 text-center"
+                        disabled={!selectedTicketType || selectedTicketType !== ticketType.name}
+                      />
+                      <button
+                        onClick={() => incrementQuantity(ticketType.name)}
+                        className="px-2 py-1 bg-gray-300 rounded-r text-gray-700"
+                        disabled={!selectedTicketType || selectedTicketType !== ticketType.name || isEventPast}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-gray-600 mb-2">
+                    {ticketType.price.toLocaleString("id-ID", {
+                      style: "currency",
+                      currency: "IDR",
+                      minimumFractionDigits: 2,
+                    })}
+                  </p>
+                </div>
+              ))}
+            </div>
             <button
               onClick={isEventPast ? undefined : openGetTicketModal}
               className={`mt-8 w-full px-4 py-2 ${

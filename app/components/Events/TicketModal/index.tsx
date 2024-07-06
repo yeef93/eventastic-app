@@ -1,16 +1,18 @@
 import React, { useState } from "react";
 import Modal from "@/components/Modal";
+import paymentMethods from "@/utils/paymentMethods";
 
 interface TicketModalProps {
   onClose: () => void;
   event: any;
 }
 
-function TicketModal({ onClose, event }: TicketModalProps) {
+function TicketModal ({ onClose, event }: TicketModalProps) {
   const [ticketQuantities, setTicketQuantities] = useState(
     event.ticketTypes.map(() => 0)
   );
   const [totalPrice, setTotalPrice] = useState(0);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
 
   const handleIncrement = (index: number) => {
     if (ticketQuantities[index] < event.ticketTypes[index].availableSeat) {
@@ -37,11 +39,15 @@ function TicketModal({ onClose, event }: TicketModalProps) {
     setTotalPrice(newTotalPrice);
   };
 
+  const handlePaymentMethodChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedPaymentMethod(event.target.value);
+  };
+
   return (
     <Modal>
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden relative z-50 max-w-3xl w-full">
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden relative z-50 max-w-3xl w-full pt-24">
         <button
-          className="absolute top-0 right-0 m-4 text-gray-500 hover:text-gray-800 focus:outline-none"
+          className="absolute top-0 right-0 m-4 text-gray-500 hover:text-gray-800 focus:outline-none pt-24"
           onClick={onClose}
         >
           <svg
@@ -119,6 +125,28 @@ function TicketModal({ onClose, event }: TicketModalProps) {
                 })}
               </p>
             </div>
+            <div className="mt-4">
+              <h3 className="text-lg font-bold mb-2">Payment Method</h3>
+              <select
+                value={selectedPaymentMethod}
+                onChange={handlePaymentMethodChange}
+                className="border rounded w-full py-2 px-3"
+              >
+                <option value="">Select a payment method</option>
+                {paymentMethods.map((method:any) => (
+                  <option key={method.id} value={method.id}>
+                    {method.name}
+                  </option>
+                ))}
+              </select>
+              {selectedPaymentMethod && (
+                <div className="mt-4 p-4 border rounded">
+                  <p className="font-bold">
+                    {paymentMethods.find((method:any) => method.id === selectedPaymentMethod)?.detail}
+                  </p>
+                </div>
+              )}
+            </div>
             <button className="mt-4 bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded w-full">
               Checkout
             </button>
@@ -127,6 +155,6 @@ function TicketModal({ onClose, event }: TicketModalProps) {
       </div>
     </Modal>
   );
-}
+};
 
 export default TicketModal;

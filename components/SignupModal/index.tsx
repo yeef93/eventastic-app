@@ -10,6 +10,7 @@ interface SignUpModalProps {
 }
 
 function SignUpModal({ onClose, openLogin }: SignUpModalProps) {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const initialValues = {
     fullName: "",
     username: "",
@@ -37,42 +38,38 @@ function SignUpModal({ onClose, openLogin }: SignUpModalProps) {
   });
 
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
-    const [firstName, lastName] = values.fullName.split(" ");
-
     const requestData = {
       username: values.username,
       email: values.email,
       password: values.password,
-      firstName: firstName || "",
-      lastName: lastName || "",
+      fullName: values.fullName,
       refCodeUsed: values.referralCode,
       isOrganizer: values.role === "Organizer",
     };
-
+  
     try {
-      const response = await fetch("http://localhost:8080/api/v1/users/register", {
-        mode: "no-cors",
+      const response = await fetch(`${apiUrl}/users/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(requestData),
       });
-
+  
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        const errorMessage = await response.text(); // Read the error message from the response body
+        throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorMessage}`);
       }
-
-      // Handle successful registration (e.g., show a success message, redirect, etc.)
       console.log("Registration successful");
       onClose();
     } catch (error) {
       console.error("Error during registration:", error);
-      // Handle registration error (e.g., show an error message)
+      alert("Registration failed. Please try again later.");
     } finally {
       setSubmitting(false);
     }
   };
+  
 
   return (
     <Modal>

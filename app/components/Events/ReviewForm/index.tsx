@@ -3,19 +3,20 @@ import Image from "next/image";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
 
-const ReviewForm = ({ onSubmit }: any) => {
+const ReviewForm = ({ onSubmit }:any) => {
   const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
   const [review, setReview] = useState("");
 
-  const handleRatingChange = (e: any) => {
-    setRating(e.target.value);
+  const handleRatingClick = (ratingValue:any) => {
+    setRating(ratingValue);
   };
 
-  const handleReviewChange = (value: any) => {
+  const handleReviewChange = (value:any) => {
     setReview(value);
   };
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e:any) => {
     e.preventDefault();
     if (rating && review) {
       onSubmit({ rating, review });
@@ -32,14 +33,29 @@ const ReviewForm = ({ onSubmit }: any) => {
         <div className="flex items-center mb-4">
           <h2 className="text-xl font-bold">Add a Review</h2>
         </div>
+        <div className="mb-4 text-center">
+          <h3 className="text-lg font-medium mb-2">Rate Event</h3>
+          <div className="flex items-center justify-center">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <svg
+                key={star}
+                className={`w-10 h-10 cursor-pointer ${
+                  star <= (hoverRating || rating) ? "text-yellow-500" : "text-gray-300"
+                }`}
+                onMouseEnter={() => setHoverRating(star)}
+                onMouseLeave={() => setHoverRating(0)}
+                onClick={() => handleRatingClick(star)}
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                />
+              </svg>
+            ))}
+          </div>
+        </div>
         <div className="flex mb-4">
-          <Image
-            src="/path-to-profile-image.jpg" // Replace with the actual path to the profile image
-            alt="Profile"
-            width={40}
-            height={40}
-            className="rounded-full mr-4"
-          />
           <div className="flex-1">
             <ReactQuill
               value={review}
@@ -56,23 +72,6 @@ const ReviewForm = ({ onSubmit }: any) => {
               }}
             />
           </div>
-        </div>
-        <div className="mb-4 pl-14">
-          <select
-            id="rating"
-            value={rating}
-            onChange={handleRatingChange}
-            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-          >
-            <option value={0} disabled>
-              Select a rating
-            </option>
-            <option value={1}>1 - Poor</option>
-            <option value={2}>2 - Fair</option>
-            <option value={3}>3 - Good</option>
-            <option value={4}>4 - Very Good</option>
-            <option value={5}>5 - Excellent</option>
-          </select>
         </div>
         <div className="flex items-center justify-end">
           <button
