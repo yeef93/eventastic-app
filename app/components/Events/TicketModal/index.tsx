@@ -1,18 +1,23 @@
-import React, { useState } from "react";
-import Modal from "@/components/Modal";
+import React, { useState, useEffect } from "react";
+import Switch from "react-switch"; // Import the Switch component
 import paymentMethods from "@/utils/paymentMethods";
 
 interface TicketModalProps {
   onClose: () => void;
   event: any;
+  onGetTotalPrice: (totalPrice: number) => void;
 }
 
-function TicketModal ({ onClose, event }: TicketModalProps) {
-  const [ticketQuantities, setTicketQuantities] = useState(
-    event.ticketTypes.map(() => 0)
-  );
+const TicketModal: React.FC<TicketModalProps> = ({ onClose, event, onGetTotalPrice }) => {
+  const [ticketQuantities, setTicketQuantities] = useState<number[]>([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
+  const [useCoin, setUseCoin] = useState(false);
+  const coinBalance = 100000;
+
+  useEffect(() => {
+    setTicketQuantities(event.ticketTypes.map(() => 0));
+  }, [event]);
 
   const handleIncrement = (index: number) => {
     if (ticketQuantities[index] < event.ticketTypes[index].availableSeat) {
@@ -37,17 +42,31 @@ function TicketModal ({ onClose, event }: TicketModalProps) {
       return total + quantity * event.ticketTypes[index].price;
     }, 0);
     setTotalPrice(newTotalPrice);
+    onGetTotalPrice(newTotalPrice); // Send total price back to parent component
   };
 
-  const handlePaymentMethodChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handlePaymentMethodChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     setSelectedPaymentMethod(event.target.value);
   };
 
+  const toggleUseCoin = () => {
+    setUseCoin((prevUseCoin) => !prevUseCoin);
+  };
+
+  const getFinalPrice = () => {
+    const discount = useCoin ? coinBalance : 0;
+    return Math.max(totalPrice - discount, 0);
+  };
+
+
   return (
-    <Modal>
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden relative z-50 max-w-3xl w-full pt-24">
+    <div className="fixed inset-0 flex xl:items-center xl:justify-center md:items-start md:justify-start z-50 text-gray-500">
+      <div className="fixed inset-0 bg-gray-600 bg-opacity-50"></div>
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden relative z-50 max-w-3xl w-full">
         <button
-          className="absolute top-0 right-0 m-4 text-gray-500 hover:text-gray-800 focus:outline-none pt-24"
+          className="absolute top-0 right-0 m-4 text-gray-500 hover:text-gray-800 focus:outline-none"
           onClick={onClose}
         >
           <svg
@@ -69,54 +88,8 @@ function TicketModal ({ onClose, event }: TicketModalProps) {
           <p className="text-center mb-4">{event.dateTime}</p>
           <p className="text-center mb-4">{event.location}</p>
           <div>
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2">Voucher Code</label>
-              <div className="flex flex-row items-center">
-                <input
-                  type="text"
-                  className="border rounded-l w-full py-2 px-3"
-                  placeholder="Enter code"
-                />
-                <button className="bg-blue-500 text-white py-2 px-4 rounded-r">
-                  Apply
-                </button>
-              </div>
-            </div>
-            {event.ticketTypes.map((ticket: any, index: number) => (
-              <div key={index} className="mb-4 border rounded p-4">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="font-bold uppercase">{ticket.name}</p>
-                    <p>
-                      {ticket.price === 0
-                        ? "Free"
-                        : `${ticket.price.toLocaleString("id-ID", {
-                            style: "currency",
-                            currency: "IDR",
-                            minimumFractionDigits: 2,
-                          })}`}
-                    </p>
-                  </div>
-                  <div className="flex items-center">
-                    <button
-                      className="bg-gray-200 text-gray-700 py-1 px-3 rounded"
-                      onClick={() => handleDecrement(index)}
-                    >
-                      -
-                    </button>
-                    <span className="mx-2">{ticketQuantities[index]}</span>
-                    <button
-                      className="bg-gray-200 text-gray-700 py-1 px-3 rounded"
-                      onClick={() => handleIncrement(index)}
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
             <div className="flex justify-between items-center">
-              <p className="font-bold">Total</p>
+              <p className="font-bold py-8">Total</p>
               <p className="font-bold">
                 {totalPrice.toLocaleString("id-ID", {
                   style: "currency",
@@ -125,15 +98,47 @@ function TicketModal ({ onClose, event }: TicketModalProps) {
                 })}
               </p>
             </div>
+            <div className="mb-4">
+              <div className="flex flex-row items-center">
+                <input
+                  type="text"
+                  className="border rounded-l w-full py-2 px-3"
+                  placeholder="Enter Voucher Code"
+                />
+                <button className="bg-red-500 text-white py-2 px-4 rounded-r">
+                  Apply
+                </button>
+              </div>
+            </div>
+            <div className="flex items-end justify-between mb-4">
+              <span className="mr-2">Use Coin Balance (100,000 IDR)</span>
+              <Switch
+                onChange={toggleUseCoin}
+                checked={useCoin}
+                offColor="#888"
+                onColor="#097969"
+                uncheckedIcon={false}
+                checkedIcon={false}
+              />
+            </div>
+            <div className="flex justify-between items-center">
+              <p className="font-bold">Final Price</p>
+              <p className="font-bold">
+                {getFinalPrice().toLocaleString("id-ID", {
+                  style: "currency",
+                  currency: "IDR",
+                  minimumFractionDigits: 2,
+                })}
+              </p>
+            </div>
             <div className="mt-4">
-              <h3 className="text-lg font-bold mb-2">Payment Method</h3>
               <select
                 value={selectedPaymentMethod}
                 onChange={handlePaymentMethodChange}
                 className="border rounded w-full py-2 px-3"
               >
                 <option value="">Select a payment method</option>
-                {paymentMethods.map((method:any) => (
+                {paymentMethods.map((method: any) => (
                   <option key={method.id} value={method.id}>
                     {method.name}
                   </option>
@@ -142,7 +147,11 @@ function TicketModal ({ onClose, event }: TicketModalProps) {
               {selectedPaymentMethod && (
                 <div className="mt-4 p-4 border rounded">
                   <p className="font-bold">
-                    {paymentMethods.find((method:any) => method.id === selectedPaymentMethod)?.detail}
+                    {
+                      paymentMethods.find(
+                        (method: any) => method.id === selectedPaymentMethod
+                      )?.detail
+                    }
                   </p>
                 </div>
               )}
@@ -153,7 +162,7 @@ function TicketModal ({ onClose, event }: TicketModalProps) {
           </div>
         </div>
       </div>
-    </Modal>
+    </div>
   );
 };
 
