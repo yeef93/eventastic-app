@@ -1,6 +1,6 @@
 function dashboard(){
     return(
-        <div className=" py-96">
+        <div>
             ini dashboard
         </div>
     )

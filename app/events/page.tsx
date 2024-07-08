@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import FilterSidebar from "../components/Events/FilterSidebar";
+import FilterComponent from "../components/Events/FilterComponent";
 import events from "@/utils/events";
 import Pagination from "@/components/Pagination";
 import EventListCard from "@/components/EventListCard";
@@ -34,8 +34,8 @@ function Events() {
 
   return (
     <div className="flex">
-      <FilterSidebar filters={filters} setFilters={setFilters} />
-      <div className="flex flex-col justify-center gap-4 md:gap-8 px-2 md:px-4 xl:px-6 py-12">
+      <FilterComponent filters={filters} setFilters={setFilters} />
+      <div className="flex flex-col justify-center gap-4 md:gap-8 px-2 md:px-4 xl:px-12 py-12">
         {filteredEvents.map((event) => (
           <EventListCard
             key={event.id}

@@ -105,17 +105,17 @@ function EventListCard({
     <Link
       href={`/events/${title.replace(/\s+/g, "-").toLowerCase()}-ticket-${id}`}
     >
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden flex">
-        <div>
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col md:flex-row">
+        <div className="w-full md:w-60 h-48 md:h-72">
           <Image
             src={imageUrl}
             alt={title}
-            className="object-cover object-center w-60 h-72"
+            className="object-cover object-center w-full h-full"
             width={200}
             height={200}
           />
         </div>
-        <div className="w-2/3 p-4 flex flex-col justify-center">
+        <div className="w-full md:w-2/3 p-4 flex flex-col justify-center">
           <div>
             <div className="uppercase tracking-wide text-lg text-purple-700 font-bold">
               {title}
@@ -124,7 +124,7 @@ function EventListCard({
               {truncateText(description, 200)}
             </p>
           </div>
-          <div className=" pt-4">
+          <div className="pt-4">
             <div className="flex items-center text-sm text-gray-600 mt-2">
               <CalendarIcon className="w-4 h-4 mr-1 text-purple-700" />
               <p>{formatDateTime(eventDate, startTime, endTime)}</p>
@@ -143,14 +143,14 @@ function EventListCard({
             </div>
           </div>
         </div>
-        <div className="flex items-center text-xl p-4 font-semibold text-purple-700">
+        <div className="flex items-center justify-center text-xl p-4 font-semibold text-purple-700 border-l-2 border-dashed w-48">
           {isFree ? (
             <p>Free</p>
           ) : (
-            <div className=" flex flex-col items-center">
-              <p className=" text-gray-400 text-sm font-normal">Start From </p>
+            <div className="flex flex-col items-center">
+              <p className="text-gray-400 text-sm font-normal">Starts from</p>
               <p>{getTicketInfo(isFree, ticketTypes)}</p>
-            </div>            
+            </div>
           )}
         </div>
       </div>

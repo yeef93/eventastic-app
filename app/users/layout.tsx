@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Sidebar from "../components/Users/SideBar";
 
 export const metadata: Metadata = {
   title: "User",
@@ -8,11 +9,12 @@ export const metadata: Metadata = {
 export default function TeamsLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <section>
-      {children}
+    <section className="flex flex-row bg-gray-100 h-screen">
+      <Sidebar />
+      <div className="pt-12 px-4 w-full">{children}</div>
     </section>
-  )
+  );
 }

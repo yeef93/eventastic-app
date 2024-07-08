@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-function FilterSidebar({ filters, setFilters }: any) {
+function FilterComponent({ filters, setFilters }: any) {
   const [categories, setCategories] = useState([]);
   const [locations, setLocations] = useState([]);
 
@@ -60,4 +60,4 @@ function FilterSidebar({ filters, setFilters }: any) {
   );
 }
 
-export default FilterSidebar;
+export default FilterComponent;
