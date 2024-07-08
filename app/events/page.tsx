@@ -51,6 +51,7 @@ function Events() {
             availableSeat={event.availableSeat}
             seatLimit={event.seatLimit}
             isFree={event.isFree}
+            ticketTypes={event.ticketTypes}
             eventCategory={event.eventCategory}
           />
         ))}

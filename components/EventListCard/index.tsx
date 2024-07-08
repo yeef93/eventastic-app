@@ -6,7 +6,6 @@ import {
   LocationMarkerIcon,
   UsersIcon,
   TagIcon,
-  TicketIcon,
 } from "@heroicons/react/outline";
 import Link from "next/link";
 
@@ -23,6 +22,10 @@ interface EventProps {
   availableSeat: number;
   seatLimit: number;
   isFree: boolean;
+  ticketTypes: {
+    name: string;
+    price: number;
+  }[];
   eventCategory: string;
 }
 
@@ -39,11 +42,11 @@ function EventListCard({
   eventDate,
   startTime,
   endTime,
-  organizer,
   location,
   availableSeat,
   seatLimit,
   isFree,
+  ticketTypes,
   eventCategory,
 }: EventProps) {
   const formatDateTime = (
@@ -81,6 +84,23 @@ function EventListCard({
     return `${formattedDate} | ${formattedStartTime} - ${formattedEndTime}`;
   };
 
+  const getTicketInfo = (isFree: boolean, ticketTypes: { price: number }[]) => {
+    console.log("isFree:", isFree);
+    console.log("ticketTypes:", ticketTypes);
+
+    if (isFree) {
+      return "Free";
+    }
+    if (!Array.isArray(ticketTypes) || ticketTypes.length === 0) {
+      return "No tickets available";
+    }
+    const minPrice = Math.min(...ticketTypes.map((ticket) => ticket.price));
+    return `${minPrice.toLocaleString("id-ID", {
+      style: "currency",
+      currency: "IDR",
+    })}`;
+  };
+
   return (
     <Link
       href={`/events/${title.replace(/\s+/g, "-").toLowerCase()}-ticket-${id}`}
@@ -95,16 +115,16 @@ function EventListCard({
             height={200}
           />
         </div>
-        <div className="w-2/3 p-4 flex flex-col justify-between">
+        <div className="w-2/3 p-4 flex flex-col justify-center">
           <div>
             <div className="uppercase tracking-wide text-lg text-purple-700 font-bold">
               {title}
             </div>
-            <p className="mt-2 text-slate-500">
+            <p className="mt-2 text-slate-500 text-sm">
               {truncateText(description, 200)}
             </p>
           </div>
-          <div>
+          <div className=" pt-4">
             <div className="flex items-center text-sm text-gray-600 mt-2">
               <CalendarIcon className="w-4 h-4 mr-1 text-purple-700" />
               <p>{formatDateTime(eventDate, startTime, endTime)}</p>
@@ -115,9 +135,7 @@ function EventListCard({
             </div>
             <div className="flex items-center text-sm text-gray-600 mt-2">
               <UsersIcon className="w-4 h-4 mr-1 text-purple-700" />
-              <p>
-                {seatLimit - availableSeat}/{seatLimit} Attendees
-              </p>
+              <p>{seatLimit - availableSeat} Attendees</p>
             </div>
             <div className="flex items-center text-sm text-gray-600 mt-2">
               <TagIcon className="w-4 h-4 mr-1 text-purple-700" />
@@ -125,9 +143,15 @@ function EventListCard({
             </div>
           </div>
         </div>
-        <div className=" items-center">
-          <TicketIcon className="w-4 h-4 mr-1 text-purple-700" />
-          {isFree ? <p>Free</p> : <p>Paid</p>}
+        <div className="flex items-center text-xl p-4 font-semibold text-purple-700">
+          {isFree ? (
+            <p>Free</p>
+          ) : (
+            <div className=" flex flex-col items-center">
+              <p className=" text-gray-400 text-sm font-normal">Start From </p>
+              <p>{getTicketInfo(isFree, ticketTypes)}</p>
+            </div>            
+          )}
         </div>
       </div>
     </Link>

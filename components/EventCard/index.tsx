@@ -78,17 +78,6 @@ function EventCard({
     return `${formattedDate} | ${formattedStartTime} - ${formattedEndTime}`;
   };
 
-  const getTicketInfo = (isFree: boolean, ticketTypes: { price: number }[]) => {
-    if (isFree) {
-      return "Free";
-    }
-    const minPrice = Math.min(...ticketTypes.map((ticket) => ticket.price));
-    return `Starts from ${minPrice.toLocaleString("en-US", {
-      style: "currency",
-      currency: "USD",
-    })}`;
-  };
-
   // Sort ticket types by price
   const sortedTicketTypes = [...ticketTypes].sort((a, b) => a.price - b.price);
 
@@ -133,7 +122,7 @@ function EventCard({
           <div className="flex items-center text-sm text-gray-600 mt-2">
             <UsersIcon className="w-4 h-4 mr-1 text-purple-700" />
             <p>
-              {seatLimit - availableSeat}/{seatLimit} Attendees
+              {seatLimit - availableSeat} Attendees
             </p>
           </div>
           <div className="flex items-center text-sm text-gray-600 mt-2">

@@ -28,7 +28,7 @@ function FilterSidebar({ filters, setFilters }: any) {
 
   return (
     <div className="w-full sm:w-1/4 p-4 border-r border-gray-200 py-10 sticky top-0 h-screen">
-      {/* <div className="mb-4">
+      <div className="mb-4">
         <h3 className="text-lg font-bold mb-2">Category</h3>
         {categories.map((category) => (
           <div key={category.id}>
@@ -55,7 +55,7 @@ function FilterSidebar({ filters, setFilters }: any) {
             <label className="ml-2">{location.label}</label>
           </div>
         ))}
-      </div> */}
+      </div>
     </div>
   );
 }
