@@ -143,7 +143,7 @@ function EventListCard({
             </div>
           </div>
         </div>
-        <div className="flex items-center justify-center text-xl p-4 font-semibold text-purple-700 border-l-2 border-dashed w-48">
+        <div className="flex items-center justify-center text-xl p-4 font-semibold text-purple-700 xl:border-l-2 border-dashed w-48">
           {isFree ? (
             <p>Free</p>
           ) : (
