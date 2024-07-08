@@ -44,7 +44,7 @@ function LoginModal({ onClose, onSuccess, openSignUp }: LoginModalProps) {
       const userData = { email: values.email, avatar: "/public/assets/avatar.png" };
       login(userData);
       const userAvatar = "/public/assets/avatar.png"; 
-      onSuccess(userAvatar);
+      onSuccess();
       onClose();
     } catch (error) {
       console.error("Error during login:", error);

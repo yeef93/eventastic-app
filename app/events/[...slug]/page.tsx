@@ -4,7 +4,13 @@ import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import events from "@/utils/events";
 import ImageCard from "@/components/ImageCard";
-import { CalendarIcon, ClockIcon, LocationMarkerIcon, TicketIcon, UserIcon } from "@heroicons/react/outline";
+import {
+  CalendarIcon,
+  ClockIcon,
+  LocationMarkerIcon,
+  TicketIcon,
+  UserIcon,
+} from "@heroicons/react/outline";
 import ReviewForm from "@/app/components/Events/ReviewForm";
 import TicketModal from "@/app/components/Events/TicketModal";
 
@@ -33,30 +39,38 @@ const EventDetail = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [event, setEvent] = useState<Event | null>(null);
-  const [selectedTicketType, setSelectedTicketType] = useState<string | null>(null);
-  const [ticketQuantities, setTicketQuantities] = useState<{ [key: string]: number }>({});
-  const handleReviewSubmit = (review: any) => {
-    console.log("Review submitted:", review);
-  };
-
-  const [isGetTicketModalOpen, setIsGetTicketModalOpen] = useState<boolean>(false);
-  const openGetTicketModal = () => setIsGetTicketModalOpen(true);
-  const closeGetTicketModal = () => setIsGetTicketModalOpen(false);
+  const [selectedTicketType, setSelectedTicketType] = useState<string | null>(
+    null
+  );
+  const [ticketQuantities, setTicketQuantities] = useState<{
+    [key: string]: number;
+  }>({});
+  const [isGetTicketModalOpen, setIsGetTicketModalOpen] =
+    useState<boolean>(false);
 
   useEffect(() => {
     const slug = pathname.split("/").pop();
     if (slug) {
-      const slugParts = slug.toString().split("-");
+      const slugParts = slug.split("-");
       const eventId = parseInt(slugParts[slugParts.length - 1], 10);
 
       if (!isNaN(eventId)) {
         const foundEvent = events.find((event) => event.id === eventId);
         if (foundEvent) {
-          const expectedSlug = `${foundEvent.title.replace(/\s+/g, "-").toLowerCase()}-ticket-${foundEvent.id}`;
+          const expectedSlug = `${foundEvent.title
+            .replace(/\s+/g, "-")
+            .toLowerCase()}-ticket-${foundEvent.id}`;
           if (slug !== expectedSlug) {
             router.replace(`/events/${expectedSlug}`);
           } else {
             setEvent(foundEvent);
+            const minPriceTicket = foundEvent.ticketTypes.reduce(
+              (minTicket, ticket) =>
+                ticket.price < minTicket.price ? ticket : minTicket,
+              foundEvent.ticketTypes[0]
+            );
+            setSelectedTicketType(minPriceTicket.name);
+            setTicketQuantities({ [minPriceTicket.name]: 1 });
           }
         } else {
           router.replace("/404");
@@ -65,18 +79,11 @@ const EventDetail = () => {
         router.replace("/404");
       }
     }
-  }, [pathname]);
+  }, [pathname, router]);
 
   if (!event) {
     return <p>Loading...</p>;
   }
-
-  const handleQuantityChange = (ticketType: string, quantity: number) => {
-    setTicketQuantities((prevQuantities) => ({
-      ...prevQuantities,
-      [ticketType]: quantity,
-    }));
-  };
 
   const incrementQuantity = (ticketType: string) => {
     setTicketQuantities((prevQuantities) => ({
@@ -88,44 +95,45 @@ const EventDetail = () => {
   const decrementQuantity = (ticketType: string) => {
     setTicketQuantities((prevQuantities) => ({
       ...prevQuantities,
-      [ticketType]: Math.max((prevQuantities[ticketType] || 0) - 1, 0),
+      [ticketType]: Math.max((prevQuantities[ticketType] || 1) - 1, 1),
     }));
   };
 
-  // Sort ticket types by price
-  const sortedTicketTypes = [...event.ticketTypes].sort((a, b) => a.price - b.price);
+  const sortedTicketTypes = [...event.ticketTypes].sort(
+    (a, b) => a.price - b.price
+  );
 
-  // Function to find minimum price
-  const getMinimumPrice = () => {
-    let minPrice = Infinity;
-    sortedTicketTypes.forEach((price) => {
-      if (price.price < minPrice) {
-        minPrice = price.price;
+  const getTotalPrice = () => {
+    if (selectedTicketType && ticketQuantities[selectedTicketType]) {
+      const ticket = sortedTicketTypes.find(
+        (ticket) => ticket.name === selectedTicketType
+      );
+      if (ticket) {
+        return ticket.price * ticketQuantities[selectedTicketType];
       }
-    });
-    return minPrice;
+    }
+    return 0;
   };
 
-  const minimumPrice = getMinimumPrice();
+  const totalTicketPrice = getTotalPrice();
 
-  // Format the date and time
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
   const formatTime = (timeString: string) => {
-    const [hours, minutes] = timeString.split(':');
+    const [hours, minutes] = timeString.split(":");
     const date = new Date();
     date.setHours(parseInt(hours, 10), parseInt(minutes, 10));
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
       hour12: true,
     });
   };
@@ -134,10 +142,16 @@ const EventDetail = () => {
   const formattedStartTime = formatTime(event.startTime);
   const formattedEndTime = formatTime(event.endTime);
 
-  // Check if the event date has passed
   const eventDate = new Date(event.eventDate);
   const currentDate = new Date();
   const isEventPast = currentDate > eventDate;
+
+  const handleReviewSubmit = (review: any) => {
+    console.log("Review submitted:", review);
+  };
+
+  const openGetTicketModal = () => setIsGetTicketModalOpen(true);
+  const closeGetTicketModal = () => setIsGetTicketModalOpen(false);
 
   return (
     <div className="py-7">
@@ -149,7 +163,9 @@ const EventDetail = () => {
               {event.title}
             </h1>
             <div className="mt-4">
-              <h2 className="text-xl sm:text-2xl font-bold mb-2">Date and time</h2>
+              <h2 className="text-xl sm:text-2xl font-bold mb-2">
+                Date and time
+              </h2>
               <p className="text-sm sm:text-base">{`${formattedEventDate} | ${formattedStartTime} - ${formattedEndTime}`}</p>
             </div>
             <div className="mt-4">
@@ -174,7 +190,9 @@ const EventDetail = () => {
               <p className="text-sm sm:text-base whitespace-pre-line">
                 {event.description}
               </p>
-              <h2 className="text-xl sm:text-2xl font-bold mt-4 mb-2">Category</h2>
+              <h2 className="text-xl sm:text-2xl font-bold mt-4 mb-2">
+                Category
+              </h2>
               <a className="inline-block px-3 py-1 border border-gray-300 rounded-full bg-gray-100 text-gray-700 text-sm sm:text-base">
                 {event.eventCategory}
               </a>
@@ -183,7 +201,9 @@ const EventDetail = () => {
           <div className="md:w-1/3 md:mt-0 mt-8 md:px-8 sticky top-16">
             <div className="flex items-center text-sm sm:text-base text-gray-600 mt-2">
               <UserIcon className="w-4 h-4 mr-1 text-gray-500" />
-              <p className="whitespace-nowrap">Organize by: {event.organizer}</p>
+              <p className="whitespace-nowrap">
+                Organize by: {event.organizer}
+              </p>
             </div>
             <div className="flex items-center text-sm sm:text-base text-gray-600 mt-2">
               <CalendarIcon className="w-4 h-4 mr-1 text-gray-500" />
@@ -207,82 +227,110 @@ const EventDetail = () => {
                 maps
               </a>
             </div>
-            <div className="flex items-center text-sm sm:text-base text-gray-600 mt-2">
+            <div className="flex items-center text-sm sm:text-base text-gray-600 mt-2 pb-4 border-b-2 border-dashed">
               <TicketIcon className="w-4 h-4 mr-1 text-gray-500" />
-              {event.isFree ? (
-                <p>Free</p>
-              ) : (
-                <p>
-                  Start From{" "}
-                  {minimumPrice.toLocaleString("id-ID", {
-                    style: "currency",
-                    currency: "IDR",
-                    minimumFractionDigits: 2,
-                  })}
-                </p>
-              )}
+              {event.isFree ? <p>Free</p> : <p>Paid</p>}
             </div>
-            <div className="mt-4">
-              {sortedTicketTypes.map((ticketType) => (
-                <div key={ticketType.name} className="mb-4 p-4 border rounded">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <input
-                        type="radio"
-                        name="ticketType"
-                        value={ticketType.name}
-                        onChange={() => setSelectedTicketType(ticketType.name)}
-                        checked={selectedTicketType === ticketType.name}
-                        className="mr-2"
-                        disabled={isEventPast}
-                      />
-                      <span className="font-bold text-lg uppercase">{ticketType.name}</span>
+            {!isEventPast && (
+              <div>
+                <div className="mt-10 text-gray-600">
+                  {sortedTicketTypes.map((ticketType) => (
+                    <div
+                      key={ticketType.name}
+                      className={`mb-4 p-4 border rounded ${
+                        selectedTicketType === ticketType.name
+                          ? "bg-green-100"
+                          : "bg-white"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <input
+                            type="radio"
+                            name="ticketType"
+                            value={ticketType.name}
+                            onChange={() =>
+                              setSelectedTicketType(ticketType.name)
+                            }
+                            checked={selectedTicketType === ticketType.name}
+                            className="mr-2"
+                            disabled={isEventPast}
+                          />
+                          <span className="font-bold text-lg uppercase">
+                            {ticketType.name}
+                          </span>
+                        </div>
+                        <div className="flex items-center ml-4">
+                          <button
+                            onClick={() => decrementQuantity(ticketType.name)}
+                            className="bg-gray-200 text-gray-700 py-1 px-3 rounded"
+                            disabled={
+                              !selectedTicketType ||
+                              selectedTicketType !== ticketType.name ||
+                              isEventPast
+                            }
+                          >
+                            -
+                          </button>
+                          <input
+                            type="number"
+                            min="0"
+                            value={ticketQuantities[ticketType.name] || 0}
+                            readOnly
+                            className="w-16 text-center"
+                            disabled={
+                              !selectedTicketType ||
+                              selectedTicketType !== ticketType.name
+                            }
+                          />
+                          <button
+                            onClick={() => incrementQuantity(ticketType.name)}
+                            className="bg-gray-200 text-gray-700 py-1 px-3 rounded"
+                            disabled={
+                              !selectedTicketType ||
+                              selectedTicketType !== ticketType.name ||
+                              isEventPast
+                            }
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                      <p className="text-gray-600 mb-2">
+                        {ticketType.price.toLocaleString("id-ID", {
+                          style: "currency",
+                          currency: "IDR",
+                          minimumFractionDigits: 2,
+                        })}
+                      </p>
                     </div>
-                    <div className="flex items-center ml-4">
-                      <button
-                        onClick={() => decrementQuantity(ticketType.name)}
-                        className="px-2 py-1 bg-gray-300 rounded-l text-gray-700"
-                        disabled={!selectedTicketType || selectedTicketType !== ticketType.name || isEventPast}
-                      >
-                        -
-                      </button>
-                      <input
-                        type="number"
-                        min="0"
-                        value={ticketQuantities[ticketType.name] || 0}
-                        readOnly
-                        className="w-16 text-center"
-                        disabled={!selectedTicketType || selectedTicketType !== ticketType.name}
-                      />
-                      <button
-                        onClick={() => incrementQuantity(ticketType.name)}
-                        className="px-2 py-1 bg-gray-300 rounded-r text-gray-700"
-                        disabled={!selectedTicketType || selectedTicketType !== ticketType.name || isEventPast}
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                  <p className="text-gray-600 mb-2">
-                    {ticketType.price.toLocaleString("id-ID", {
+                  ))}
+                </div>
+                <div className="mt-4">
+                  <p className="text-xl font-bold">
+                    Total Price:{" "}
+                    {totalTicketPrice.toLocaleString("id-ID", {
                       style: "currency",
                       currency: "IDR",
                       minimumFractionDigits: 2,
                     })}
                   </p>
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
+
             <button
               onClick={isEventPast ? undefined : openGetTicketModal}
               className={`mt-8 w-full px-4 py-2 ${
-                isEventPast ? "bg-gray-500 cursor-not-allowed" : "bg-red-500 hover:bg-red-700"
+                isEventPast
+                  ? "bg-gray-500 cursor-not-allowed"
+                  : "bg-red-500 hover:bg-red-700"
               } text-white rounded transition text-sm sm:text-base sticky-tickets-button`}
               disabled={isEventPast}
             >
               {isEventPast ? "Sales Ended" : "Get tickets"}
             </button>
-            {isGetTicketModalOpen && (
+            {isGetTicketModalOpen && !isEventPast && (
               <TicketModal onClose={closeGetTicketModal} event={event} />
             )}
           </div>

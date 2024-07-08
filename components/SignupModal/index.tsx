@@ -1,7 +1,6 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import roles from "@/utils/role";
 import Modal from "../Modal";
 import { useAuth } from "@/context/AuthContext";
 
@@ -20,7 +19,7 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
     password: "",
     retypePassword: "",
     referralCode: "",
-    role: "",
+    role: "", // Default to empty string
   };
 
   const validationSchema = Yup.object().shape({
@@ -110,32 +109,39 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
             {({ isSubmitting }) => (
               <Form>
                 <div className="mb-4">
-                  <div className="mb-4">
-                    <label
-                      className="block text-gray-700 text-sm font-bold mb-2"
-                      htmlFor="role"
-                    >
-                      Role
+                  <label
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                    htmlFor="role"
+                  >
+                    Role
+                  </label>
+                  <div className="flex space-x-4">
+                    <label>
+                      <Field
+                        type="radio"
+                        name="role"
+                        value="User"
+                        className="mr-2"
+                      />
+                      User
                     </label>
-                    <Field
-                      as="select"
-                      name="role"
-                      id="role"
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      <option value="" label="Select role" />
-                      {roles.map((role) => (
-                        <option key={role.id} value={role.name}>
-                          {role.name}
-                        </option>
-                      ))}
-                    </Field>
-                    <ErrorMessage
-                      name="role"
-                      component="p"
-                      className="text-red-500 text-xs italic"
-                    />
+                    <label>
+                      <Field
+                        type="radio"
+                        name="role"
+                        value="Organizer"
+                        className="mr-2"
+                      />
+                      Organizer
+                    </label>
                   </div>
+                  <ErrorMessage
+                    name="role"
+                    component="p"
+                    className="text-red-500 text-xs italic"
+                  />
+                </div>
+                <div className="mb-4">
                   <label
                     className="block text-gray-700 text-sm font-bold mb-2"
                     htmlFor="fullName"
