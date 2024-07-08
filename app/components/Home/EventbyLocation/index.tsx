@@ -50,20 +50,21 @@ function EventbyLocation() {
       <div className="flex flex-wrap justify-center xl:px-28 xl:gap-8 md:px-4">
         {filteredEvents.map((event) => (
           <EventCard
-            key={event.id}
-            id={event.id}
-            imageUrl={event.imageUrl}
-            title={event.title}
-            eventDate={event.eventDate}
-            startTime={event.startTime}
-            endTime={event.endTime}
-            organizer={event.organizer}
-            location={event.location}
-            availableSeat={event.availableSeat}
-            seatLimit={event.seatLimit}
-            isFree={event.isFree}
-            eventCategory={event.eventCategory}
-          />
+          key={event.id}
+          id={event.id}
+          imageUrl={event.imageUrl}
+          title={event.title}
+          eventDate={event.eventDate}
+          startTime={event.startTime}
+          endTime={event.endTime}
+          organizer={event.organizer}
+          location={event.location}
+          availableSeat={event.availableSeat}
+          seatLimit={event.seatLimit}
+          isFree={event.isFree}
+          ticketTypes={event.ticketTypes}
+          eventCategory={event.eventCategory}
+        />
         ))}
       </div>
     </>

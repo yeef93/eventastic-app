@@ -21,6 +21,10 @@ interface EventProps {
   availableSeat: number;
   seatLimit: number;
   isFree: boolean;
+  ticketTypes: {
+    name: string;
+    price: number;
+  }[];
   eventCategory: string;
 }
 
@@ -36,23 +40,70 @@ function EventCard({
   availableSeat,
   seatLimit,
   isFree,
+  ticketTypes,
   eventCategory,
 }: EventProps) {
-  const formatDateTime = (eventDate: string, startTime: string, endTime: string) => {
-    const dateOptions: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const timeOptions: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
+  const formatDateTime = (
+    eventDate: string,
+    startTime: string,
+    endTime: string
+  ) => {
+    const dateOptions: Intl.DateTimeFormatOptions = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+    const timeOptions: Intl.DateTimeFormatOptions = {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    };
 
     const eventDateObj = new Date(eventDate);
-    const formattedDate = eventDateObj.toLocaleDateString('en-US', dateOptions);
+    const formattedDate = eventDateObj.toLocaleDateString("en-US", dateOptions);
 
     const startTimeObj = new Date(`${eventDate}T${startTime}`);
-    const formattedStartTime = startTimeObj.toLocaleTimeString('en-US', timeOptions);
+    const formattedStartTime = startTimeObj.toLocaleTimeString(
+      "en-US",
+      timeOptions
+    );
 
     const endTimeObj = new Date(`${eventDate}T${endTime}`);
-    const formattedEndTime = endTimeObj.toLocaleTimeString('en-US', timeOptions);
+    const formattedEndTime = endTimeObj.toLocaleTimeString(
+      "en-US",
+      timeOptions
+    );
 
     return `${formattedDate} | ${formattedStartTime} - ${formattedEndTime}`;
   };
+
+  const getTicketInfo = (isFree: boolean, ticketTypes: { price: number }[]) => {
+    if (isFree) {
+      return "Free";
+    }
+    const minPrice = Math.min(...ticketTypes.map((ticket) => ticket.price));
+    return `Starts from ${minPrice.toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+    })}`;
+  };
+
+  // Sort ticket types by price
+  const sortedTicketTypes = [...ticketTypes].sort((a, b) => a.price - b.price);
+
+  // Function to find minimum price
+  const getMinimumPrice = () => {
+    let minPrice = Infinity;
+    sortedTicketTypes.forEach((price) => {
+      if (price.price < minPrice) {
+        minPrice = price.price;
+      }
+    });
+    return minPrice;
+  };
+
+  const minimumPrice = getMinimumPrice();
 
   return (
     <Link
@@ -86,8 +137,19 @@ function EventCard({
             </p>
           </div>
           <div className="flex items-center text-sm text-gray-600 mt-2">
-            <TicketIcon className="w-4 h-4 mr-1 text-purple-700" />
-            {isFree ? <p>Free</p> : <p>Paid</p>}
+          <TicketIcon className="w-4 h-4 mr-1 text-purple-700" />
+              {isFree ? (
+                <p>Free</p>
+              ) : (
+                <p>
+                  Start From{" "}
+                  {minimumPrice.toLocaleString("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 2,
+                  })}
+                </p>
+              )}
           </div>
           <div className="flex items-center text-sm text-gray-600 mt-2">
             <span className="inline-block bg-green-200 text-gray-800 rounded-full px-3 py-1 text-xs font-semibold mr-2">
