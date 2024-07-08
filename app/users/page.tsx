@@ -1,14 +1,4 @@
 import React, { useState } from "react";
-import Image from "next/image";
-import SideBar from "@/components/SideBar";
-import {
-  CalendarIcon,
-  LockClosedIcon,
-  LogoutIcon,
-  PresentationChartLineIcon,
-  TicketIcon,
-  UserIcon,
-} from "@heroicons/react/outline";
 
 function Users() {
   return (

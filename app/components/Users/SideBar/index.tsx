@@ -25,7 +25,7 @@ function Sidebar() {
   ];
 
   return (
-    <div className="w-64 bg-white h-screen p-4">
+    <div className="w-80 bg-white h-screen p-6">
       <div className="flex items-center space-x-4 pt-12 mb-5">
         <Image className="h-12 rounded-full" src="" alt="James Bhatta" />
         <div>

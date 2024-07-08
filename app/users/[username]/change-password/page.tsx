@@ -1,4 +1,4 @@
-function changePassword(){
+function ChangePassword(){
     return(
         <div>
             ini change password
@@ -6,4 +6,4 @@ function changePassword(){
     )
 }
 
-export default changePassword;
+export default ChangePassword;

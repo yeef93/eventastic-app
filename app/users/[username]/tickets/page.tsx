@@ -1,4 +1,4 @@
-function tickets(){
+function Tickets(){
     return(
         <div>
             ini ticket
@@ -6,4 +6,4 @@ function tickets(){
     )
 }
 
-export default tickets;
+export default Tickets;

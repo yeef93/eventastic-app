@@ -1,4 +1,4 @@
-function logout(){
+function Logout(){
     return(
         <div>
             logout
@@ -6,4 +6,4 @@ function logout(){
     )
 }
 
-export default logout;
+export default Logout;

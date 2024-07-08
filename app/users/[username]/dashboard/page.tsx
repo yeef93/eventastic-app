@@ -1,4 +1,4 @@
-function dashboard(){
+function Dashboard(){
     return(
         <div>
             ini dashboard
@@ -6,4 +6,4 @@ function dashboard(){
     )
 }
 
-export default dashboard;
+export default Dashboard;

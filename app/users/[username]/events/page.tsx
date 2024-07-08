@@ -1,4 +1,4 @@
-function events(){
+function Events(){
     return(
         <div>
             ini events
@@ -6,4 +6,4 @@ function events(){
     )
 }
 
-export default events;
+export default Events;
