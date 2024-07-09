@@ -31,15 +31,15 @@ const ReviewForm = ({ onSubmit }:any) => {
     <div className="bg-white p-6 rounded-2xl shadow-lg">
       <form onSubmit={handleSubmit}>
         <div className="flex items-center mb-4">
-          <h2 className="text-xl font-bold">Add a Review</h2>
+          <h2 className="text-xl font-bold">Submit Your Review</h2>
         </div>
-        <div className="mb-4 text-center">
-          <h3 className="text-lg font-medium mb-2">Rate Event</h3>
-          <div className="flex items-center justify-center">
+        <div className="mb-4 text-left">
+          <h3 className="text-sm font-medium mb-2">Add Your Rating *</h3>
+          <div className="flex items-start justify-start">
             {[1, 2, 3, 4, 5].map((star) => (
               <svg
                 key={star}
-                className={`w-10 h-10 cursor-pointer ${
+                className={`w-5 h-5 cursor-pointer ${
                   star <= (hoverRating || rating) ? "text-yellow-500" : "text-gray-300"
                 }`}
                 onMouseEnter={() => setHoverRating(star)}
@@ -78,7 +78,7 @@ const ReviewForm = ({ onSubmit }:any) => {
             type="submit"
             className="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline text-sm"
           >
-            Submit
+            Submit Review
           </button>
         </div>
       </form>
