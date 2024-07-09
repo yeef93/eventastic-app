@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import {
@@ -11,12 +11,23 @@ import {
   TicketIcon,
   UserIcon,
 } from "@heroicons/react/outline";
+import LogoutModal from "@/components/LogoutModal";
 
 function Sidebar() {
   const router = useRouter();
   const { username } = usePathname();
-  const points = 100;
-  const expiredDate = "2024/12/02";
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+
+  const handleLogoutClick = (e) => {
+    e.preventDefault();
+    setIsLogoutModalOpen(true);
+  };
+
+  const handleLogoutConfirm = () => {
+    setIsLogoutModalOpen(false);
+    // Perform logout action here, e.g., call API and redirect to login page
+    router.push("/");
+  };
 
   const menuItems = [
     { href: `/users/${username}/dashboard`, label: "Dashboard", icon: PresentationChartLineIcon },
@@ -24,7 +35,6 @@ function Sidebar() {
     { href: `/users/${username}/tickets`, label: "My tickets", icon: TicketIcon },
     { href: `/users/${username}/profile`, label: "Profile", icon: UserIcon },
     { href: `/users/${username}/change-password`, label: "Change password", icon: LockClosedIcon },
-    { href: `/users/${username}/logout`, label: "Logout", icon: LogoutIcon },
   ];
 
   return (
@@ -35,12 +45,7 @@ function Sidebar() {
           <h4 className="font-semibold text-lg text-gray-700 capitalize font-poppins tracking-wide">
             James Bhatta
           </h4>
-          <div className="flex justify-center">
-          <CurrencyDollarIcon className="w-6 h-6 mr-1 text-yellow-500"></CurrencyDollarIcon>
-          <p className=" text-lg text-yellow-500">{points} points</p>
-          </div>
-          
-          <p className="text-sm text-gray-500">Expired Date: {expiredDate}</p>
+          <p className="text-sm text-gray-500">100 points</p>
         </div>
       </div>
       <ul className="space-y-2 text-sm">
@@ -59,7 +64,23 @@ function Sidebar() {
             </a>
           </li>
         ))}
+        <li>
+          <button
+            onClick={handleLogoutClick}
+            className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-3 text-gray-700 p-2 rounded-md font-medium w-full text-left hover:bg-gray-200"
+          >
+            <span className="text-gray-600">
+              <LogoutIcon className="w-5 h-5 mr-1 text-gray-700" />
+            </span>
+            <span className="text-center sm:text-left">Logout</span>
+          </button>
+        </li>
       </ul>
+      <LogoutModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={handleLogoutConfirm}
+      />
     </div>
   );
 }
