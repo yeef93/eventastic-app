@@ -49,29 +49,60 @@ function Header() {
               Eventastic
             </span>
           </a>
-          <div className="flex md:order-2 space-x-3 md:space-x-0">
+          <div className="flex md:order-2 space-x-3 md:space-x-0 relative">
             {isAuthenticated ? (
-              <>
+              <div className="relative group">
                 <Image
                   src={user?.avatar || "/assets/avatar.png"}
                   width={32}
                   height={32}
                   alt="User Avatar"
-                  className="rounded-full border-2 w-8 h-8"
+                  className="rounded-full border-2 w-8 h-8 cursor-pointer"
                 />
-                <button
-                  type="button"
-                  className="text-gray-900 font-medium rounded-lg text-sm px-4 py-2 text-center"
-                  onClick={logout}
-                >
-                  Log out
-                </button>
-              </>
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    25 Points
+                  </a>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    2.779 XP
+                  </a>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Profil Saya
+                  </a>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Daftar Pesanan
+                  </a>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Pengaturan
+                  </a>
+                  <button
+                    onClick={logout}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Keluar
+                  </button>
+                </div>
+              </div>
             ) : (
               <>
                 <button
                   type="button"
-                  className=" text-gray-900 font-medium rounded-lg text-sm px-4 py-2 text-center"
+                  className="text-gray-900 font-medium rounded-lg text-sm px-4 py-2 text-center"
                   onClick={handleLoginClick}
                 >
                   Log in

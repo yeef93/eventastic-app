@@ -3,8 +3,8 @@ import React, { createContext, useState, useContext, ReactNode } from "react";
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  user: { avatar: string } | null;
-  login: (userData: { avatar: string }) => void;
+  user: { avatar: string; email: string } | null;
+  login: (userData: { avatar: string; email: string }) => void;
   logout: () => void;
 }
 
@@ -12,9 +12,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<{ avatar: string } | null>(null);
+  const [user, setUser] = useState<{ avatar: string; email: string } | null>(null);
 
-  const login = (userData: { avatar: string }) => {
+  const login = (userData: { avatar: string; email: string }) => {
     setIsAuthenticated(true);
     setUser(userData);
   };

@@ -19,7 +19,7 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
     password: "",
     retypePassword: "",
     referralCode: "",
-    role: "", // Default to empty string
+    role: "", 
   };
 
   const validationSchema = Yup.object().shape({

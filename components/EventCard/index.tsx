@@ -25,7 +25,7 @@ interface EventProps {
     name: string;
     price: number;
   }[];
-  eventCategory: string;
+  category: string;
 }
 
 function EventCard({
@@ -41,7 +41,7 @@ function EventCard({
   seatLimit,
   isFree,
   ticketTypes,
-  eventCategory,
+  category,
 }: EventProps) {
   const formatDateTime = (
     eventDate: string,
@@ -142,7 +142,7 @@ function EventCard({
           </div>
           <div className="flex items-center text-sm text-gray-600 mt-2">
             <span className="inline-block bg-green-200 text-gray-800 rounded-full px-3 py-1 text-xs font-semibold mr-2">
-              {eventCategory}
+              {category}
             </span>
           </div>
         </div>

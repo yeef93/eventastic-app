@@ -13,11 +13,14 @@ import {
 } from "@heroicons/react/outline";
 import ReviewForm from "@/app/components/Events/ReviewForm";
 import TicketModal from "@/app/components/Events/TicketModal";
+import ReviewDisplay from "@/app/components/Events/ReviewDisplay";
 
 type Event = {
   id: number;
   title: string;
-  imageUrl: string;
+  image: {
+    imageUrl: string;
+  }[];  
   eventDate: string;
   startTime: string;
   endTime: string;
@@ -31,7 +34,7 @@ type Event = {
     name: string;
     price: number;
   }[];
-  eventCategory: string;
+  category: string;
   description: string;
 };
 
@@ -47,6 +50,11 @@ const EventDetail = () => {
   }>({});
   const [isGetTicketModalOpen, setIsGetTicketModalOpen] =
     useState<boolean>(false);
+
+  const [reviews, setReviews] = useState([
+    { name: "John Doe", text: "Great event!" },
+    { name: "Jane Smith", text: "Had a wonderful time!" },
+  ]);
 
   useEffect(() => {
     const slug = pathname.split("/").pop();
@@ -162,7 +170,7 @@ const EventDetail = () => {
 
   return (
     <div className="py-7">
-      <ImageCard src={event.imageUrl} alt={event.title} />
+      <ImageCard src={event.image.imageUrl} alt={event.title} />
       <div className="px-4 sm:px-8 md:px-12 lg:px-20 xl:px-32">
         <div className="mt-6 md:flex md:justify-between md:items-start">
           <div className="md:w-2/3 md:pr-8">
@@ -201,7 +209,7 @@ const EventDetail = () => {
                 Category
               </h2>
               <a className="inline-block px-3 py-1 border border-gray-300 rounded-full bg-gray-100 text-gray-700 text-sm sm:text-base">
-                {event.eventCategory}
+                {event.category}
               </a>
             </div>
           </div>
@@ -349,6 +357,7 @@ const EventDetail = () => {
         {isEventPast && (
           <div className="py-8">
             <ReviewForm onSubmit={handleReviewSubmit} />
+            <ReviewDisplay reviews={reviews} />
           </div>
         )}
       </div>

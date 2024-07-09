@@ -52,7 +52,7 @@ function EventbyLocation() {
           <EventCard
           key={event.id}
           id={event.id}
-          imageUrl={event.imageUrl}
+          imageUrl={event.image.imageUrl}
           title={event.title}
           eventDate={event.eventDate}
           startTime={event.startTime}
@@ -63,7 +63,7 @@ function EventbyLocation() {
           seatLimit={event.seatLimit}
           isFree={event.isFree}
           ticketTypes={event.ticketTypes}
-          eventCategory={event.eventCategory}
+          category={event.category}
         />
         ))}
       </div>
