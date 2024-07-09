@@ -3,18 +3,21 @@
 import React from "react";
 
 interface LogoutModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onConfirm: () => void;
-  }
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+}
 
-const LogoutModal = ({ isOpen, onClose, onConfirm }:LogoutModalProps) => {
+const LogoutModal = ({ isOpen, onClose, onConfirm }: LogoutModalProps) => {
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg">
-        <h2 className="text-lg font-semibold mb-4">Are you sure you want to logout?</h2>
+        <div className=" text-xs border-b-2">Confirm logout</div>
+        <p className="text-lg font-semibold mb-4">
+          Are you sure you want to logout?
+        </p>
         <div className="flex justify-end space-x-4">
           <button
             onClick={onClose}
