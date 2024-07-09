@@ -17,7 +17,7 @@ function ReferralCode() {
           onClick={handleCopy}
           className="text-blue-600 hover:underline text-sm"
         >
-          Tap to copy
+          Copy link
         </button>
       </div>
     </div>
