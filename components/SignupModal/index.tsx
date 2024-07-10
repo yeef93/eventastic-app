@@ -19,7 +19,7 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
     password: "",
     retypePassword: "",
     referralCode: "",
-    role: "", 
+    role: "",
   };
 
   const validationSchema = Yup.object().shape({
@@ -65,7 +65,7 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
       }
 
       console.log("Registration successful");
-      login({ avatar: "/assets/avatar.png" }); // Assuming default avatar after signup
+      login({ avatar: "/assets/avatar.png", email: values.email }); // Ensure both avatar and email are provided
       onSuccess();
       onClose();
     } catch (error) {
