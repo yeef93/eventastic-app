@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import events from "@/utils/events";
 import EventCard from "@/components/EventCard";
 
@@ -7,7 +7,57 @@ const uniqueLocations = [
   ...new Set(events.map((event) => event.location)),
 ];
 
+interface Event {
+  id: number;
+  image: {
+    imageUrl: string;
+  };
+  title: string;
+  description: string;
+  eventDate: string;
+  startTime: string;
+  endTime: string;
+  organizer: string;
+  location: string;
+  availableSeat: number;
+  seatLimit: number;
+  isFree: boolean;
+  ticketTypes: {
+    name: string;
+    price: number;
+  }[];
+  category: string;
+}
+
 function EventbyLocation() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const [events, setEvents] = useState<Event[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("Any Category");
+  const [selectedDay, setSelectedDay] = useState("Weekdays");
+  const [uniqueCategories, setUniqueCategories] = useState(["Any Category"]);
+
+  useEffect(() => {
+    const url = `${apiUrl}/events/upcoming`;
+      console.log("Fetching events from:", url); // Log the URL being fetched
+    // Fetch events data from the API
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          const fetchedEvents = data.data.events;
+          setEvents(fetchedEvents);
+          
+          const categories = [
+            "Any Category",
+            ...new Set(fetchedEvents.map((event) => event.category)),
+          ];
+          setUniqueCategories(categories);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching events:", error);
+      });
+  }, []);
   const [selectedLocation, setSelectedLocation] = useState("Any Location");
 
   const filterEvents = (event: { location: string }) => {

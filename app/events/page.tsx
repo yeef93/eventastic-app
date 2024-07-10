@@ -26,20 +26,20 @@ interface Event {
 }
 
 function Events() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
-  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  
   const eventsPerPage = 10; // Number of events to fetch per page
 
   useEffect(() => {
     const fetchEvents = async (page: number) => {
       setLoading(true);
       const url = `${apiUrl}/events?page=${page}&limit=${eventsPerPage}`;
-      console.log("Fetching events from:", url); // Log the URL being fetched
+      // console.log("Fetching events from:", url); // Log the URL being fetched
       try {
         const response = await fetch(url);
         if (!response.ok) {

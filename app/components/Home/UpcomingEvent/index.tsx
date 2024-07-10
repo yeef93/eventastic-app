@@ -1,29 +1,66 @@
-import React, { useState } from "react";
-import events from "@/utils/events";
+import React, { useState, useEffect } from "react";
 import EventCard from "@/components/EventCard";
 
-const uniqueCategories = [
-  "Any Category",
-  ...new Set(events.map((event) => event.category)),
-];
+interface Event {
+  id: number;
+  image: {
+    imageUrl: string;
+  };
+  title: string;
+  description: string;
+  eventDate: string;
+  startTime: string;
+  endTime: string;
+  organizer: string;
+  location: string;
+  availableSeat: number;
+  seatLimit: number;
+  isFree: boolean;
+  ticketTypes: {
+    name: string;
+    price: number;
+  }[];
+  category: string;
+}
+
 const days = ["Weekdays", "Today", "Tomorrow", "This Week", "This Month"];
 
 function UpcomingEvent() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const [events, setEvents] = useState<Event[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("Any Category");
   const [selectedDay, setSelectedDay] = useState("Weekdays");
+  const [uniqueCategories, setUniqueCategories] = useState(["Any Category"]);
 
-  const filterEvents = (event: {
-    eventDate: string | number | Date;
-    category: string;
-  }) => {
+  useEffect(() => {
+    const url = `${apiUrl}/events/upcoming`;
+      console.log("Fetching events from:", url); // Log the URL being fetched
+    // Fetch events data from the API
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          const fetchedEvents = data.data.events;
+          setEvents(fetchedEvents);
+          
+          const categories = [
+            "Any Category",
+            ...new Set(fetchedEvents.map((event) => event.category)),
+          ];
+          setUniqueCategories(categories);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching events:", error);
+      });
+  }, []);
+
+  const filterEvents = (event) => {
     const now = new Date();
     const eventDate = new Date(event.eventDate);
 
     // Filter by category
-    if (
-      selectedCategory !== "Any Category" &&
-      event.category !== selectedCategory
-    ) {
+    if (selectedCategory !== "Any Category" && event.category !== selectedCategory) {
       return false;
     }
 
@@ -48,6 +85,7 @@ function UpcomingEvent() {
   };
 
   const filteredEvents = events.filter(filterEvents);
+
   return (
     <>
       <div className="px-4 pt-8 xl:px-40 xl:pt-16">
