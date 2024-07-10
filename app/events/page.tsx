@@ -25,40 +25,40 @@ interface Event {
   category: string;
 }
 
-const Events = () => {
+function Events() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const eventsPerPage = 10; // Number of events to fetch per page
 
   useEffect(() => {
-    fetchEvents(currentPage);
-  }, [currentPage]); // Fetch events whenever currentPage changes
-
-  const fetchEvents = async (page: number) => {
-    setLoading(true);
-    const url = `${apiUrl}/events?page=${page}&limit=${eventsPerPage}`;
-    console.log("Fetching events from:", url); // Log the URL being fetched
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error("Failed to fetch events");
+    const fetchEvents = async (page: number) => {
+      setLoading(true);
+      const url = `${apiUrl}/events?page=${page}&limit=${eventsPerPage}`;
+      console.log("Fetching events from:", url); // Log the URL being fetched
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error("Failed to fetch events");
+        }
+        const data = await response.json();
+        console.log("Fetched events data:", data);
+        setEvents(data.data.events || []);
+        setTotalPages(data.data.totalPages || 1);
+        setLoading(false);
+      } catch (err: any) {
+        console.error("Fetching error:", err);
+        setError(err.message);
+        setLoading(false);
       }
-      const data = await response.json();
-      console.log("Fetched events data:", data);
-      setEvents(data.data.events || []);
-      setTotalPages(data.data.totalPages || 1);
-      setLoading(false);
-    } catch (err: any) {
-      console.error("Fetching error:", err);
-      setError(err.message);
-      setLoading(false);
-    }
-  };
+    };
+
+    fetchEvents(currentPage);
+  }, [apiUrl, currentPage]); // Include fetchEvents, apiUrl, and currentPage in the dependency array
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -100,6 +100,6 @@ const Events = () => {
       />
     </div>
   );
-};
+}
 
 export default Events;

@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import events from "@/utils/events";
 import ImageCard from "@/components/ImageCard";
 import {
   CalendarIcon,
@@ -13,14 +12,13 @@ import {
 } from "@heroicons/react/outline";
 import ReviewForm from "@/app/components/Events/ReviewForm";
 import TicketModal from "@/app/components/Events/TicketModal";
-import ReviewDisplay from "@/app/components/Events/ReviewDisplay";
 
 type Event = {
   id: number;
   title: string;
   image: {
     imageUrl: string;
-  }[];  
+  };
   eventDate: string;
   startTime: string;
   endTime: string;
@@ -39,9 +37,12 @@ type Event = {
 };
 
 const EventDetail = () => {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const router = useRouter();
   const pathname = usePathname();
   const [event, setEvent] = useState<Event | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedTicketType, setSelectedTicketType] = useState<string | null>(
     null
   );
@@ -51,46 +52,56 @@ const EventDetail = () => {
   const [isGetTicketModalOpen, setIsGetTicketModalOpen] =
     useState<boolean>(false);
 
-  const [reviews, setReviews] = useState([
-    { name: "John Doe", text: "Great event!" },
-    { name: "Jane Smith", text: "Had a wonderful time!" },
-  ]);
-
   useEffect(() => {
-    const slug = pathname.split("/").pop();
-    if (slug) {
-      const slugParts = slug.split("-");
-      const eventId = parseInt(slugParts[slugParts.length - 1], 10);
+    const fetchEvent = async () => {
+      const slug = pathname.split("/").pop();
+      if (slug) {
+        const slugParts = slug.split("-");
+        const eventId = parseInt(slugParts[slugParts.length - 1], 10);
 
-      if (!isNaN(eventId)) {
-        const foundEvent = events.find((event) => event.id === eventId);
-        if (foundEvent) {
-          const expectedSlug = `${foundEvent.title
-            .replace(/\s+/g, "-")
-            .toLowerCase()}-ticket-${foundEvent.id}`;
-          if (slug !== expectedSlug) {
-            router.replace(`/events/${expectedSlug}`);
-          } else {
-            setEvent(foundEvent);
-            const minPriceTicket = foundEvent.ticketTypes.reduce(
-              (minTicket, ticket) =>
-                ticket.price < minTicket.price ? ticket : minTicket,
-              foundEvent.ticketTypes[0]
-            );
-            setSelectedTicketType(minPriceTicket.name);
-            setTicketQuantities({ [minPriceTicket.name]: 1 });
+        if (!isNaN(eventId)) {
+          try {
+            setIsLoading(true);
+            const response = await fetch(`${apiUrl}/events/${eventId}`);
+            if (!response.ok) {
+              throw new Error("Failed to fetch event details");
+            }
+            const data = await response.json();
+            console.log("Fetched event data:", data);
+
+            // Update to correctly access imageUrl from image object
+            if (data.data.image && data.data.image.imageUrl) {
+              console.log("Event image URL:", data.data.image.imageUrl);
+            } else {
+              console.log("No image data found for this event");
+            }
+
+            setEvent(data.data);
+
+            // Remaining code...
+          } catch (error) {
+            console.error("Error fetching event:", error);
+            setError("Failed to fetch event details");
+          } finally {
+            setIsLoading(false);
           }
-        } else {
-          router.replace("/404");
         }
-      } else {
-        router.replace("/404");
       }
-    }
-  }, [pathname, router]);
+    };
+
+    fetchEvent();
+  }, [pathname, apiUrl]); // Include apiUrl in the dependency array
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
 
   if (!event) {
-    return <p>Loading...</p>;
+    return <p>No event details available.</p>;
   }
 
   const handleQuantityChange = (ticketType: string, quantity: number) => {
@@ -170,7 +181,9 @@ const EventDetail = () => {
 
   return (
     <div className="py-7">
-      <ImageCard src={event.image.imageUrl} alt={event.title} />
+      {event.image && (
+        <ImageCard src={event.image.imageUrl} alt={event.title} />
+      )}
       <div className="px-4 sm:px-8 md:px-12 lg:px-20 xl:px-32">
         <div className="mt-6 md:flex md:justify-between md:items-start">
           <div className="md:w-2/3 md:pr-8">
@@ -357,7 +370,6 @@ const EventDetail = () => {
         {isEventPast && (
           <div className="py-8">
             <ReviewForm onSubmit={handleReviewSubmit} />
-            <ReviewDisplay reviews={reviews} />
           </div>
         )}
       </div>
