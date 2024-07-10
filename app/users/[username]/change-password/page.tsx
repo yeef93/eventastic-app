@@ -17,7 +17,7 @@ function ChangePasswordForm() {
       .min(8, "Password must be at least 8 characters")
       .required("New Password is required"),
     confirmPassword: Yup.string()
-      .oneOf([Yup.ref("newPassword"), null], "Passwords must match")
+      .oneOf([Yup.ref("newPassword"), undefined], "Passwords must match")
       .required("Confirm Password is required")
   });
 

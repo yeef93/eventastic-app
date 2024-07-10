@@ -15,12 +15,13 @@ import LogoutModal from "@/components/LogoutModal";
 
 function Sidebar() {
   const router = useRouter();
-  const { username } = usePathname();
+  const pathname = usePathname();
+  const username = pathname.split('/')[2]; // Extract username from pathname
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const points = 100;
   const expiredDate = "2024/12/02";
 
-  const handleLogoutClick = (e) => {
+  const handleLogoutClick = (e:any) => {
     e.preventDefault();
     setIsLogoutModalOpen(true);
   };
@@ -60,7 +61,7 @@ function Sidebar() {
             <a
               href={item.href}
               className={`flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-3 text-gray-700 p-2 rounded-md font-medium ${
-                router.asPath === item.href ? "bg-gray-200" : "hover:bg-gray-200"
+                pathname === item.href ? "bg-gray-200" : "hover:bg-gray-200"
               }`}
             >
               <span className="text-gray-600">

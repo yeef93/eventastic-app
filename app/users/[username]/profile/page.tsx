@@ -11,21 +11,13 @@ function ProfileSettings() {
   const [email, setEmail] = useState("");
   const [bio, setBio] = useState("");
   const [birthday, setBirthday] = useState<Date | null>(null);
-  const [profilePicture, setProfilePicture] = useState<
-    string | ArrayBuffer | null
-  >("");
+  const [profilePicture, setProfilePicture] = useState<string | ArrayBuffer | null>("");
 
-  const handleProfilePictureChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const fileType = file.type;
-      if (
-        fileType === "image/jpeg" ||
-        fileType === "image/jpg" ||
-        fileType === "image/png"
-      ) {
+      if (fileType === "image/jpeg" || fileType === "image/jpg" || fileType === "image/png") {
         const reader = new FileReader();
         reader.onloadend = () => {
           setProfilePicture(reader.result);
@@ -107,7 +99,7 @@ function ProfileSettings() {
             </div>
             <DatePicker
               selected={birthday}
-              onChange={(date: Date) => setBirthday(date)}
+              onChange={(date: Date | null) => setBirthday(date)}
               dateFormat="yyyy/MM/dd"
               placeholderText="yyyy/MM/dd"
               className="w-full p-2 pl-10 border border-gray-300 bg-gray-200 hover:bg-gray-100 rounded"

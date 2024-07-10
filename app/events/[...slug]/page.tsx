@@ -77,8 +77,6 @@ const EventDetail = () => {
             }
 
             setEvent(data.data);
-
-            // Remaining code...
           } catch (error) {
             console.error("Error fetching event:", error);
             setError("Failed to fetch event details");
@@ -178,6 +176,10 @@ const EventDetail = () => {
 
   const openGetTicketModal = () => setIsGetTicketModalOpen(true);
   const closeGetTicketModal = () => setIsGetTicketModalOpen(false);
+
+  const handleGetTotalPrice = () => {
+    return totalTicketPrice;
+  };
 
   return (
     <div className="py-7">
@@ -361,7 +363,7 @@ const EventDetail = () => {
             {isGetTicketModalOpen && !isEventPast && (
               <TicketModal
                 onClose={closeGetTicketModal}
-                onGetTotalPrice={totalTicketPrice}
+                onGetTotalPrice={handleGetTotalPrice}
                 event={event}
               />
             )}
