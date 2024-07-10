@@ -38,8 +38,8 @@ function ProfileSettings() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <div className="flex flex-col items-center mb-6">
+    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md space-y-6">
+      <div className="flex flex-col items-center mb-6 space-y-4">
         <div className="w-32 h-32 rounded-full overflow-hidden mb-4">
           {profilePicture ? (
             <Image
@@ -59,9 +59,9 @@ function ProfileSettings() {
           onChange={handleProfilePictureChange}
           className="text-sm"
         />
-      </div>      
-      <ReferralCode />
-      <div className="space-y-4 w-full">
+      </div>
+      <div className="space-y-4">
+        <ReferralCode />
         <div className="form-group relative">
           <label htmlFor="name" className="block mb-1 font-medium">
             Name

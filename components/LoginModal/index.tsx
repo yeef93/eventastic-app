@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Modal from "../Modal";
@@ -16,6 +16,7 @@ const LoginModal = ({ onClose, onSuccess, openSignUp }: LoginModalProps) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const { login } = useAuth();
   const router = useRouter();
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   const initialValues = {
     email: "",
@@ -49,6 +50,7 @@ const LoginModal = ({ onClose, onSuccess, openSignUp }: LoginModalProps) => {
       router.push(`/`);
     } catch (error) {
       console.error("Error during login:", error);
+      setLoginError("Your email and password combination is incorrect. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -69,7 +71,7 @@ const LoginModal = ({ onClose, onSuccess, openSignUp }: LoginModalProps) => {
           <h2 className="text-2xl font-bold mb-4 text-purple-800 text-center">Log In</h2>
           <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
             {({ isSubmitting }) => (
-              <Form>
+              <Form>                
                 <div className="mb-4">
                   <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
                     Email
@@ -96,6 +98,7 @@ const LoginModal = ({ onClose, onSuccess, openSignUp }: LoginModalProps) => {
                   />
                   <ErrorMessage name="password" component="p" className="text-red-500 text-xs italic" />
                 </div>
+                <div>{loginError && <p className="text-red-500 text-xs italic mb-4">{loginError}</p>}</div>
                 <div className="flex items-center justify-between">
                   <p className="inline-block">
                     Don&apos;t have an account?{" "}
