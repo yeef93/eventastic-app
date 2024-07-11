@@ -12,7 +12,7 @@ interface LoginModalProps {
   openSignUp: () => void;
 }
 
-const LoginModal = ({ onClose, onSuccess, openSignUp }: LoginModalProps) => {
+function LoginModal ({ onClose, onSuccess, openSignUp }: LoginModalProps){
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const { login } = useAuth();
   const router = useRouter();

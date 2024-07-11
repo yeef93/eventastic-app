@@ -39,7 +39,7 @@ function EventbyLocation() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const url = `${apiUrl}/events/upcoming`;
+    const url = `${apiUrl}/events/upcoming?size=6`;
       console.log("Fetching events from:", url); // Log the URL being fetched
     // Fetch events data from the API
     fetch(url)
