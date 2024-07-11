@@ -35,7 +35,7 @@ function EventbyLocation() {
   const [events, setEvents] = useState<Event[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("Any Category");
   const [selectedDay, setSelectedDay] = useState("Weekdays");
-  const [uniqueCategories, setUniqueCategories] = useState(["Any Category"]);
+  const [uniqueCategories, setUniqueCategories] = useState<string[]>(["Any Category"]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -51,9 +51,9 @@ function EventbyLocation() {
           
           const categories = [
             "Any Category",
-            ...new Set(fetchedEvents.map((event) => event.category)),
+            ...new Set(fetchedEvents.map((event:any) => event.category)),
           ];
-          setUniqueCategories(categories);
+          // setUniqueCategories(categories: string[]);
           setLoading(false);
         }
       })
