@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import events from "@/utils/events";
 import EventCard from "@/components/EventCard";
+import EventCardSkeleton from "@/components/EventCardSkeleton";
 
 const uniqueLocations = [
   "Any Location",
@@ -35,6 +36,7 @@ function EventbyLocation() {
   const [selectedCategory, setSelectedCategory] = useState("Any Category");
   const [selectedDay, setSelectedDay] = useState("Weekdays");
   const [uniqueCategories, setUniqueCategories] = useState(["Any Category"]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const url = `${apiUrl}/events/upcoming`;
@@ -52,10 +54,12 @@ function EventbyLocation() {
             ...new Set(fetchedEvents.map((event) => event.category)),
           ];
           setUniqueCategories(categories);
+          setLoading(false);
         }
       })
       .catch((error) => {
         console.error("Error fetching events:", error);
+        setLoading(false);
       });
   }, []);
   const [selectedLocation, setSelectedLocation] = useState("Any Location");
@@ -97,25 +101,29 @@ function EventbyLocation() {
           </p>
         </div>
       </div>
-      <div className="flex flex-wrap justify-center xl:px-28 xl:gap-8 md:px-4">
-        {filteredEvents.map((event) => (
-          <EventCard
-          key={event.id}
-          id={event.id}
-          imageUrl={event.image.imageUrl}
-          title={event.title}
-          eventDate={event.eventDate}
-          startTime={event.startTime}
-          endTime={event.endTime}
-          organizer={event.organizer}
-          location={event.location}
-          availableSeat={event.availableSeat}
-          seatLimit={event.seatLimit}
-          isFree={event.isFree}
-          ticketTypes={event.ticketTypes}
-          category={event.category}
-        />
-        ))}
+      <div className="flex flex-wrap justify-center gap-4 md:gap-8 px-2 md:px-4 xl:px-28">
+        {loading
+          ? Array.from({ length: 3 }).map((_, index) => (
+              <EventCardSkeleton key={index} />
+            ))
+          : filteredEvents.map((event) => (
+              <EventCard
+                key={event.id}
+                id={event.id}
+                imageUrl={event.image.imageUrl}
+                title={event.title}
+                eventDate={event.eventDate}
+                startTime={event.startTime}
+                endTime={event.endTime}
+                organizer={event.organizer}
+                location={event.location}
+                availableSeat={event.availableSeat}
+                seatLimit={event.seatLimit}
+                isFree={event.isFree}
+                ticketTypes={event.ticketTypes}
+                category={event.category}
+              />
+            ))}
       </div>
     </>
   );
