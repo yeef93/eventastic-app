@@ -1,8 +1,8 @@
-// components/EventTable.tsx
 import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/outline";
 import React, { useState, useEffect } from "react";
 import Pagination from "@/components/Pagination";
 import EventTableSkeleton from "@/components/Skeleton/EventTableSkeleton";
+import { useRouter,usePathname } from 'next/navigation';
 
 interface Event {
   id: number;
@@ -32,6 +32,8 @@ const EventTable = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const eventsPerPage = 5;
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const idOrganizer = 20;
@@ -63,7 +65,7 @@ const EventTable = () => {
   };
 
   const handleCreate = () => {
-    // Handle create event logic here
+    router.push(`${pathname}/create`);
     console.log("Create a new event");
   };
 
@@ -77,13 +79,24 @@ const EventTable = () => {
     setCurrentPage(pageNumber);
   };
 
+  // Function to format date
+  const formatDate = (eventDate: string) => {
+    const date = new Date(eventDate);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Events</h2>
         <button
           onClick={handleCreate}
-          className="flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+          className="flex items-center px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
         >
           <PlusIcon className="mr-2 w-5 h-5" />
           Create Event
@@ -94,6 +107,7 @@ const EventTable = () => {
           <tr>
             <th className="py-2 px-4 border-b">Title</th>
             <th className="py-2 px-4 border-b">Description</th>
+            <th className="py-2 px-4 border-b">Date</th>
             <th className="py-2 px-4 border-b">Time</th>
             <th className="py-2 px-4 border-b">Actions</th>
           </tr>
@@ -106,9 +120,10 @@ const EventTable = () => {
               <tr key={event.id}>
                 <td className="py-2 px-4 border-b">{event.title}</td>
                 <td className="py-2 px-4 border-b">{event.description}</td>
-                <td className="py-2 px-4 border-b">
-                  {new Date(event.eventDate).toLocaleDateString()} {event.startTime}
+                <td className="py-2 px-4 border-b w-fit">
+                  {formatDate(event.eventDate)}
                 </td>
+                <td className="py-2 px-4 border-b">{event.startTime} - {event.endTime}</td>
                 <td className="py-2 px-4 border-b">
                   <button
                     onClick={() => handleEdit(event.id)}
@@ -128,10 +143,10 @@ const EventTable = () => {
           </tbody>
         )}
       </table>
-      <Pagination 
-        currentPage={currentPage} 
-        totalPages={totalPages} 
-        onPageChange={handlePageChange} 
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
       />
     </div>
   );

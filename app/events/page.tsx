@@ -39,7 +39,7 @@ function Events() {
   useEffect(() => {
     const fetchEvents = async (page: number) => {
       setLoading(true);
-      const url = `${apiUrl}/events?page=${page}&limit=${eventsPerPage}`;
+      const url = `${apiUrl}/events?page=${page-1}&limit=${eventsPerPage}`;
       // console.log("Fetching events from:", url); // Log the URL being fetched
       try {
         const response = await fetch(url);

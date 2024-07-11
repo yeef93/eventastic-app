@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Sidebar from "../components/Organizer/SideBar";
+import Sidebar from "../../components/Organizer/SideBar";
 
 export const metadata: Metadata = {
-  title: "User",
-  description: "User",
+  title: "Organizer",
+  description: "Organizer",
 };
 
 export default function TeamsLayout({

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Sidebar from "../components/Organizer/SideBar";
+import Sidebar from "../../components/Organizer/SideBar";
 
 function Organizer() {
   return (
