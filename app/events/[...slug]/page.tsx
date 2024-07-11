@@ -182,6 +182,9 @@ const EventDetail = () => {
     return totalTicketPrice;
   };
 
+  const isGetTicketsButtonDisabled =
+    !selectedTicketType || ticketQuantities[selectedTicketType] === 0;
+
   return (
     <div className="py-7">
       {event.image && (
@@ -351,13 +354,17 @@ const EventDetail = () => {
             )}
 
             <button
-              onClick={isEventPast ? undefined : openGetTicketModal}
+              onClick={
+                isGetTicketsButtonDisabled || isEventPast
+                  ? undefined
+                  : openGetTicketModal
+              }
               className={`mt-8 w-full px-4 py-2 ${
-                isEventPast
+                isGetTicketsButtonDisabled || isEventPast
                   ? "bg-gray-500 cursor-not-allowed"
                   : "bg-red-500 hover:bg-red-700"
               } text-white rounded transition text-sm sm:text-base sticky-tickets-button`}
-              disabled={isEventPast}
+              disabled={isGetTicketsButtonDisabled || isEventPast}
             >
               {isEventPast ? "Sales Ended" : "Get tickets"}
             </button>

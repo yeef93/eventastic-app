@@ -1,6 +1,8 @@
+// components/EventTable.tsx
 import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/outline";
 import React, { useState, useEffect } from "react";
 import Pagination from "@/components/Pagination";
+import EventTableSkeleton from "@/components/Skeleton/EventTableSkeleton";
 
 interface Event {
   id: number;
@@ -32,10 +34,12 @@ const EventTable = () => {
   const eventsPerPage = 5;
 
   useEffect(() => {
+    const idOrganizer = 20;
+    const url = `${apiUrl}/events/organizer/${idOrganizer}`;
     const fetchEvents = async () => {
       setLoading(true);
       try {
-        const response = await fetch("https://eventastic-ol7zwytd3q-as.a.run.app/api/v1/events/organizer/20");
+        const response = await fetch(url);
         const data = await response.json();
         setEvents(data.data.events);
         setLoading(false);
@@ -46,7 +50,7 @@ const EventTable = () => {
     };
 
     fetchEvents();
-  }, []);
+  }, [apiUrl]);
 
   const handleEdit = (id: number) => {
     // Handle edit event logic here
@@ -94,31 +98,35 @@ const EventTable = () => {
             <th className="py-2 px-4 border-b">Actions</th>
           </tr>
         </thead>
-        <tbody>
-          {currentEvents.map((event) => (
-            <tr key={event.id}>
-              <td className="py-2 px-4 border-b">{event.title}</td>
-              <td className="py-2 px-4 border-b">{event.description}</td>
-              <td className="py-2 px-4 border-b">
-                {new Date(event.eventDate).toLocaleDateString()} {event.startTime}
-              </td>
-              <td className="py-2 px-4 border-b">
-                <button
-                  onClick={() => handleEdit(event.id)}
-                  className="text-yellow-500 hover:text-yellow-700 mr-2"
-                >
-                  <PencilIcon className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => handleDelete(event.id)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  <TrashIcon className="w-5 h-5" />
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+        {loading ? (
+          <EventTableSkeleton />
+        ) : (
+          <tbody>
+            {currentEvents.map((event) => (
+              <tr key={event.id}>
+                <td className="py-2 px-4 border-b">{event.title}</td>
+                <td className="py-2 px-4 border-b">{event.description}</td>
+                <td className="py-2 px-4 border-b">
+                  {new Date(event.eventDate).toLocaleDateString()} {event.startTime}
+                </td>
+                <td className="py-2 px-4 border-b">
+                  <button
+                    onClick={() => handleEdit(event.id)}
+                    className="text-yellow-500 hover:text-yellow-700 mr-2"
+                  >
+                    <PencilIcon className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(event.id)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <TrashIcon className="w-5 h-5" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        )}
       </table>
       <Pagination 
         currentPage={currentPage} 
