@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import EventListCard from "@/components/EventListCard";
+import EventListCardSkeleton from "@/components/Skeleton/EventListCardSkeleton";
 import Pagination from "@/components/Pagination"; // Adjust path as needed
 
 interface Event {
@@ -64,35 +65,35 @@ function Events() {
     setCurrentPage(page);
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   if (error) {
     return <div>{error}</div>;
   }
 
   return (
     <div className="flex flex-col justify-center gap-4 md:gap-8 px-2 md:px-4 xl:px-12 py-12">
-      {events.map((event) => (
-        <EventListCard
-          key={event.id}
-          id={event.id}
-          title={event.title}
-          description={event.description}
-          image={event.image}
-          eventDate={event.eventDate}
-          startTime={event.startTime}
-          endTime={event.endTime}
-          organizer={event.organizer}
-          location={event.location}
-          availableSeat={event.availableSeat}
-          seatLimit={event.seatLimit}
-          isFree={event.isFree}
-          ticketTypes={event.ticketTypes}
-          category={event.category}
-        />
-      ))}
+      {loading
+        ? Array.from({ length: eventsPerPage }).map((_, index) => (
+            <EventListCardSkeleton key={index} />
+          ))
+        : events.map((event) => (
+            <EventListCard
+              key={event.id}
+              id={event.id}
+              title={event.title}
+              description={event.description}
+              image={event.image}
+              eventDate={event.eventDate}
+              startTime={event.startTime}
+              endTime={event.endTime}
+              organizer={event.organizer}
+              location={event.location}
+              availableSeat={event.availableSeat}
+              seatLimit={event.seatLimit}
+              isFree={event.isFree}
+              ticketTypes={event.ticketTypes}
+              category={event.category}
+            />
+          ))}
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}

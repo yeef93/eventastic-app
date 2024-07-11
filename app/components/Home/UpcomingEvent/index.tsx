@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import EventCard from "@/components/EventCard";
-import EventCardSkeleton from "@/components/EventCardSkeleton";
+import EventCardSkeleton from "@/components/Skeleton/EventCardSkeleton";
 
 interface Event {
   id: number;

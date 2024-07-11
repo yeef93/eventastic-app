@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import events from "@/utils/events";
 import EventCard from "@/components/EventCard";
-import EventCardSkeleton from "@/components/EventCardSkeleton";
+import EventCardSkeleton from "@/components/Skeleton/EventCardSkeleton";
 
 const uniqueLocations = [
   "Any Location",
