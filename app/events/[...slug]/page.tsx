@@ -12,6 +12,7 @@ import {
 } from "@heroicons/react/outline";
 import ReviewForm from "@/app/components/Events/ReviewForm";
 import TicketModal from "@/app/components/Events/TicketModal";
+import EventDetailSkeleton from "@/components/Skeleton/EventDetailSkeleton";
 
 type Event = {
   id: number;
@@ -91,7 +92,7 @@ const EventDetail = () => {
   }, [pathname, apiUrl]); // Include apiUrl in the dependency array
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <EventDetailSkeleton />;
   }
 
   if (error) {

@@ -8,7 +8,6 @@ import {
   LockClosedIcon,
   LogoutIcon,
   PresentationChartLineIcon,
-  TicketIcon,
   UserIcon,
 } from "@heroicons/react/outline";
 import LogoutModal from "@/components/LogoutModal";
@@ -33,11 +32,9 @@ function Sidebar() {
   };
 
   const menuItems = [
-    { href: `/users/${username}/dashboard`, label: "Dashboard", icon: PresentationChartLineIcon },
-    { href: `/users/${username}/events`, label: "My events", icon: CalendarIcon },
-    { href: `/users/${username}/tickets`, label: "My tickets", icon: TicketIcon },
-    { href: `/users/${username}/profile`, label: "Profile", icon: UserIcon },
-    { href: `/users/${username}/change-password`, label: "Change password", icon: LockClosedIcon },
+    { href: `/organizer/${username}/dashboard`, label: "Dashboard", icon: PresentationChartLineIcon },
+    { href: `/organizer/${username}/wallets`, label: "My wallets", icon: CurrencyDollarIcon },
+    { href: `/organizer/${username}/events`, label: "Events", icon: CalendarIcon },
   ];
 
   return (
@@ -47,12 +44,7 @@ function Sidebar() {
         <div className="mt-2 text-center">
           <h4 className="font-semibold text-lg text-gray-700 capitalize font-poppins tracking-wide">
             James Bhatta
-          </h4>
-          <div className="flex justify-center">
-          <CurrencyDollarIcon className="w-4 h-4 mr-1 text-yellow-500"></CurrencyDollarIcon>
-          <p className=" text-sm text-yellow-500">{points} points</p>
-          </div>          
-          <p className="text-xs text-gray-500">Expired Date: {expiredDate}</p>
+          </h4>          
         </div>
       </div>
       <ul className="space-y-2 text-sm">

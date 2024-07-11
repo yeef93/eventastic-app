@@ -2,7 +2,7 @@ import React from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-const EventListCardSkeleton = () => {
+function EventListCardSkeleton(){
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col md:flex-row">
       <div className="w-full md:w-60 h-48 md:h-72">
