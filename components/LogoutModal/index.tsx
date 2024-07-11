@@ -8,7 +8,7 @@ interface LogoutModalProps {
   onConfirm: () => void;
 }
 
-const LogoutModal = ({ isOpen, onClose, onConfirm }: LogoutModalProps) => {
+function LogoutModal ({ isOpen, onClose, onConfirm }: LogoutModalProps){
   if (!isOpen) return null;
 
   return (

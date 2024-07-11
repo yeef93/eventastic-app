@@ -26,7 +26,7 @@ interface Event {
   category: string;
 }
 
-const EventTable = () => {
+function EventTable (){
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);

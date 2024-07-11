@@ -8,7 +8,7 @@ interface TicketModalProps {
   onGetTotalPrice: (totalPrice: number) => void;
 }
 
-const TicketModal: React.FC<TicketModalProps> = ({ onClose, event, onGetTotalPrice }) => {
+function TicketModal ({ onClose, event, onGetTotalPrice }:TicketModalProps) {
   const [ticketQuantities, setTicketQuantities] = useState<number[]>([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");

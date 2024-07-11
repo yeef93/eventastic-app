@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface Review {
   name: string;
@@ -9,7 +9,7 @@ interface ReviewDisplayProps {
   reviews: Review[];
 }
 
-const ReviewDisplay: React.FC<ReviewDisplayProps> = ({ reviews }) => {
+function ReviewDisplay({ reviews }: ReviewDisplayProps) {
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-4">Reviews</h2>
@@ -27,6 +27,6 @@ const ReviewDisplay: React.FC<ReviewDisplayProps> = ({ reviews }) => {
       )}
     </div>
   );
-};
+}
 
 export default ReviewDisplay;

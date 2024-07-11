@@ -3,7 +3,7 @@ import Image from "next/image";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
 
-const ReviewForm = ({ onSubmit }:any) => {
+function ReviewForm ({ onSubmit }:any) {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [review, setReview] = useState("");
