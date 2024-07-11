@@ -49,7 +49,7 @@ function UpcomingEvent() {
             "Any Category",
             ...new Set(fetchedEvents.map((event:any) => event.category)),
           ];
-          setUniqueCategories(categories);
+          // setUniqueCategories(categories);
           setLoading(false);
         }
       })
