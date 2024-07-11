@@ -3,9 +3,9 @@ import Logo from "@/public/assets/icon.png";
 
 function Footer() {
   return (
-    <footer className="flex flex-col items-center p-10 bg-slate-50 text-primary-content">
+    <footer className="  flex flex-col items-center p-10 bg-slate-50 text-primary-content">
       <Image src={Logo} alt="eventastic Logo" width={50} height={50} />
-      <aside className="text-center mt-4">
+      <aside className="text-c enter mt-4">
         <p className="font-bold">Where Every Event Shines</p>
         <p>Copyright © 2024 - All rights reserved</p>
       </aside>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import EventCard from "@/components/EventCard";
+import EventCardSkeleton from "@/components/EventCardSkeleton";
 
 interface Event {
   id: number;
@@ -31,10 +32,11 @@ function UpcomingEvent() {
   const [selectedCategory, setSelectedCategory] = useState("Any Category");
   const [selectedDay, setSelectedDay] = useState("Weekdays");
   const [uniqueCategories, setUniqueCategories] = useState(["Any Category"]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const url = `${apiUrl}/events/upcoming`;
-      console.log("Fetching events from:", url); // Log the URL being fetched
+    console.log("Fetching events from:", url); // Log the URL being fetched
     // Fetch events data from the API
     fetch(url)
       .then((response) => response.json())
@@ -45,17 +47,19 @@ function UpcomingEvent() {
           
           const categories = [
             "Any Category",
-            ...new Set(fetchedEvents.map((event) => event.category)),
+            ...new Set(fetchedEvents.map((event:any) => event.category)),
           ];
           setUniqueCategories(categories);
+          setLoading(false);
         }
       })
       .catch((error) => {
         console.error("Error fetching events:", error);
+        setLoading(false);
       });
   }, []);
 
-  const filterEvents = (event) => {
+  const filterEvents = (event:any) => {
     const now = new Date();
     const eventDate = new Date(event.eventDate);
 
@@ -126,24 +130,28 @@ function UpcomingEvent() {
         </div>
       </div>
       <div className="flex flex-wrap justify-center gap-4 md:gap-8 px-2 md:px-4 xl:px-28">
-        {filteredEvents.map((event) => (
-          <EventCard
-            key={event.id}
-            id={event.id}
-            imageUrl={event.image.imageUrl}
-            title={event.title}
-            eventDate={event.eventDate}
-            startTime={event.startTime}
-            endTime={event.endTime}
-            organizer={event.organizer}
-            location={event.location}
-            availableSeat={event.availableSeat}
-            seatLimit={event.seatLimit}
-            isFree={event.isFree}
-            ticketTypes={event.ticketTypes}
-            category={event.category}
-          />
-        ))}
+        {loading
+          ? Array.from({ length: 3 }).map((_, index) => (
+              <EventCardSkeleton key={index} />
+            ))
+          : filteredEvents.map((event) => (
+              <EventCard
+                key={event.id}
+                id={event.id}
+                imageUrl={event.image.imageUrl}
+                title={event.title}
+                eventDate={event.eventDate}
+                startTime={event.startTime}
+                endTime={event.endTime}
+                organizer={event.organizer}
+                location={event.location}
+                availableSeat={event.availableSeat}
+                seatLimit={event.seatLimit}
+                isFree={event.isFree}
+                ticketTypes={event.ticketTypes}
+                category={event.category}
+              />
+            ))}
       </div>
     </>
   );
