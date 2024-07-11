@@ -38,7 +38,7 @@ function Sidebar() {
   ];
 
   return (
-    <div className="w-80 bg-white h-screen p-6">
+    <div className="w-80 bg-white h-auto min-h-svh p-6">
       <div className="flex flex-col items-center pt-12 mb-5">
         <Image className="h-12 rounded-full" src="" alt="James Bhatta" />
         <div className="mt-2 text-center">

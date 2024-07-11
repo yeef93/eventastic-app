@@ -2,7 +2,7 @@ import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/outline";
 import React, { useState, useEffect } from "react";
 import Pagination from "@/components/Pagination";
 import EventTableSkeleton from "@/components/Skeleton/EventTableSkeleton";
-import { useRouter,usePathname } from 'next/navigation';
+import { useRouter, usePathname } from "next/navigation";
 
 interface Event {
   id: number;
@@ -31,7 +31,7 @@ const EventTable = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const eventsPerPage = 5;
+  const eventsPerPage = 10;
   const router = useRouter();
   const pathname = usePathname();
 
@@ -82,11 +82,21 @@ const EventTable = () => {
   // Function to format date
   const formatDate = (eventDate: string) => {
     const date = new Date(eventDate);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  // Function to format time to 12-hour format with AM/PM
+  const formatTime = (timeString: string) => {
+    const time = new Date(`1970-01-01T${timeString}`);
+    return time.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
     });
   };
 
@@ -109,6 +119,7 @@ const EventTable = () => {
             <th className="py-2 px-4 border-b">Description</th>
             <th className="py-2 px-4 border-b">Date</th>
             <th className="py-2 px-4 border-b">Time</th>
+            <th className="py-2 px-4 border-b">Total Attendees</th>
             <th className="py-2 px-4 border-b">Actions</th>
           </tr>
         </thead>
@@ -120,11 +131,16 @@ const EventTable = () => {
               <tr key={event.id}>
                 <td className="py-2 px-4 border-b">{event.title}</td>
                 <td className="py-2 px-4 border-b">{event.description}</td>
-                <td className="py-2 px-4 border-b w-fit">
+                <td className="py-2 px-4 border-b text-nowrap">
                   {formatDate(event.eventDate)}
                 </td>
-                <td className="py-2 px-4 border-b">{event.startTime} - {event.endTime}</td>
-                <td className="py-2 px-4 border-b">
+                <td className="py-2 px-4 border-b text-nowrap">
+                  {formatTime(event.startTime)} - {formatTime(event.endTime)}
+                </td>
+                <td className="py-2 px-4 border-b text-center">
+                  {event.seatLimit-event.availableSeat}
+                </td>
+                <td className="py-2 px-4 border-b text-nowrap">
                   <button
                     onClick={() => handleEdit(event.id)}
                     className="text-yellow-500 hover:text-yellow-700 mr-2"

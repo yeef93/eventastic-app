@@ -16,7 +16,7 @@ const EventTableSkeleton = () => {
         <div className="animate-pulse h-4 bg-gray-300 rounded"></div>
       </td>
       <td className="py-2 px-4 border-b">
-        <div className="flex space-x-2">
+        <div className="flex justify-center space-x-2">
           <div className="animate-pulse h-4 w-4 bg-gray-300 rounded"></div>
           <div className="animate-pulse h-4 w-4 bg-gray-300 rounded"></div>
         </div>

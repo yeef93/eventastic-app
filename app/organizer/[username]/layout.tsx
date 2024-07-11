@@ -14,7 +14,7 @@ export default function TeamsLayout({
   return (
     <section className="flex flex-row bg-gray-100 h-auto">
       <Sidebar />
-      <div className="pt-12 px-4 w-full">{children}</div>
+      <div className="py-12 px-4 w-full">{children}</div>
     </section>
   );
 }
