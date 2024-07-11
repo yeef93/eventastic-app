@@ -5,7 +5,7 @@ import MenuProvider from "@/context/MenuProvider";
 import { AuthProvider } from "@/context/AuthContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { ReduxProvider } from "../store/redux-provider";
+// import { ReduxProvider } from "../store/redux-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
