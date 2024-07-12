@@ -26,7 +26,7 @@ interface Event {
   category: string;
 }
 
-function EventTable (){
+function EventTable() {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
@@ -127,35 +127,42 @@ function EventTable (){
           <EventTableSkeleton />
         ) : (
           <tbody>
-            {currentEvents.map((event) => (
-              <tr key={event.id}>
-                <td className="py-2 px-4 border-b">{event.title}</td>
-                <td className="py-2 px-4 border-b">{event.description}</td>
-                <td className="py-2 px-4 border-b text-nowrap">
-                  {formatDate(event.eventDate)}
-                </td>
-                <td className="py-2 px-4 border-b text-nowrap">
-                  {formatTime(event.startTime)} - {formatTime(event.endTime)}
-                </td>
-                <td className="py-2 px-4 border-b text-center">
-                  {event.seatLimit-event.availableSeat}
-                </td>
-                <td className="py-2 px-4 border-b text-nowrap">
-                  <button
-                    onClick={() => handleEdit(event.id)}
-                    className="text-yellow-500 hover:text-yellow-700 mr-2"
-                  >
-                    <PencilIcon className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(event.id)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <TrashIcon className="w-5 h-5" />
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {currentEvents.map((event) => {
+              const totalAttendees = event.seatLimit - event.availableSeat;
+              const isEditable = totalAttendees === 0;
+
+              return (
+                <tr key={event.id}>
+                  <td className="py-2 px-4 border-b">{event.title}</td>
+                  <td className="py-2 px-4 border-b">{event.description}</td>
+                  <td className="py-2 px-4 border-b text-nowrap">
+                    {formatDate(event.eventDate)}
+                  </td>
+                  <td className="py-2 px-4 border-b text-nowrap">
+                    {formatTime(event.startTime)} - {formatTime(event.endTime)}
+                  </td>
+                  <td className="py-2 px-4 border-b text-center">
+                    {totalAttendees}
+                  </td>
+                  <td className="py-2 px-4 border-b text-nowrap">
+                    <button
+                      onClick={() => handleEdit(event.id)}
+                      className={`text-yellow-500 hover:text-yellow-700 mr-2 ${!isEditable && "opacity-50 cursor-not-allowed"}`}
+                      disabled={!isEditable}
+                    >
+                      <PencilIcon className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(event.id)}
+                      className={`text-red-500 hover:text-red-700 ${!isEditable && "opacity-50 cursor-not-allowed"}`}
+                      disabled={!isEditable}
+                    >
+                      <TrashIcon className="w-5 h-5" />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         )}
       </table>
