@@ -1,9 +1,10 @@
 "use client";
+
 import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Modal from "../Modal";
-import { useAuth } from "@/context/AuthContext";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 interface LoginModalProps {
@@ -12,9 +13,7 @@ interface LoginModalProps {
   openSignUp: () => void;
 }
 
-function LoginModal ({ onClose, onSuccess, openSignUp }: LoginModalProps){
-  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-  const { login } = useAuth();
+function LoginModal({ onClose, onSuccess, openSignUp }: LoginModalProps) {
   const router = useRouter();
   const [loginError, setLoginError] = useState<string | null>(null);
 
@@ -29,31 +28,28 @@ function LoginModal ({ onClose, onSuccess, openSignUp }: LoginModalProps){
   });
 
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
-    const data = {
-      usernameOrEmail: values.email,
-      password: values.password,
-    };
+    setLoginError(null);
+    console.log(values.email, values.password)
     try {
-      const response = await fetch(`${apiUrl}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: values.email,
+        password: values.password,
       });
-      if (!response.ok) throw new Error("Login failed");
-
-      const userData = { email: values.email, avatar: "/public/assets/avatar.png" };
-      login(userData);
-      onSuccess();
-      onClose();
-      router.push(`/`);
+  
+      if (result?.error) {
+        throw new Error(result.error);
+      } else {
+        onSuccess();
+        onClose();
+        // router.push(`/organizer/xx/events/create`);
+      }
     } catch (error) {
-      console.error("Error during login:", error);
+      console.error("Sign-in error:", error);
       setLoginError("Your email and password combination is incorrect. Please try again.");
-    } finally {
-      setSubmitting(false);
     }
+  
+    setSubmitting(false);
   };
 
   return (
@@ -71,7 +67,7 @@ function LoginModal ({ onClose, onSuccess, openSignUp }: LoginModalProps){
           <h2 className="text-2xl font-bold mb-4 text-purple-800 text-center">Log In</h2>
           <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
             {({ isSubmitting }) => (
-              <Form>                
+              <Form>
                 <div className="mb-4">
                   <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
                     Email
@@ -127,6 +123,6 @@ function LoginModal ({ onClose, onSuccess, openSignUp }: LoginModalProps){
       </div>
     </Modal>
   );
-};
+}
 
 export default LoginModal;

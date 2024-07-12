@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useFormik, Formik, FieldArray, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { useAuth } from '@/context/AuthContext';
 
 interface TicketType {
   ticketName: string;
@@ -26,7 +27,7 @@ interface FormValues {
 
 const validationSchema = Yup.object().shape({
   eventName: Yup.string().required('Event Name is required'),
-  eventDate: Yup.date().required('Event Date is required'),
+  eventDate: Yup.date().required('Event Date is required').min(new Date().toISOString().split("T")[0], 'Event Date cannot be in the past'),
   startTime: Yup.string().required('Start Time is required'),
   endTime: Yup.string().required('End Time is required'),
   description: Yup.string().required('Description is required'),
@@ -47,14 +48,26 @@ const validationSchema = Yup.object().shape({
   }),
 });
 
+const getCurrentTime = () => {
+  const now = new Date();
+  return now.toTimeString().split(' ')[0].slice(0, 5); // HH:mm format
+};
+
+const getOneHourLaterTime = () => {
+  const now = new Date();
+  now.setHours(now.getHours() + 1);
+  return now.toTimeString().split(' ')[0].slice(0, 5); // HH:mm format
+};
+
 const CreateEventForm: React.FC = () => {
   const [isFree, setIsFree] = useState(false);
+  const {user}= useAuth()
 
   const initialValues: FormValues = {
     eventName: '',
-    eventDate: '',
-    startTime: '',
-    endTime: '',
+    eventDate: new Date().toISOString().split('T')[0], // Default to today
+    startTime: getCurrentTime(), // Default to current time
+    endTime: getOneHourLaterTime(), // Default to one hour later
     description: '',
     image: null,
     category: '',
@@ -71,15 +84,56 @@ const CreateEventForm: React.FC = () => {
     ],
   };
 
+  const handleSubmit = async (values: FormValues) => {
+    console.log(values);
+
+    const formData = new FormData();
+    formData.append('title', values.eventName);
+    formData.append('description', values.description);
+    formData.append('categoryId', "1"); // You need to adjust this based on your category logic
+    formData.append('location', values.location);
+    formData.append('venue', values.venue);
+    formData.append('imageId', "1"); // You need to adjust this based on your image logic
+    formData.append('eventDate', values.eventDate);
+    formData.append('startTime', values.startTime);
+    formData.append('endTime', values.endTime);
+    formData.append('isFree', values.isFree.toString());
+  
+    values.tickets.forEach((ticket, index) => {
+      formData.append(`ticketTypeCreateRequestDtos[${index}].name`, ticket.ticketName);
+      formData.append(`ticketTypeCreateRequestDtos[${index}].description`, ticket.ticketDescription);
+      formData.append(`ticketTypeCreateRequestDtos[${index}].price`, ticket.ticketPrice.toString());
+      formData.append(`ticketTypeCreateRequestDtos[${index}].seatLimit`, ticket.ticketLimit.toString());
+    });
+  
+    try {
+      const response = await fetch('https://eventastic-ol7zwytd3q-as.a.run.app/api/v1/events/create', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': user ? `Bearer ${user.token}` : '',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-6 text-center">Create Event</h2>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={(values) => {
-          console.log(values);
-        }}
+        onSubmit={handleSubmit}
       >
         {({ values, setFieldValue }) => (
           <Form>
