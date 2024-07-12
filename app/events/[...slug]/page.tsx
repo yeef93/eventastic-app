@@ -37,7 +37,7 @@ type Event = {
   description: string;
 };
 
-const EventDetail = () => {
+function EventDetail () {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const router = useRouter();
   const pathname = usePathname();
