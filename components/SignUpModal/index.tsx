@@ -65,7 +65,7 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
       }
 
       console.log("Registration successful");
-      login({ avatar: "/assets/avatar.png", email: values.email }); // Ensure both avatar and email are provided
+      // login({ avatar: "/assets/avatar.png", email: values.email }); // Ensure both avatar and email are provided
       onSuccess();
       onClose();
     } catch (error) {
