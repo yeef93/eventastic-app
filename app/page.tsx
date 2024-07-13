@@ -7,6 +7,7 @@ import EventCreationCTA from "@/app/components/Home/EventCreationCTA";
 import UpcomingEvent from "./components/Home/UpcomingEvent";
 import EventbyLocation from "./components/Home/EventbyLocation";
 
+
 export default function Home() {
   return (
     <>

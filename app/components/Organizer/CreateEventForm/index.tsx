@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { useFormik, Formik, FieldArray, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { useAuth } from '@/context/AuthContext';
 
 interface TicketType {
   ticketName: string;
@@ -61,7 +60,6 @@ const getOneHourLaterTime = () => {
 
 const CreateEventForm: React.FC = () => {
   const [isFree, setIsFree] = useState(false);
-  const {user}= useAuth()
 
   const initialValues: FormValues = {
     eventName: '',
@@ -112,7 +110,7 @@ const CreateEventForm: React.FC = () => {
         body: formData,
         headers: {
           'Accept': 'application/json',
-          'Authorization': user ? `Bearer ${user.token}` : '',
+          // 'Authorization': user ? `Bearer ${user.token}` : '',
         },
       });
   

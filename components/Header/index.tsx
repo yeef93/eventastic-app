@@ -1,20 +1,49 @@
 "use client";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import Logo from "@/public/assets/logo.png";
 import MenuContext from "@/context/MenuContext";
 import Menu from "../Menu";
 import SignUpModal from "@/components/SignUpModal";
 import LoginModal from "@/components/LoginModal";
-import { useAuth } from "@/context/AuthContext";
+import { useSession } from "next-auth/react";
 
 function Header() {
   const [showing, setShowing] = useState<boolean>(false);
   const [isSignupModalOpen, setIsSignupModalOpen] = useState<boolean>(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
+  const [userData, setUserData] = useState<any>(null);
 
-  const { isAuthenticated, user, logout } = useAuth();
   const { setShowing: setGlobalMenuShowing } = useContext(MenuContext);
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (session) {
+      const fetchUserData = async () => {
+        try {
+          console.log("tes token",session.user.token)
+          const response = await fetch("https://eventastic-ol7zwytd3q-as.a.run.app/api/v1/users/me", {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${session.user.token}`,
+            },
+          });
+
+          if (response.ok) {
+            const json = await response.json();
+            console.log(json.data);
+            setUserData(json.data); // Store user data
+          } else {
+            console.error("Failed to fetch user data");
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      };
+
+      fetchUserData();
+    }
+  }, [session]);
 
   const handleClickButton = () => {
     setShowing((prev) => !prev);
@@ -50,53 +79,19 @@ function Header() {
             </span>
           </a>
           <div className="flex md:order-2 space-x-3 md:space-x-0 relative">
-            {isAuthenticated ? (
-              <div className="relative group">
+            {status === "loading" ? (
+              <span className="loader" />
+            ) : session ? (
+              <div className="relative group flex items-center justify-center">
                 <Image
-                  src={user?.avatar || "/assets/avatar.png"}
+                  src={userData?.avatar?.imageUrl || "/assets/avatar.png"}
                   width={32}
                   height={32}
                   alt="User Avatar"
                   className="rounded-full border-2 w-8 h-8 cursor-pointer"
                 />
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    25 Points
-                  </a>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    2.779 XP
-                  </a>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Profil Saya
-                  </a>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Daftar Pesanan
-                  </a>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Pengaturan
-                  </a>
-                  <button
-                    onClick={logout}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Keluar
-                  </button>
-                </div>
+                <span className="ml-2 text-gray-900">{userData?.username} nama</span>
+                {/* User menu dropdown can go here */}
               </div>
             ) : (
               <>

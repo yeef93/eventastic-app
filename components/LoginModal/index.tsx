@@ -29,7 +29,7 @@ function LoginModal({ onClose, onSuccess, openSignUp }: LoginModalProps) {
 
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     setLoginError(null);
-    console.log(values.email, values.password)
+    // console.log(values.email, values.password)
     try {
       const result = await signIn("credentials", {
         redirect: false,
@@ -42,7 +42,7 @@ function LoginModal({ onClose, onSuccess, openSignUp }: LoginModalProps) {
       } else {
         onSuccess();
         onClose();
-        // router.push(`/organizer/xx/events/create`);
+        router.push(`/`);
       }
     } catch (error) {
       console.error("Sign-in error:", error);
