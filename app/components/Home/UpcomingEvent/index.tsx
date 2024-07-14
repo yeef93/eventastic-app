@@ -31,7 +31,9 @@ function UpcomingEvent() {
   const [events, setEvents] = useState<Event[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("Any Category");
   const [selectedDay, setSelectedDay] = useState("Weekdays");
-  const [uniqueCategories, setUniqueCategories] = useState<string[]>(["Any Category"]);
+  const [uniqueCategories, setUniqueCategories] = useState<string[]>([
+    "Any Category",
+  ]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -44,10 +46,12 @@ function UpcomingEvent() {
         if (data.success) {
           const fetchedEvents = data.data.events;
           setEvents(fetchedEvents);
-          
+
           const categories = [
             "Any Category",
-            ...Array.from(new Set(fetchedEvents.map((event: Event) => event.category))),
+            ...Array.from(
+              new Set(fetchedEvents.map((event: Event) => event.category))
+            ),
           ] as string[];
           setUniqueCategories(categories);
           setLoading(false);
@@ -64,7 +68,10 @@ function UpcomingEvent() {
     const eventDate = new Date(event.eventDate);
 
     // Filter by category
-    if (selectedCategory !== "Any Category" && event.category !== selectedCategory) {
+    if (
+      selectedCategory !== "Any Category" &&
+      event.category !== selectedCategory
+    ) {
       return false;
     }
 
@@ -130,28 +137,36 @@ function UpcomingEvent() {
         </div>
       </div>
       <div className="flex flex-wrap justify-center gap-4 md:gap-8 px-2 md:px-4 xl:px-28">
-        {loading
-          ? Array.from({ length: 3 }).map((_, index) => (
-              <EventCardSkeleton key={index} />
-            ))
-          : filteredEvents.map((event) => (
-              <EventCard
-                key={event.id}
-                id={event.id}
-                imageUrl={event.image.imageUrl}
-                title={event.title}
-                eventDate={event.eventDate}
-                startTime={event.startTime}
-                endTime={event.endTime}
-                organizer={event.organizer}
-                location={event.location}
-                availableSeat={event.availableSeat}
-                seatLimit={event.seatLimit}
-                isFree={event.isFree}
-                ticketTypes={event.ticketTypes}
-                category={event.category}
-              />
-            ))}
+        {loading ? (
+          Array.from({ length: 3 }).map((_, index) => (
+            <EventCardSkeleton key={index} />
+          ))
+        ) : filteredEvents.length > 0 ? (
+          filteredEvents.map((event) => (
+            <EventCard
+              key={event.id}
+              id={event.id}
+              imageUrl={event.image.imageUrl}
+              title={event.title}
+              eventDate={event.eventDate}
+              startTime={event.startTime}
+              endTime={event.endTime}
+              organizer={event.organizer}
+              location={event.location}
+              availableSeat={event.availableSeat}
+              seatLimit={event.seatLimit}
+              isFree={event.isFree}
+              ticketTypes={event.ticketTypes}
+              category={event.category}
+            />
+          ))
+        ) : (
+          <div className="flex flex-col items-center justify-center my-8">
+            <p className="text-lg font-semibold text-gray-700">
+              Sorry, there are no events results that match these filters.
+            </p>
+          </div>
+        )}
       </div>
     </>
   );
