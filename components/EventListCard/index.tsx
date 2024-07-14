@@ -104,7 +104,7 @@ function EventListCard({
     <Link
       href={`/events/${title.replace(/\s+/g, "-").toLowerCase()}-ticket-${id}`}
     >
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col md:flex-row">
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col md:flex-row mb-4">
         <div className="w-full md:w-60 h-48 md:h-72">
           {image?.imageUrl && (
             <Image

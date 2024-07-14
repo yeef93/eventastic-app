@@ -29,6 +29,7 @@ const days = ["Weekdays", "Today", "Tomorrow", "This Week", "This Month"];
 function UpcomingEvent() {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const [events, setEvents] = useState<Event[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("Any Category");
   const [selectedDay, setSelectedDay] = useState("Weekdays");
   const [uniqueCategories, setUniqueCategories] = useState<string[]>([
@@ -37,28 +38,38 @@ function UpcomingEvent() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const url = `${apiUrl}/events/upcoming?size=6`;
-    console.log("Fetching events from:", url); // Log the URL being fetched
-    // Fetch events data from the API
-    fetch(url)
+    // Fetch all events to populate categories
+    const allEventsUrl = `${apiUrl}/events`;
+    fetch(allEventsUrl)
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
-          const fetchedEvents = data.data.events;
-          setEvents(fetchedEvents);
+          const allEvents = data.data.events;
+          setEvents(allEvents);
 
           const categories = [
             "Any Category",
             ...Array.from(
-              new Set(fetchedEvents.map((event: Event) => event.category))
+              new Set(allEvents.map((event: Event) => event.category))
             ),
           ] as string[];
           setUniqueCategories(categories);
-          setLoading(false);
         }
       })
+      .catch((error) => console.error("Error fetching all events:", error));
+
+    // Fetch upcoming events
+    const upcomingEventsUrl = `${apiUrl}/events/upcoming?size=6`;
+    fetch(upcomingEventsUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          setUpcomingEvents(data.data.events);
+        }
+        setLoading(false);
+      })
       .catch((error) => {
-        console.error("Error fetching events:", error);
+        console.error("Error fetching upcoming events:", error);
         setLoading(false);
       });
   }, [apiUrl]);
@@ -95,7 +106,7 @@ function UpcomingEvent() {
     return true;
   };
 
-  const filteredEvents = events.filter(filterEvents);
+  const filteredEvents = upcomingEvents.filter(filterEvents);
 
   return (
     <>

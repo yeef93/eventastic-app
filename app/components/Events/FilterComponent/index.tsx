@@ -1,63 +1,108 @@
-// import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-// function FilterComponent({ filters, setFilters }: any) {
-//   const [categories, setCategories] = useState([]);
-//   const [locations, setLocations] = useState([]);
+interface FilterComponentProps {
+  categories: string[];
+  locations: string[];
+  onFilterChange: (filters: {
+    categories: string[];
+    locations: string[];
+    prices: string[];
+  }) => void;
+}
 
-//   useEffect(() => {
-//     // Fetch categories from API
-//     fetch("your_category_api_url")
-//       .then((response) => response.json())
-//       .then((data) => setCategories(data))
-//       .catch((error) => console.error("Error fetching categories:", error));
+function FilterComponent({
+  categories,
+  locations,
+  onFilterChange,
+}: FilterComponentProps) {
+  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState<string[]>([]);
+  const [selectedPrice, setSelectedPrice] = useState<string[]>([]);
 
-//     // Fetch locations from API (e.g., for Indonesia)
-//     fetch("your_location_api_url")
-//       .then((response) => response.json())
-//       .then((data) => setLocations(data))
-//       .catch((error) => console.error("Error fetching locations:", error));
-//   }, []);
+  const handleCategoryChange = (category: string) => {
+    const updatedCategories = selectedCategory.includes(category)
+      ? selectedCategory.filter((cat) => cat !== category)
+      : [...selectedCategory, category];
+    setSelectedCategory(updatedCategories);
+    onFilterChange({
+      categories: updatedCategories,
+      locations: selectedLocation,
+      prices: selectedPrice,
+    });
+  };
 
-//   const handleDurationChange = (event:any) => {
-//     setFilters({ ...filters, duration: event.target.value });
-//   };
+  const handleLocationChange = (location: string) => {
+    const updatedLocations = selectedLocation.includes(location)
+      ? selectedLocation.filter((loc) => loc !== location)
+      : [...selectedLocation, location];
+    setSelectedLocation(updatedLocations);
+    onFilterChange({
+      categories: selectedCategory,
+      locations: updatedLocations,
+      prices: selectedPrice,
+    });
+  };
 
-//   const handleTopicChange = (event:any) => {
-//     setFilters({ ...filters, topic: event.target.value });
-//   };
+  const handlePriceChange = (price: string) => {
+    const updatedPrices = selectedPrice.includes(price)
+      ? selectedPrice.filter((p) => p !== price)
+      : [...selectedPrice, price];
+    setSelectedPrice(updatedPrices);
+    onFilterChange({
+      categories: selectedCategory,
+      locations: selectedLocation,
+      prices: updatedPrices,
+    });
+  };
 
-//   return (
-//     <div className="w-full sm:w-1/4 p-4 border-r border-gray-200 py-10 sticky top-0 h-screen">
-//       <div className="mb-4">
-//         <h3 className="text-lg font-bold mb-2">Category</h3>
-//         {categories.map((category) => (
-//           <div key={category.id}>
-//             <input
-//               type="checkbox"
-//               name="duration"
-//               value={category.value}
-//               onChange={handleDurationChange}
-//             />
-//             <label className="ml-2">{category.label}</label>
-//           </div>
-//         ))}
-//       </div>
-//       <div>
-//         <h3 className="text-lg font-bold mb-2">Location</h3>
-//         {locations.map((location) => (
-//           <div key={location.id}>
-//             <input
-//               type="checkbox"
-//               name="topic"
-//               value={location.value}
-//               onChange={handleTopicChange}
-//             />
-//             <label className="ml-2">{location.label}</label>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
+  return (
+    <div className="filter-component">
+      <div className="filter-section mb-4 border-t-2 px-4">
+        <h3 className="font-semibold text-lg py-2">Category</h3>
+        {categories.map((category) => (
+          <div key={category} className="filter-option mb-1">
+            <input
+              type="checkbox"
+              id={`category-${category}`}
+              checked={selectedCategory.includes(category)}
+              onChange={() => handleCategoryChange(category)}
+            />
+            <label htmlFor={`category-${category}`}>{category}</label>
+          </div>
+        ))}
+      </div>
 
-// export default FilterComponent;
+      <div className="filter-section mb-4 border-t-2 px-4">
+        <h3 className="font-semibold text-lg py-2">Location</h3>
+        {locations.map((location) => (
+          <div key={location} className="filter-option mb-1">
+            <input
+              type="checkbox"
+              id={`location-${location}`}
+              checked={selectedLocation.includes(location)}
+              onChange={() => handleLocationChange(location)}
+            />
+            <label htmlFor={`location-${location}`}>{location}</label>
+          </div>
+        ))}
+      </div>
+
+      <div className="filter-section mb-4 border-t-2 px-4">
+        <h3 className="font-semibold text-lg py-2">Price</h3>
+        {["Free", "Paid"].map((price) => (
+          <div key={price} className="filter-option mb-1">
+            <input
+              type="checkbox"
+              id={`price-${price}`}
+              checked={selectedPrice.includes(price)}
+              onChange={() => handlePriceChange(price)}
+            />
+            <label htmlFor={`price-${price}`}>{price}</label>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default FilterComponent;

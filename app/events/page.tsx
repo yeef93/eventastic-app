@@ -1,8 +1,10 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import EventListCard from "@/components/EventListCard";
 import EventListCardSkeleton from "@/components/Skeleton/EventListCardSkeleton";
-import Pagination from "@/components/Pagination"; // Adjust path as needed
+import Pagination from "@/components/Pagination";
+import FilterComponent from "../components/Events/FilterComponent";
 
 interface Event {
   id: number;
@@ -26,6 +28,12 @@ interface Event {
   category: string;
 }
 
+interface Filters {
+  categories: string[];
+  locations: string[];
+  prices: string[];
+}
+
 function Events() {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const [events, setEvents] = useState<Event[]>([]);
@@ -33,23 +41,51 @@ function Events() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  
-  const eventsPerPage = 10; // Number of events to fetch per page
+  const [categories, setCategories] = useState<string[]>([]);
+  const [locations, setLocations] = useState<string[]>([]);
+  const [filters, setFilters] = useState<Filters>({
+    categories: [],
+    locations: [],
+    prices: [],
+  });
+
+  const eventsPerPage = 10;
 
   useEffect(() => {
-    const fetchEvents = async (page: number) => {
+    const fetchEvents = async (page: number, filters: Filters) => {
       setLoading(true);
-      const url = `${apiUrl}/events?page=${page-1}&limit=${eventsPerPage}`;
-      // console.log("Fetching events from:", url); // Log the URL being fetched
+
+      const categoryFilter = filters.categories.length > 0 ? `&category=${filters.categories.join(",")}` : "";
+      const locationFilter = filters.locations.length > 0 ? `&location=${filters.locations.join(",")}` : "";
+      const priceFilter = filters.prices.length > 0
+        ? filters.prices.includes("Free") && !filters.prices.includes("Paid")
+          ? "&isFree=true"
+          : filters.prices.includes("Paid") && !filters.prices.includes("Free")
+          ? "&isFree=false"
+          : ""
+        : "";
+
+      const url = `${apiUrl}/events?page=${page - 1}&limit=${eventsPerPage}&order=eventDate&direction=desc${categoryFilter}${locationFilter}${priceFilter}`;
+
       try {
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error("Failed to fetch events");
         }
         const data = await response.json();
-        console.log("Fetched events data:", data);
         setEvents(data.data.events || []);
         setTotalPages(data.data.totalPages || 1);
+
+        // Extract categories and locations from fetched events
+        const fetchedCategories = Array.from(
+          new Set(data.data.events.map((event: Event) => event.category))
+        ) as string[];
+        const fetchedLocations = Array.from(
+          new Set(data.data.events.map((event: Event) => event.location))
+        ) as string[];
+        setCategories(fetchedCategories);
+        setLocations(fetchedLocations);
+
         setLoading(false);
       } catch (err: any) {
         console.error("Fetching error:", err);
@@ -58,24 +94,51 @@ function Events() {
       }
     };
 
-    fetchEvents(currentPage);
-  }, [apiUrl, currentPage]); // Include fetchEvents, apiUrl, and currentPage in the dependency array
+    fetchEvents(currentPage, filters);
+  }, [apiUrl, currentPage, filters]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+
+  const handleFilterChange = (newFilters: Filters) => {
+    setFilters(newFilters);
+    setCurrentPage(1); // Reset to first page on filter change
+  };
+
+  const filteredEvents = events.filter((event) => {
+    const categoryMatch =
+      filters.categories.length === 0 || filters.categories.includes(event.category);
+    const locationMatch =
+      filters.locations.length === 0 || filters.locations.includes(event.location);
+    const priceMatch =
+      filters.prices.length === 0 ||
+      (filters.prices.includes("Free") && event.isFree) ||
+      (filters.prices.includes("Paid") && !event.isFree);
+    
+    return categoryMatch && locationMatch && priceMatch;
+  });
 
   if (error) {
     return <div>{error}</div>;
   }
 
   return (
-    <div className="flex flex-col justify-center gap-4 md:gap-8 px-2 md:px-4 xl:px-12 py-12">
-      {loading
-        ? Array.from({ length: eventsPerPage }).map((_, index) => (
+    <div className="flex flex-row px-2 md:px-4 xl:px-12 py-12">
+      <div className="w-1/4 sticky top-20 h-screen bg-white p-4">
+        <FilterComponent
+          categories={categories}
+          locations={locations}
+          onFilterChange={handleFilterChange}
+        />
+      </div>
+      <div>
+        {loading ? (
+          Array.from({ length: eventsPerPage }).map((_, index) => (
             <EventListCardSkeleton key={index} />
           ))
-        : events.map((event) => (
+        ) : filteredEvents.length > 0 ? (
+          filteredEvents.map((event) => (
             <EventListCard
               key={event.id}
               id={event.id}
@@ -93,12 +156,16 @@ function Events() {
               ticketTypes={event.ticketTypes}
               category={event.category}
             />
-          ))}
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-      />
+          ))
+        ) : (
+          <div>Sorry, there are no event results that match these filters.</div>
+        )}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      </div>
     </div>
   );
 }
