@@ -31,7 +31,7 @@ function UpcomingEvent() {
   const [events, setEvents] = useState<Event[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("Any Category");
   const [selectedDay, setSelectedDay] = useState("Weekdays");
-  const [uniqueCategories, setUniqueCategories] = useState(["Any Category"]);
+  const [uniqueCategories, setUniqueCategories] = useState<string[]>(["Any Category"]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -47,9 +47,9 @@ function UpcomingEvent() {
           
           const categories = [
             "Any Category",
-            ...new Set(fetchedEvents.map((event:any) => event.category)),
-          ];
-          // setUniqueCategories(categories);
+            ...Array.from(new Set(fetchedEvents.map((event: Event) => event.category))),
+          ] as string[];
+          setUniqueCategories(categories);
           setLoading(false);
         }
       })
@@ -57,9 +57,9 @@ function UpcomingEvent() {
         console.error("Error fetching events:", error);
         setLoading(false);
       });
-  }, []);
+  }, [apiUrl]);
 
-  const filterEvents = (event:any) => {
+  const filterEvents = (event: Event) => {
     const now = new Date();
     const eventDate = new Date(event.eventDate);
 

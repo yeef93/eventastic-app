@@ -2,7 +2,7 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Modal from "../Modal";
-import { useAuth } from "@/context/AuthContext";
+import { signIn } from "next-auth/react";
 
 interface SignUpModalProps {
   onClose: () => void;
@@ -38,8 +38,6 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
     role: Yup.string().required("Role is required"),
   });
 
-  const { login } = useAuth();
-
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     const requestData = {
       username: values.username,
@@ -65,7 +63,18 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
       }
 
       console.log("Registration successful");
-      // login({ avatar: "/assets/avatar.png", email: values.email }); // Ensure both avatar and email are provided
+
+      // Automatically log in the user after successful registration
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: values.email,
+        password: values.password,
+      });
+
+      if (result?.error) {
+        throw new Error(result.error);
+      }
+
       onSuccess();
       onClose();
     } catch (error) {

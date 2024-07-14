@@ -104,8 +104,9 @@ const CreateEventForm: React.FC = () => {
       formData.append(`ticketTypeCreateRequestDtos[${index}].seatLimit`, ticket.ticketLimit.toString());
     });
   
+    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     try {
-      const response = await fetch('https://eventastic-ol7zwytd3q-as.a.run.app/api/v1/events/create', {
+      const response = await fetch(`${apiUrl}/events/create`, {
         method: 'POST',
         body: formData,
         headers: {

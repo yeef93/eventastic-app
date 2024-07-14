@@ -6,6 +6,7 @@ import * as Yup from "yup";
 import Modal from "../Modal";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Cookies from 'js-cookie';
 
 interface LoginModalProps {
   onClose: () => void;

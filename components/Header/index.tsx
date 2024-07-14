@@ -16,17 +16,19 @@ function Header() {
 
   const { setShowing: setGlobalMenuShowing } = useContext(MenuContext);
   const { data: session, status } = useSession();
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   useEffect(() => {
     if (session) {
       const fetchUserData = async () => {
         try {
-          console.log("tes token",session.user.token)
-          const response = await fetch("https://eventastic-ol7zwytd3q-as.a.run.app/api/v1/users/me", {
+          console.log("tes token", session.user.token);
+          const response = await fetch(`${apiUrl}/users/me`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${session.user.token}`,
             },
+            credentials: 'include', // Include cookies
           });
 
           if (response.ok) {
