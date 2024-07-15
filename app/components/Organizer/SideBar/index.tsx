@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import {
@@ -11,14 +11,54 @@ import {
   UserIcon,
 } from "@heroicons/react/outline";
 import LogoutModal from "@/components/LogoutModal";
+import { useSession, signOut } from "next-auth/react";
 
 function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
+  const { data: session } = useSession();
   const username = pathname.split('/')[2]; // Extract username from pathname
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  const points = 100;
-  const expiredDate = "2024/12/02";
+  const [avatarUrl, setAvatarUrl] = useState("/assets/avatar.png"); // Default avatar
+  const [fullName, setFullName] = useState("");
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  useEffect(() => {
+    if (session) {
+      const fetchUserData = async () => {
+        try {
+          const response = await fetch(`${apiUrl}/users/me`, {
+            headers: {
+              'Authorization': `Bearer ${session.user.token}`
+            }
+          });
+          const data = await response.json();
+          if (data.success) {
+            setAvatarUrl(data.data.avatar.imageUrl || "/assets/avatar.png"); // Use default if not available
+            setFullName(data.data.fullName);
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      };
+
+      const fetchUserPoints = async () => {
+        try {
+          const response = await fetch(`${apiUrl}/users/me/points`, {
+            headers: {
+              'Authorization': `Bearer ${session.user.token}`
+            }
+          });
+          const data = await response.json();
+        } catch (error) {
+          console.error("Error fetching user points:", error);
+        }
+      };
+
+      fetchUserData();
+      fetchUserPoints();
+    }
+  }, [session, apiUrl]);
 
   const handleLogoutClick = (e:any) => {
     e.preventDefault();
@@ -40,10 +80,16 @@ function Sidebar() {
   return (
     <div className="w-80 bg-white h-auto min-h-svh p-6">
       <div className="flex flex-col items-center pt-12 mb-5">
-        <Image className="h-12 rounded-full" src="" alt="James Bhatta" />
+      <Image
+          className="h-24 w-24 rounded-full"
+          src={avatarUrl}
+          alt={fullName || "User Avatar"}
+          width={96}
+          height={96}
+        />
         <div className="mt-2 text-center">
           <h4 className="font-semibold text-lg text-gray-700 capitalize font-poppins tracking-wide">
-            James Bhatta
+          {fullName}
           </h4>          
         </div>
       </div>
