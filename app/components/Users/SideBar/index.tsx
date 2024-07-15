@@ -112,7 +112,9 @@ function Sidebar() {
             <CreditCardIcon className="w-4 h-4 mr-1 text-yellow-500" />
             <p className="text-sm text-yellow-500">Rp. {formatPoints(points)} points</p>
           </div>
-          <p className="text-xs text-gray-500">Expired Date: {expiredDate}</p>
+          {points > 0 && (
+            <p className="text-xs text-gray-500">Expired Date: {expiredDate}</p>
+          )}
         </div>
       </div>
       <ul className="space-y-2 text-sm">

@@ -3,7 +3,6 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import jwt, { JwtPayload } from "jsonwebtoken";
 import {
   CalendarIcon,
   CurrencyDollarIcon,
