@@ -7,7 +7,6 @@ import Menu from "../Menu";
 import SignUpModal from "@/components/SignUpModal";
 import LoginModal from "@/components/LoginModal";
 import { useSession, signOut } from "next-auth/react";
-import jwt, { JwtPayload } from "jsonwebtoken";
 
 function Header() {
   const [showing, setShowing] = useState<boolean>(false);
@@ -96,9 +95,6 @@ function Header() {
     };
   }, [isDropdownOpen]);
 
-  const decodedToken = session?.user?.token ? jwt.decode(session.user.token) as JwtPayload : null;
-  const isOrganizer = decodedToken?.scope?.includes("ROLE_ORGANIZER");
-
   return (
     <>
       <nav className="bg-white fixed w-full z-20 top-0 start-0 border-b border-gray-200">
@@ -135,14 +131,12 @@ function Header() {
                     >
                       Profile
                     </a>
-                    {isOrganizer && (
-                      <a
-                        href="/organizer/fara/dashboard"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        Organizer
-                      </a>
-                    )}
+                    <a
+                      href="/organizer/fara/dashboard"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Organizer
+                    </a>
                     <button
                       onClick={() => signOut()}
                       className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"

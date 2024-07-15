@@ -1,7 +1,9 @@
 "use client";
 import React, { useState } from 'react';
-import { useFormik, Formik, FieldArray, Form, Field, ErrorMessage } from 'formik';
+import { Formik, FieldArray, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import categories from '@/utils/categories';
+import { useSession } from "next-auth/react";
 
 interface TicketType {
   ticketName: string;
@@ -58,8 +60,10 @@ const getOneHourLaterTime = () => {
   return now.toTimeString().split(' ')[0].slice(0, 5); // HH:mm format
 };
 
-const CreateEventForm: React.FC = () => {
+function CreateEventForm() {
   const [isFree, setIsFree] = useState(false);
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const { data: session } = useSession();
 
   const initialValues: FormValues = {
     eventName: '',
@@ -85,40 +89,40 @@ const CreateEventForm: React.FC = () => {
   const handleSubmit = async (values: FormValues) => {
     console.log(values);
 
-    const formData = new FormData();
-    formData.append('title', values.eventName);
-    formData.append('description', values.description);
-    formData.append('categoryId', "1"); // You need to adjust this based on your category logic
-    formData.append('location', values.location);
-    formData.append('venue', values.venue);
-    formData.append('imageId', "1"); // You need to adjust this based on your image logic
-    formData.append('eventDate', values.eventDate);
-    formData.append('startTime', values.startTime);
-    formData.append('endTime', values.endTime);
-    formData.append('isFree', values.isFree.toString());
-  
-    values.tickets.forEach((ticket, index) => {
-      formData.append(`ticketTypeCreateRequestDtos[${index}].name`, ticket.ticketName);
-      formData.append(`ticketTypeCreateRequestDtos[${index}].description`, ticket.ticketDescription);
-      formData.append(`ticketTypeCreateRequestDtos[${index}].price`, ticket.ticketPrice.toString());
-      formData.append(`ticketTypeCreateRequestDtos[${index}].seatLimit`, ticket.ticketLimit.toString());
-    });
-  
-    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const formData = {
+      title: values.eventName,
+      description: values.description,
+      categoryId: values.category, // Assuming this is the selected category ID
+      location: values.location,
+      venue: values.venue,
+      imageId: "1", // Adjust as necessary
+      eventDate: values.eventDate,
+      startTime: values.startTime,
+      endTime: values.endTime,
+      isFree: values.isFree.toString(),
+      ticketTypeCreateRequestDtos: values.tickets.map(ticket => ({
+        name: ticket.ticketName,
+        description: ticket.ticketDescription,
+        price: Number(ticket.ticketPrice),
+        seatLimit: Number(ticket.ticketLimit),
+      })),
+    };
+
     try {
       const response = await fetch(`${apiUrl}/events/create`, {
         method: 'POST',
-        body: formData,
         headers: {
           'Accept': 'application/json',
-          // 'Authorization': user ? `Bearer ${user.token}` : '',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.user?.token}`,
         },
+        body: JSON.stringify(formData),
       });
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       const data = await response.json();
       console.log(data);
     } catch (error) {
@@ -137,6 +141,7 @@ const CreateEventForm: React.FC = () => {
         {({ values, setFieldValue }) => (
           <Form>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              {/* Fields for event details */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Event Name*</label>
                 <Field
@@ -197,12 +202,14 @@ const CreateEventForm: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Category*</label>
-                <Field
-                  type="text"
-                  className="mt-1 p-2 w-full border rounded"
-                  placeholder="Category"
-                  name="category"
-                />
+                <Field as="select" name="category" className="mt-1 p-2 w-full border rounded">
+                  <option value="">Select Category</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </Field>
                 <ErrorMessage name="category" component="div" className="text-red-500 text-sm" />
               </div>
               <div>
@@ -225,108 +232,117 @@ const CreateEventForm: React.FC = () => {
                 />
                 <ErrorMessage name="venue" component="div" className="text-red-500 text-sm" />
               </div>
-              <div className="col-span-1 md:col-span-2 flex items-center">
+              <div className="col-span-1 md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700">Is Free Event?</label>
                 <Field
                   type="checkbox"
-                  id="isFree"
                   name="isFree"
-                  checked={isFree}
+                  checked={values.isFree}
                   onChange={() => {
                     setIsFree(!isFree);
                     setFieldValue('isFree', !isFree);
+                    if (isFree) {
+                      setFieldValue('tickets', []);
+                    } else {
+                      setFieldValue('tickets', [
+                        {
+                          ticketName: '',
+                          ticketDescription: '',
+                          ticketPrice: '',
+                          ticketLimit: '',
+                        },
+                      ]);
+                    }
                   }}
-                  className="mr-2"
                 />
-                <label htmlFor="isFree" className="text-sm font-medium text-gray-700">
-                  Free Event
-                </label>
               </div>
-            </div>
-
-            {!values.isFree && (
-              <FieldArray name="tickets">
-                {({ push, remove }) => (
-                  <div>
-                    <h3 className="text-lg font-semibold mb-4">Ticket Types</h3>
-                    {values.tickets.map((ticket, index) => (
-                      <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 border-b pb-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">Ticket Name*</label>
-                          <Field
-                            type="text"
-                            className="mt-1 p-2 w-full border rounded"
-                            placeholder="Ticket Name"
-                            name={`tickets.${index}.ticketName`}
-                          />
-                          <ErrorMessage name={`tickets.${index}.ticketName`} component="div" className="text-red-500 text-sm" />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">Ticket Description*</label>
-                          <Field
-                            as="textarea"
-                            className="mt-1 p-2 w-full border rounded"
-                            placeholder="Ticket Description"
-                            name={`tickets.${index}.ticketDescription`}
-                          />
-                          <ErrorMessage name={`tickets.${index}.ticketDescription`} component="div" className="text-red-500 text-sm" />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">Ticket Price*</label>
-                          <Field
-                            type="number"
-                            className="mt-1 p-2 w-full border rounded"
-                            placeholder="Ticket Price"
-                            name={`tickets.${index}.ticketPrice`}
-                          />
-                          <ErrorMessage name={`tickets.${index}.ticketPrice`} component="div" className="text-red-500 text-sm" />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">Ticket Limit*</label>
-                          <Field
-                            type="number"
-                            className="mt-1 p-2 w-full border rounded"
-                            placeholder="Ticket Limit"
-                            name={`tickets.${index}.ticketLimit`}
-                          />
-                          <ErrorMessage name={`tickets.${index}.ticketLimit`} component="div" className="text-red-500 text-sm" />
-                        </div>
-                        <div className="col-span-1 md:col-span-2 flex justify-end">
-                          <button
-                            type="button"
-                            onClick={() => remove(index)}
-                            className="py-2 px-4 bg-red-500 hover:bg-red-700 text-white font-semibold rounded-lg"
-                          >
-                            Remove Ticket
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                    <div className="col-span-1 md:col-span-2 flex justify-end">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          push({
+              {!isFree && (
+                <div className="col-span-1 md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700">Ticket Types</label>
+                  <FieldArray name="tickets">
+                    {({ push, remove }) => (
+                      <>
+                        {values.tickets.map((ticket, index) => (
+                          <div key={index} className="mb-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700">Ticket Name*</label>
+                                <Field
+                                  type="text"
+                                  className="mt-1 p-2 w-full border rounded"
+                                  placeholder="Ticket Name"
+                                  name={`tickets[${index}].ticketName`}
+                                />
+                                <ErrorMessage name={`tickets[${index}].ticketName`} component="div" className="text-red-500 text-sm" />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700">Ticket Description*</label>
+                                <Field
+                                  type="text"
+                                  className="mt-1 p-2 w-full border rounded"
+                                  placeholder="Ticket Description"
+                                  name={`tickets[${index}].ticketDescription`}
+                                />
+                                <ErrorMessage name={`tickets[${index}].ticketDescription`} component="div" className="text-red-500 text-sm" />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700">Ticket Price*</label>
+                                <Field
+                                  type="number"
+                                  className="mt-1 p-2 w-full border rounded"
+                                  placeholder="Ticket Price"
+                                  name={`tickets[${index}].ticketPrice`}
+                                />
+                                <ErrorMessage name={`tickets[${index}].ticketPrice`} component="div" className="text-red-500 text-sm" />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700">Ticket Limit*</label>
+                                <Field
+                                  type="number"
+                                  className="mt-1 p-2 w-full border rounded"
+                                  placeholder="Ticket Limit"
+                                  name={`tickets[${index}].ticketLimit`}
+                                />
+                                <ErrorMessage name={`tickets[${index}].ticketLimit`} component="div" className="text-red-500 text-sm" />
+                              </div>
+                            </div>
+                            <div className="flex justify-between">
+                              <button
+                                type="button"
+                                className="text-red-500 text-sm"
+                                onClick={() => remove(index)}
+                              >
+                                Remove Ticket
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                        <button
+                          type="button"
+                          className="mt-2 p-2 w-full bg-blue-500 text-white rounded"
+                          onClick={() => push({
                             ticketName: '',
                             ticketDescription: '',
                             ticketPrice: '',
                             ticketLimit: '',
-                          })
-                        }
-                        className="py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-semibold rounded-lg"
-                      >
-                        Add Ticket
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </FieldArray>
-            )}
-            <button
-              type="submit"
-              className="w-full py-2 px-4 bg-red-500 hover:bg-red-700 text-white font-semibold rounded-lg"
-            >
-              Create Event
-            </button>
+                          })}
+                        >
+                          Add Ticket
+                        </button>
+                      </>
+                    )}
+                  </FieldArray>
+                </div>
+              )}
+            </div>
+            <div className="text-center">
+              <button
+                type="submit"
+                className="mt-4 p-2 w-full bg-green-500 text-white rounded"
+              >
+                Create Event
+              </button>
+            </div>
           </Form>
         )}
       </Formik>

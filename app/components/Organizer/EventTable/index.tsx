@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import Pagination from "@/components/Pagination";
 import EventTableSkeleton from "@/components/Skeleton/EventTableSkeleton";
 import { useRouter, usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 interface Event {
   id: number;
@@ -28,6 +30,7 @@ interface Event {
 
 function EventTable() {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const { data: session } = useSession();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -35,32 +38,36 @@ function EventTable() {
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {
-    const idOrganizer = 20;
-    const url = `${apiUrl}/events/organizer/${idOrganizer}`;
+  useEffect(() => {    
+    const token = session?.user?.token; // Get token from session
+    const decodedToken = jwt.decode(token || "") as JwtPayload | null;
+    const username = decodedToken?.sub; // Extract username from token
+    console.log(username);
+    if (!username) return; // Early return if username is not available
+
+    const url = `${apiUrl}/events?organizer=${username}&order=id&direction=desc`;
+    
     const fetchEvents = async () => {
       setLoading(true);
       try {
         const response = await fetch(url);
         const data = await response.json();
         setEvents(data.data.events);
-        setLoading(false);
       } catch (error) {
         console.error("Error fetching events:", error);
+      } finally {
         setLoading(false);
       }
     };
 
     fetchEvents();
-  }, [apiUrl]);
+  }, [apiUrl, session]);
 
   const handleEdit = (id: number) => {
-    // Handle edit event logic here
     console.log("Edit event with id:", id);
   };
 
   const handleDelete = (id: number) => {
-    // Handle delete event logic here
     console.log("Delete event with id:", id);
   };
 
@@ -173,6 +180,6 @@ function EventTable() {
       />
     </div>
   );
-};
+}
 
 export default EventTable;
