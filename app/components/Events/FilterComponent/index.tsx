@@ -60,14 +60,14 @@ function FilterComponent({
       <div className="filter-section mb-4 border-t-2 px-4">
         <h3 className="font-semibold text-lg py-2">Category</h3>
         {categories.map((category) => (
-          <div key={category} className="filter-option mb-1">
+          <div key={category} className="filter-option mb-1 text-sm">
             <input
               type="checkbox"
               id={`category-${category}`}
               checked={selectedCategory.includes(category)}
               onChange={() => handleCategoryChange(category)}
             />
-            <label htmlFor={`category-${category}`}>{category}</label>
+            <label htmlFor={`category-${category}`} className=" px-2">{category}</label>
           </div>
         ))}
       </div>
@@ -75,14 +75,14 @@ function FilterComponent({
       <div className="filter-section mb-4 border-t-2 px-4">
         <h3 className="font-semibold text-lg py-2">Location</h3>
         {locations.map((location) => (
-          <div key={location} className="filter-option mb-1">
+          <div key={location} className="filter-option mb-1 text-sm">
             <input
               type="checkbox"
               id={`location-${location}`}
               checked={selectedLocation.includes(location)}
               onChange={() => handleLocationChange(location)}
             />
-            <label htmlFor={`location-${location}`}>{location}</label>
+            <label htmlFor={`location-${location}`} className=" px-2">{location}</label>
           </div>
         ))}
       </div>
@@ -90,14 +90,14 @@ function FilterComponent({
       <div className="filter-section mb-4 border-t-2 px-4">
         <h3 className="font-semibold text-lg py-2">Price</h3>
         {["Free", "Paid"].map((price) => (
-          <div key={price} className="filter-option mb-1">
+          <div key={price} className="filter-option mb-1 text-sm">
             <input
               type="checkbox"
               id={`price-${price}`}
               checked={selectedPrice.includes(price)}
               onChange={() => handlePriceChange(price)}
             />
-            <label htmlFor={`price-${price}`}>{price}</label>
+            <label htmlFor={`price-${price}`} className=" px-2">{price}</label>
           </div>
         ))}
       </div>

@@ -52,6 +52,33 @@ function Events() {
   const eventsPerPage = 10;
 
   useEffect(() => {
+    const fetchFilters = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/events`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch event filters");
+        }
+        const data = await response.json();
+
+        // Extract categories and locations from fetched events
+        const fetchedCategories = Array.from(
+          new Set(data.data.events.map((event: Event) => event.category))
+        ) as string[];
+        const fetchedLocations = Array.from(
+          new Set(data.data.events.map((event: Event) => event.location))
+        ) as string[];
+        setCategories(fetchedCategories);
+        setLocations(fetchedLocations);
+      } catch (err: any) {
+        console.error("Fetching filters error:", err);
+        setError(err.message);
+      }
+    };
+
+    fetchFilters();
+  }, [apiUrl]);
+
+  useEffect(() => {
     const fetchEvents = async (page: number, filters: Filters) => {
       setLoading(true);
 
@@ -75,17 +102,6 @@ function Events() {
         const data = await response.json();
         setEvents(data.data.events || []);
         setTotalPages(data.data.totalPages || 1);
-
-        // Extract categories and locations from fetched events
-        const fetchedCategories = Array.from(
-          new Set(data.data.events.map((event: Event) => event.category))
-        ) as string[];
-        const fetchedLocations = Array.from(
-          new Set(data.data.events.map((event: Event) => event.location))
-        ) as string[];
-        setCategories(fetchedCategories);
-        setLocations(fetchedLocations);
-
         setLoading(false);
       } catch (err: any) {
         console.error("Fetching error:", err);
@@ -106,19 +122,6 @@ function Events() {
     setCurrentPage(1); // Reset to first page on filter change
   };
 
-  const filteredEvents = events.filter((event) => {
-    const categoryMatch =
-      filters.categories.length === 0 || filters.categories.includes(event.category);
-    const locationMatch =
-      filters.locations.length === 0 || filters.locations.includes(event.location);
-    const priceMatch =
-      filters.prices.length === 0 ||
-      (filters.prices.includes("Free") && event.isFree) ||
-      (filters.prices.includes("Paid") && !event.isFree);
-    
-    return categoryMatch && locationMatch && priceMatch;
-  });
-
   if (error) {
     return <div>{error}</div>;
   }
@@ -137,8 +140,8 @@ function Events() {
           Array.from({ length: eventsPerPage }).map((_, index) => (
             <EventListCardSkeleton key={index} />
           ))
-        ) : filteredEvents.length > 0 ? (
-          filteredEvents.map((event) => (
+        ) : events.length > 0 ? (
+          events.map((event) => (
             <EventListCard
               key={event.id}
               id={event.id}
