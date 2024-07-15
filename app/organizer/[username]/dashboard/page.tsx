@@ -15,19 +15,13 @@ function Dashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "unauthenticated" || !session?.user?.token) {
+    if (status === "unauthenticated") {
       router.push("/");
-      return;
-    }
-
-    const token = session.user.token;
-    if (token) {
-      const decodedToken = jwt.decode(token) as JwtPayload | null;
-      if (!decodedToken?.scope?.includes("ROLE_ORGANIZER")) {
+    } else if (status === "authenticated") {
+      const decodedToken = jwt.decode(session?.user?.token || "") as JwtPayload | null;
+      if (!decodedToken || decodedToken.scope !== "ROLE_ORGANIZER") {
         router.push("/");
       }
-    } else {
-      router.push("/");
     }
   }, [status, session, router]);
 
@@ -35,10 +29,9 @@ function Dashboard() {
     return <div>Loading...</div>;
   }
 
-  const token = session?.user?.token;
-  if (token) {
-    const decodedToken = jwt.decode(token) as JwtPayload | null;
-    if (decodedToken?.scope?.includes("ROLE_ORGANIZER")) {
+  if (session) {
+    const decodedToken = jwt.decode(session.user.token) as JwtPayload | null;
+    if (decodedToken?.scope === "ROLE_ORGANIZER") {
       return (
         <div>
           <div className="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-4">
