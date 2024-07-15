@@ -3,9 +3,9 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import EventTable from "@/app/components/Organizer/EventTable";
+import CreateEventForm from "@/app/components/Organizer/CreateEventForm";
 
-function Events() {
+function Edit() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -20,15 +20,14 @@ function Events() {
   }
 
   if (session) {
-
     return (
-      <div className=" h-fit">
-        <EventTable />
-      </div>
+      <>
+        <CreateEventForm />
+      </>
     );
   }
 
   return null;
 }
 
-export default Events;
+export default Edit;

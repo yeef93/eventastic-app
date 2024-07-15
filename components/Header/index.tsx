@@ -1,18 +1,21 @@
 "use client";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Logo from "@/public/assets/logo.png";
 import MenuContext from "@/context/MenuContext";
 import Menu from "../Menu";
 import SignUpModal from "@/components/SignUpModal";
 import LoginModal from "@/components/LoginModal";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 
 function Header() {
   const [showing, setShowing] = useState<boolean>(false);
   const [isSignupModalOpen, setIsSignupModalOpen] = useState<boolean>(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
   const [userData, setUserData] = useState<any>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { setShowing: setGlobalMenuShowing } = useContext(MenuContext);
   const { data: session, status } = useSession();
@@ -22,7 +25,7 @@ function Header() {
     if (session) {
       const fetchUserData = async () => {
         try {
-          console.log("tes token", session.user.token);
+          // console.log("tes token", session.user.token);
           const response = await fetch(`${apiUrl}/users/me`, {
             method: "GET",
             headers: {
@@ -33,7 +36,7 @@ function Header() {
 
           if (response.ok) {
             const json = await response.json();
-            console.log(json.data);
+            // console.log(json.data);
             setUserData(json.data); // Store user data
           } else {
             console.error("Failed to fetch user data");
@@ -70,6 +73,28 @@ function Header() {
     setIsLoginModalOpen(false);
   };
 
+  const handleAvatarClick = () => {
+    setIsDropdownOpen((prev) => !prev);
+  };
+
+  const handleOutsideClick = (event: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setIsDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    } else {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [isDropdownOpen]);
+
   return (
     <>
       <nav className="bg-white fixed w-full z-20 top-0 start-0 border-b border-gray-200">
@@ -91,9 +116,35 @@ function Header() {
                   height={32}
                   alt="User Avatar"
                   className="rounded-full border-2 w-8 h-8 cursor-pointer"
+                  onClick={handleAvatarClick}
                 />
-                <span className="ml-2 text-gray-900">{userData?.username} nama</span>
-                {/* User menu dropdown can go here */}
+                <span className="ml-2 text-gray-900">{userData?.username}</span>
+                {isDropdownOpen && (
+                  <div
+                    ref={dropdownRef}
+                    className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-20"
+                    style={{ top: '40px' }} // Adjust this value to position the dropdown below the avatar
+                  >
+                    <a
+                      href="/users/fara/dashboard"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Profile
+                    </a>
+                    <a
+                      href="/organizer/fara/dashboard"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Organizer
+                    </a>
+                    <button
+                      onClick={() => signOut()}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <>
