@@ -127,15 +127,15 @@ function Events() {
   }
 
   return (
-    <div className="flex flex-row px-2 md:px-4 xl:px-12 py-12">
-      <div className="w-1/4 sticky top-20 h-screen bg-white p-4">
+    <div className="flex flex-col md:flex-row px-2 md:px-4 xl:px-12 py-12">
+      <div className="w-full md:w-1/4 md:sticky md:top-20 xl:h-screen md:h-fit bg-white p-4">
         <FilterComponent
           categories={categories}
           locations={locations}
           onFilterChange={handleFilterChange}
         />
       </div>
-      <div>
+      <div className="w-full md:w-3/4 mt-4 md:mt-0">
         {loading ? (
           Array.from({ length: eventsPerPage }).map((_, index) => (
             <EventListCardSkeleton key={index} />
