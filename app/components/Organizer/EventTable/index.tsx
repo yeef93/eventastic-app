@@ -44,9 +44,7 @@ function EventTable() {
     const username = decodedToken?.sub; // Extract username from token
     console.log(username);
     if (!username) return; // Early return if username is not available
-
-    const url = `${apiUrl}/events?organizer=${username}&order=id&direction=desc`;
-    
+    const url = `${apiUrl}/events?organizer=${username}&order=id&direction=desc`;    
     const fetchEvents = async () => {
       setLoading(true);
       try {
