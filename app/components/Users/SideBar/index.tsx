@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import {
   CalendarIcon,
   CreditCardIcon,
+  DocumentDuplicateIcon,
   LockClosedIcon,
   LogoutIcon,
   PresentationChartLineIcon,
@@ -18,11 +19,13 @@ function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const { data: session } = useSession();
-  const username = pathname.split('/')[2];
+  const username = pathname.split("/")[2];
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("/assets/avatar.png"); // Default avatar
   const [fullName, setFullName] = useState("");
+  const [bio, setBio] = useState("");
   const [points, setPoints] = useState<number>(0);
+  const [refCode, setRefCode] = useState("");
   const [expiredDate, setExpiredDate] = useState<string>("");
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -32,13 +35,15 @@ function Sidebar() {
         try {
           const response = await fetch(`${apiUrl}/users/me`, {
             headers: {
-              'Authorization': `Bearer ${session.user.token}`
-            }
+              Authorization: `Bearer ${session.user.token}`,
+            },
           });
           const data = await response.json();
           if (data.success) {
             setAvatarUrl(data.data.avatar.imageUrl || "/assets/avatar.png"); // Use default if not available
             setFullName(data.data.fullName);
+            setBio(data.data.bio);
+            setRefCode(data.data.ownedRefCode);
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -49,17 +54,19 @@ function Sidebar() {
         try {
           const response = await fetch(`${apiUrl}/users/me/points`, {
             headers: {
-              'Authorization': `Bearer ${session.user.token}`
-            }
+              Authorization: `Bearer ${session.user.token}`,
+            },
           });
           const data = await response.json();
           if (data.success) {
             setPoints(data.data.points);
-            setExpiredDate(new Date(data.data.expiresAt).toLocaleString("en-US", {
-              day: '2-digit',
-              month: 'short',
-              year: 'numeric',
-            }));
+            setExpiredDate(
+              new Date(data.data.expiresAt).toLocaleString("en-US", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })
+            );
           }
         } catch (error) {
           console.error("Error fetching user points:", error);
@@ -83,14 +90,32 @@ function Sidebar() {
   };
 
   const formatPoints = (points: number) => {
-    return new Intl.NumberFormat('id-ID', { minimumFractionDigits: 2 }).format(points);
+    return new Intl.NumberFormat("id-ID", { minimumFractionDigits: 2 }).format(
+      points
+    );
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(refCode);
+    alert("Referral code copied to clipboard");
   };
 
   const menuItems = [
-    { href: `/users/${username}/dashboard`, label: "Dashboard", icon: PresentationChartLineIcon },
-    { href: `/users/${username}/events`, label: "My events", icon: CalendarIcon },
-    { href: `/users/${username}/profile`, label: "Profile", icon: UserIcon },
-    { href: `/users/${username}/change-password`, label: "Change password", icon: LockClosedIcon },
+    {
+      href: `/users/${username}/dashboard`,
+      label: "Dashboard",
+      icon: PresentationChartLineIcon,
+    },
+    {
+      href: `/users/${username}/events`,
+      label: "My events",
+      icon: CalendarIcon,
+    },
+    {
+      href: `/users/${username}/change-password`,
+      label: "Change password",
+      icon: LockClosedIcon,
+    },
   ];
 
   return (
@@ -107,13 +132,28 @@ function Sidebar() {
           <h4 className="font-semibold text-lg text-gray-700 capitalize font-poppins tracking-wide">
             {fullName}
           </h4>
+          <p className="text-md text-gray-500 capitalize">{bio}</p>
           <div className="flex justify-center">
             <CreditCardIcon className="w-4 h-4 mr-1 text-yellow-500" />
-            <p className="text-sm text-yellow-500">Rp. {formatPoints(points)} points</p>
+            <p className="text-sm text-yellow-500">
+              Rp. {formatPoints(points)} points
+            </p>
           </div>
           {points > 0 && (
             <p className="text-xs text-gray-500">Expired Date: {expiredDate}</p>
           )}
+        </div>
+        <div className=" mt-4 text-center ">
+          <p className="text-gray-500">Referral Code</p>
+          <div className="flex justify-between items-center border border-yellow-300 bg-yellow-100 p-2 rounded-md">
+            <span className="font-bold text-sm">{refCode}</span>
+            <button
+              onClick={handleCopy}
+              className="text-blue-600 hover:underline text-sm"
+            >
+              <DocumentDuplicateIcon className="w-4 h-4 mr-1 text-yellow-500" />
+            </button>
+          </div>
         </div>
       </div>
       <ul className="space-y-2 text-sm">

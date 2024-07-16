@@ -63,7 +63,8 @@ function Events() {
 
   return (
     <div className=" h-auto">
-      <h1 className="text-2xl font-bold mb-4">Events and Tickets</h1>
+      <h1 className="text-2xl font-bold">My events</h1>
+      <p className=" mb-4">Events and Tickets</p>
       {error && <p className="text-red-500">{error}</p>}
       {Object.keys(events).length > 0 ? (
         Object.keys(events).map((eventTitle) => (
