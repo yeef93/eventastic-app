@@ -141,7 +141,7 @@ function ProfileSettings() {
         const data = await response.json();
         if (data.success) {
           alert("Profile updated successfully!");
-          router.push(`/users/${name}/dashboard`);
+          window.location.href =`/users/${userName}/dashboard`;
         } else {
           alert("Failed to update profile. Please try again.");
         }
