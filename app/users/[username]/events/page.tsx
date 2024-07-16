@@ -62,36 +62,38 @@ function Events() {
   );
 
   return (
-    <div className=" h-auto">
-      <h1 className="text-2xl font-bold">My events</h1>
-      <p className=" mb-4">Events and Tickets</p>
-      {error && <p className="text-red-500">{error}</p>}
-      {Object.keys(events).length > 0 ? (
-        Object.keys(events).map((eventTitle) => (
-          <div key={eventTitle} className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">{eventTitle}</h2>
-            <ul>
-              {events[eventTitle].map((ticket) => (
-                <li key={ticket.id} className="mb-2 border p-2 rounded">
-                  <p>
-                    <strong>Ticket Type:</strong> {ticket.ticketType}
-                  </p>
-                  <p>
-                    <strong>Ticket Code:</strong> {ticket.ticketCode}
-                  </p>
-                  <p>
-                    <strong>Issued At:</strong>{" "}
-                    {new Date(ticket.issuedAt).toLocaleString()}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))
-      ) : (
-        <p>No tickets available.</p>
-      )}
-    </div>
+    <ProtectedLayout>
+      <div className=" h-auto">
+        <h1 className="text-2xl font-bold">My events</h1>
+        <p className=" mb-4">Events and Tickets</p>
+        {error && <p className="text-red-500">{error}</p>}
+        {Object.keys(events).length > 0 ? (
+          Object.keys(events).map((eventTitle) => (
+            <div key={eventTitle} className="mb-6">
+              <h2 className="text-xl font-semibold mb-2">{eventTitle}</h2>
+              <ul>
+                {events[eventTitle].map((ticket) => (
+                  <li key={ticket.id} className="mb-2 border p-2 rounded">
+                    <p>
+                      <strong>Ticket Type:</strong> {ticket.ticketType}
+                    </p>
+                    <p>
+                      <strong>Ticket Code:</strong> {ticket.ticketCode}
+                    </p>
+                    <p>
+                      <strong>Issued At:</strong>{" "}
+                      {new Date(ticket.issuedAt).toLocaleString()}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        ) : (
+          <p>No tickets available.</p>
+        )}
+      </div>
+    </ProtectedLayout>
   );
 }
 

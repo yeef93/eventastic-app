@@ -18,7 +18,7 @@ interface Event {
   endTime: string;
   organizer: string;
   location: string;
-  availableSeat: number;
+  seatAvailability: number;
   seatLimit: number;
   isFree: boolean;
   ticketTypes: {
@@ -44,7 +44,7 @@ function EventTable() {
     const username = decodedToken?.sub; // Extract username from token
     console.log(username);
     if (!username) return; // Early return if username is not available
-    const url = `${apiUrl}/events?organizer=${username}&order=id&direction=desc`;    
+    const url = `${apiUrl}/events?organizer=${username}&order=eventDate&direction=desc`;    
     const fetchEvents = async () => {
       setLoading(true);
       try {
@@ -133,7 +133,7 @@ function EventTable() {
         ) : (
           <tbody>
             {currentEvents.map((event) => {
-              const totalAttendees = event.seatLimit - event.availableSeat;
+              const totalAttendees = event.seatLimit - event.seatAvailability;
               const isEditable = totalAttendees === 0;
 
               return (

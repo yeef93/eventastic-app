@@ -19,6 +19,7 @@ function Sidebar() {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("/assets/avatar.png"); // Default avatar
   const [fullName, setFullName] = useState("");
+  const [bio, setBio] = useState("");
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   useEffect(() => {
@@ -34,6 +35,7 @@ function Sidebar() {
           if (data.success) {
             setAvatarUrl(data.data.avatar.imageUrl || "/assets/avatar.png"); // Use default if not available
             setFullName(data.data.fullName);
+            setBio(data.data.bio);
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -88,7 +90,8 @@ function Sidebar() {
         <div className="mt-2 text-center">
           <h4 className="font-semibold text-lg text-gray-700 capitalize font-poppins tracking-wide">
           {fullName}
-          </h4>          
+          </h4>    
+          <p className="text-md text-gray-500 capitalize">{bio}</p>      
         </div>
       </div>
       <ul className="space-y-2 text-sm">

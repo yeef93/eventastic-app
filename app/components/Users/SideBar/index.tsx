@@ -8,6 +8,7 @@ import {
   DocumentDuplicateIcon,
   LockClosedIcon,
   LogoutIcon,
+  PencilIcon,
   PresentationChartLineIcon,
   TicketIcon,
   UserIcon,
@@ -121,13 +122,21 @@ function Sidebar() {
   return (
     <div className="w-80 bg-white h-auto min-h-screen p-6">
       <div className="flex flex-col items-center pt-12 mb-5">
-        <Image
-          className="h-24 w-24 rounded-full"
-          src={avatarUrl}
-          alt={fullName || "User Avatar"}
-          width={96}
-          height={96}
-        />
+        <div className="relative">
+          <Image
+            className="h-24 w-24 rounded-full"
+            src={avatarUrl}
+            alt={fullName || "User Avatar"}
+            width={96}
+            height={96}
+          />
+          <a
+            href={`/users/${username}/edit-profile`}
+            className="absolute bottom-0 right-0 p-1 bg-white rounded-full border-2"
+          >
+            <PencilIcon className="w-4 h-4 text-slate-700" />
+          </a>
+        </div>
         <div className="mt-2 text-center">
           <h4 className="font-semibold text-lg text-gray-700 capitalize font-poppins tracking-wide">
             {fullName}
