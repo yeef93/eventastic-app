@@ -5,10 +5,8 @@ import { useRouter, usePathname } from "next/navigation";
 import {
   CalendarIcon,
   CurrencyDollarIcon,
-  LockClosedIcon,
   LogoutIcon,
   PresentationChartLineIcon,
-  UserIcon,
 } from "@heroicons/react/outline";
 import LogoutModal from "@/components/LogoutModal";
 import { useSession, signOut } from "next-auth/react";

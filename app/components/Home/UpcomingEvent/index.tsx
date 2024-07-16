@@ -14,7 +14,7 @@ interface Event {
   endTime: string;
   organizer: string;
   location: string;
-  availableSeat: number;
+  seatAvailability: number;
   seatLimit: number;
   isFree: boolean;
   ticketTypes: {
@@ -24,86 +24,61 @@ interface Event {
   category: string;
 }
 
-const days = ["Weekdays", "Today", "Tomorrow", "This Week", "This Month"];
-
 function UpcomingEvent() {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const [events, setEvents] = useState<Event[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("Any Category");
-  const [selectedDay, setSelectedDay] = useState("Weekdays");
-  const [uniqueCategories, setUniqueCategories] = useState<string[]>([
-    "Any Category",
-  ]);
+  const [uniqueCategories, setUniqueCategories] = useState<string[]>(["Any Category"]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Fetch all events to populate categories
-    const allEventsUrl = `${apiUrl}/events`;
-    fetch(allEventsUrl)
-      .then((response) => response.json())
-      .then((data) => {
+    const fetchAllEvents = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/events`);
+        const data = await response.json();
         if (data.success) {
-          const allEvents = data.data.events;
+          const allEvents: Event[] = data.data.events;
           setEvents(allEvents);
-
-          const categories = [
-            "Any Category",
-            ...Array.from(
-              new Set(allEvents.map((event: Event) => event.category))
-            ),
-          ] as string[];
+          const categories = ["Any Category", ...new Set(allEvents.map((event) => event.category))];
           setUniqueCategories(categories);
         }
-      })
-      .catch((error) => console.error("Error fetching all events:", error));
+      } catch (error) {
+        console.error("Error fetching all events:", error);
+      }
+    };
 
     // Fetch upcoming events
-    const upcomingEventsUrl = `${apiUrl}/events/upcoming?size=6`;
-    fetch(upcomingEventsUrl)
-      .then((response) => response.json())
-      .then((data) => {
+    const fetchUpcomingEvents = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/events/upcoming?size=6`);
+        const data = await response.json();
         if (data.success) {
           setUpcomingEvents(data.data.events);
         }
-        setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error fetching upcoming events:", error);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchAllEvents();
+    fetchUpcomingEvents();
   }, [apiUrl]);
 
-  const filterEvents = (event: Event) => {
+  const filterEvents = (event: Event): boolean => {
     const now = new Date();
     const eventDate = new Date(event.eventDate);
 
     // Filter by category
-    if (
-      selectedCategory !== "Any Category" &&
-      event.category !== selectedCategory
-    ) {
+    if (selectedCategory !== "Any Category" && event.category !== selectedCategory) {
       return false;
     }
 
-    // Filter by day
-    if (selectedDay === "Today") {
-      return eventDate.toDateString() === now.toDateString();
-    } else if (selectedDay === "Tomorrow") {
-      const tomorrow = new Date();
-      tomorrow.setDate(now.getDate() + 1);
-      return eventDate.toDateString() === tomorrow.toDateString();
-    } else if (selectedDay === "This Week") {
-      const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
-      const endOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 6));
-      return eventDate >= startOfWeek && eventDate <= endOfWeek;
-    } else if (selectedDay === "This Month") {
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      return eventDate >= startOfMonth && eventDate <= endOfMonth;
-    }
-
-    return true;
+    // Check if the event date is in the future
+    return eventDate >= now;
   };
 
   const filteredEvents = upcomingEvents.filter(filterEvents);
@@ -113,21 +88,10 @@ function UpcomingEvent() {
       <div className="px-4 pt-8 xl:px-40 xl:pt-16">
         <div className="flex flex-col lg:flex-row justify-between items-center mb-8">
           <div className="flex flex-col lg:flex-row">
-            <h2 className="text-xl md:text-2xl font-bold mb-4 lg:mb-0">
+            <h2 className="text-xl md:text-2xl font-bold mb-4 lg:mb-0 mr-4">
               Upcoming Events
             </h2>
             <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
-              <select
-                value={selectedDay}
-                onChange={(e) => setSelectedDay(e.target.value)}
-                className="p-2 border border-gray-300 rounded-full bg-gray-100 text-gray-700"
-              >
-                {days.map((day) => (
-                  <option key={day} value={day}>
-                    {day}
-                  </option>
-                ))}
-              </select>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
@@ -164,7 +128,7 @@ function UpcomingEvent() {
               endTime={event.endTime}
               organizer={event.organizer}
               location={event.location}
-              availableSeat={event.availableSeat}
+              seatAvailability={event.seatAvailability}
               seatLimit={event.seatLimit}
               isFree={event.isFree}
               ticketTypes={event.ticketTypes}

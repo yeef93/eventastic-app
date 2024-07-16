@@ -18,7 +18,7 @@ interface Event {
   endTime: string;
   organizer: string;
   location: string;
-  availableSeat: number;
+  seatAvailability: number;
   seatLimit: number;
   isFree: boolean;
   ticketTypes: {
@@ -153,7 +153,7 @@ function Events() {
               endTime={event.endTime}
               organizer={event.organizer}
               location={event.location}
-              availableSeat={event.availableSeat}
+              seatAvailability={event.seatAvailability}
               seatLimit={event.seatLimit}
               isFree={event.isFree}
               ticketTypes={event.ticketTypes}

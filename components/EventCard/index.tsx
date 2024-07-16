@@ -18,7 +18,7 @@ interface EventProps {
   endTime: string;
   organizer: string;
   location: string;
-  availableSeat: number;
+  seatAvailability: number;
   seatLimit: number;
   isFree: boolean;
   ticketTypes: {
@@ -37,7 +37,7 @@ function EventCard({
   endTime,
   organizer,
   location,
-  availableSeat,
+  seatAvailability,
   seatLimit,
   isFree,
   ticketTypes,
@@ -122,7 +122,7 @@ function EventCard({
           <div className="flex items-center text-sm text-gray-600 mt-2">
             <UsersIcon className="w-4 h-4 mr-1 text-purple-700" />
             <p>
-              {seatLimit - availableSeat} Attendees
+              {seatLimit - seatAvailability} Attendees
             </p>
           </div>
           <div className="flex items-center text-sm text-gray-600 mt-2">

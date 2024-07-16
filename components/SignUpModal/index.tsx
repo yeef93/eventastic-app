@@ -11,7 +11,7 @@ interface SignUpModalProps {
 }
 
 function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
-  const [referralError, setReferralError] = useState<string | null>(null);
+  const [registerError, setRegisterError] = useState<string | null>(null);
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const initialValues = {
     fullName: "",
@@ -61,10 +61,12 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
         const errorMessage = await response.text();
         const errorData = JSON.parse(errorMessage);
 
-        if (errorData.statusCode === 404 && errorData.statusMessage.includes("UserNotFoundException")) {
-          setReferralError("Referral code invalid");
+        if (errorData.statusCode === 400 && errorData.statusMessage.includes("DuplicateCredentialsException")) {
+          setRegisterError("Username or email already exists");
+        } else if (errorData.statusCode === 404 && errorData.statusMessage.includes("UserNotFoundException")) {
+          setRegisterError("Referral code invalid");
         } else {
-          setReferralError(null);
+          setRegisterError(null); // Clear any previous errors
         }
 
         throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorMessage}`);
@@ -85,7 +87,7 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
       onClose();
     } catch (error) {
       console.error("Error during registration:", error);
-      alert("Registration failed. Please try again later.");
+      // alert("Registration failed. Please try again later.");
     } finally {
       setSubmitting(false);
     }
@@ -255,8 +257,8 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
                     component="p"
                     className="text-red-500 text-xs italic"
                   />
-                  {referralError && (
-                    <p className="text-red-500 text-xs italic mt-2">{referralError}</p>
+                  {registerError && (
+                    <p className="text-red-500 text-xs italic mt-2">{registerError}</p>
                   )}
                 </div>
                 <div className="flex items-center justify-between">

@@ -26,6 +26,7 @@ type Event = {
   organizer: string;
   location: string;
   venue: string;
+  map: string;
   availableSeat: number;
   seatLimit: number;
   isFree: boolean;
@@ -205,9 +206,9 @@ function EventDetail () {
             <div className="mt-4">
               <h2 className="text-xl sm:text-2xl font-bold mb-2">Location</h2>
               <div className="flex items-center text-sm sm:text-base">
-                <p className="mr-2">{event.location}</p>
+                <p className="mr-2">{event.venue}, {event.location}</p>
                 <a
-                  href={event.venue}
+                  href={event.map}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-500 hover:underline"
@@ -251,9 +252,9 @@ function EventDetail () {
             </div>
             <div className="flex items-center text-sm sm:text-base text-gray-600 mt-2">
               <LocationMarkerIcon className="w-4 h-4 mr-1 text-gray-500" />
-              <p className="whitespace-nowrap">{event.location}</p>
+              <p className="whitespace-nowrap">{event.venue}, {event.location}</p>
               <a
-                href={event.venue}
+                href={event.map}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-500 hover:underline ml-2"

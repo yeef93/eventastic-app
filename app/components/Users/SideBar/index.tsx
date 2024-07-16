@@ -89,7 +89,6 @@ function Sidebar() {
   const menuItems = [
     { href: `/users/${username}/dashboard`, label: "Dashboard", icon: PresentationChartLineIcon },
     { href: `/users/${username}/events`, label: "My events", icon: CalendarIcon },
-    { href: `/users/${username}/tickets`, label: "My tickets", icon: TicketIcon },
     { href: `/users/${username}/profile`, label: "Profile", icon: UserIcon },
     { href: `/users/${username}/change-password`, label: "Change password", icon: LockClosedIcon },
   ];
