@@ -1,33 +1,14 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import CreateEventForm from "@/app/components/Organizer/CreateEventForm";
+import ProtectedLayout from "@/app/components/Organizer/ProtectedLayout";
 
 function Create() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/");
-    }
-  }, [status]);
-
-  if (status === "loading") {
-    return <div>Loading...</div>;
-  }
-
-  if (session) {
-    return (
-      <>
-        <CreateEventForm />
-      </>
-    );
-  }
-
-  return null;
+  return (
+    <ProtectedLayout>
+      <CreateEventForm />
+    </ProtectedLayout>
+  );
 }
 
 export default Create;

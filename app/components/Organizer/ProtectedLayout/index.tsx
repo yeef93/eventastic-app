@@ -1,8 +1,7 @@
 "use client";
-import React from "react";
-import { ReactNode } from "react";
+import React, { useEffect, ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { useSession, signIn } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import DashboardSkeleton from "@/components/Skeleton/DashboardSkeleton";
 
@@ -14,17 +13,58 @@ function ProtectedLayout({ children }: ProtectedLayoutProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  React.useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/");
-    } else if (status === "authenticated") {
-      const decodedToken = jwt.decode(
-        session?.user?.token || ""
-      ) as JwtPayload | null;
-      if (!decodedToken || decodedToken.scope !== "ROLE_ORGANIZER") {
+  useEffect(() => {
+    const handleSessionExpiration = () => {
+      if (status === "authenticated") {
+        const decodedToken = jwt.decode(
+          session?.user?.token || ""
+        ) as JwtPayload | null;
+        if (!decodedToken || decodedToken.scope !== "ROLE_ORGANIZER") {
+          router.push("/");
+        } else {
+          console.log(decodedToken.exp)
+          const tokenExpirationTime = decodedToken.exp
+            ? decodedToken.exp * 1000
+            : 0;
+          const checkSessionExpiration = () => {
+            if (Date.now() >= tokenExpirationTime) {
+              signOut(); // Signs out the user if token is expired
+              handleLogout(); // Initiates API logout
+              router.push("/"); // Redirects to login page
+            }
+          };
+
+          const intervalId = setInterval(checkSessionExpiration, 1000 * 60); // Check every minute
+
+          // Clean up the interval on component unmount
+          return () => clearInterval(intervalId);
+        }
+      } else if (status === "unauthenticated") {
         router.push("/");
       }
-    }
+    };
+
+    const handleLogout = async () => {
+      try {
+        const response = await fetch(`${process.env.base_url}/auth/logout`, {
+          method: "POST",
+          credentials: "include", // Optional, if you're using cookies
+        });
+        if (response.ok) {
+          console.log("Logout successful"); // Optional: Handle success message
+        } else {
+          console.error("Logout failed"); // Optional: Handle error message
+        }
+      } catch (error) {
+        console.error("Error during logout:", error); // Optional: Handle fetch error
+      }
+    };
+
+    
+    const intervalId = setInterval(handleSessionExpiration, 1000 * 60); // Check every minute
+
+    // Clean up the interval on component unmount
+    return () => clearInterval(intervalId);
   }, [status, session, router]);
 
   if (status === "loading") {
