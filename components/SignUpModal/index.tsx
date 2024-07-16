@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Modal from "../Modal";
@@ -11,6 +11,7 @@ interface SignUpModalProps {
 }
 
 function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
+  const [referralError, setReferralError] = useState<string | null>(null);
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const initialValues = {
     fullName: "",
@@ -23,7 +24,6 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
   };
 
   const validationSchema = Yup.object().shape({
-    fullName: Yup.string().required("Full Name is required"),
     username: Yup.string().required("Username is required"),
     email: Yup.string()
       .email("Invalid email address")
@@ -43,7 +43,7 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
       username: values.username,
       email: values.email,
       password: values.password,
-      fullName: values.fullName,
+      fullName: values.username,
       refCodeUsed: values.referralCode,
       isOrganizer: values.role === "Organizer",
     };
@@ -59,10 +59,16 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
 
       if (!response.ok) {
         const errorMessage = await response.text();
+        const errorData = JSON.parse(errorMessage);
+
+        if (errorData.statusCode === 404 && errorData.statusMessage.includes("UserNotFoundException")) {
+          setReferralError("Referral code invalid");
+        } else {
+          setReferralError(null);
+        }
+
         throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorMessage}`);
       }
-
-      console.log("Registration successful");
 
       // Automatically log in the user after successful registration
       const result = await signIn("credentials", {
@@ -146,26 +152,6 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
                   </div>
                   <ErrorMessage
                     name="role"
-                    component="p"
-                    className="text-red-500 text-xs italic"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="fullName"
-                  >
-                    Full Name
-                  </label>
-                  <Field
-                    type="text"
-                    name="fullName"
-                    id="fullName"
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    placeholder="Enter your full name"
-                  />
-                  <ErrorMessage
-                    name="fullName"
                     component="p"
                     className="text-red-500 text-xs italic"
                   />
@@ -269,6 +255,9 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
                     component="p"
                     className="text-red-500 text-xs italic"
                   />
+                  {referralError && (
+                    <p className="text-red-500 text-xs italic mt-2">{referralError}</p>
+                  )}
                 </div>
                 <div className="flex items-center justify-between">
                   <p className="inline-block">

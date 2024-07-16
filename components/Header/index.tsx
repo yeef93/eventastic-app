@@ -25,18 +25,16 @@ function Header() {
     if (session) {
       const fetchUserData = async () => {
         try {
-          // console.log("tes token", session.user.token);
           const response = await fetch(`${apiUrl}/users/me`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${session.user.token}`,
             },
-            credentials: 'include', // Include cookies
+            credentials: "include", // Include cookies
           });
 
           if (response.ok) {
             const json = await response.json();
-            // console.log(json.data);
             setUserData(json.data); // Store user data
           } else {
             console.error("Failed to fetch user data");
@@ -123,20 +121,22 @@ function Header() {
                   <div
                     ref={dropdownRef}
                     className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-20"
-                    style={{ top: '40px' }} // Adjust this value to position the dropdown below the avatar
+                    style={{ top: "40px" }} // Adjust this value to position the dropdown below the avatar
                   >
                     <a
-                      href="/users/fara/dashboard"
+                      href={`/users/${userData?.username}/dashboard`}
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       Profile
                     </a>
-                    <a
-                      href="/organizer/fara/dashboard"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      Organizer
-                    </a>
+                    {userData?.organizer === true && (
+                      <a
+                        href={`/organizer/${userData?.username}/dashboard`}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Organizer
+                      </a>
+                    )}
                     <button
                       onClick={() => signOut()}
                       className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
