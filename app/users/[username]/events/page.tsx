@@ -62,7 +62,7 @@ function Events() {
   );
 
   return (
-    <div>
+    <div className=" h-auto">
       <h1 className="text-2xl font-bold mb-4">Events and Tickets</h1>
       {error && <p className="text-red-500">{error}</p>}
       {Object.keys(events).length > 0 ? (
@@ -72,9 +72,6 @@ function Events() {
             <ul>
               {events[eventTitle].map((ticket) => (
                 <li key={ticket.id} className="mb-2 border p-2 rounded">
-                  <p>
-                    <strong>Attendee:</strong> {ticket.attendee}
-                  </p>
                   <p>
                     <strong>Ticket Type:</strong> {ticket.ticketType}
                   </p>

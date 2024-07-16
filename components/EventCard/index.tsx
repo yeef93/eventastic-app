@@ -122,7 +122,7 @@ function EventCard({
           <div className="flex items-center text-sm text-gray-600 mt-2">
             <UsersIcon className="w-4 h-4 mr-1 text-purple-700" />
             <p>
-              {seatLimit - seatAvailability} Attendees
+              {seatAvailability} Remaining seats
             </p>
           </div>
           <div className="flex items-center text-sm text-gray-600 mt-2">
