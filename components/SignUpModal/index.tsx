@@ -58,6 +58,8 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
         body: JSON.stringify(requestData),
       });
 
+      console.log(response)
+
       if (!response.ok) {
         const errorMessage = await response.text();
         const errorData = JSON.parse(errorMessage);
@@ -65,7 +67,8 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
 
         if (errorData.error === "UserNotFoundException") {
           setRegisterError("No code found, make sure you've entered the right referral code");
-        } else if (errorData.error === "DuplicateCredentialsException") {
+        } 
+        else if (errorData.error === "DuplicateCredentialsException") {
           setRegisterError("Username or email already exists");
         } else {
           setRegisterError("Registration failed. Please try again later."); // Generic error message

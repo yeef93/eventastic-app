@@ -15,43 +15,34 @@ function FilterComponent({
   locations,
   onFilterChange,
 }: FilterComponentProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState<string[]>([]);
-  const [selectedPrice, setSelectedPrice] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedLocation, setSelectedLocation] = useState<string>("");
+  const [selectedPrice, setSelectedPrice] = useState<string>("");
 
   const handleCategoryChange = (category: string) => {
-    const updatedCategories = selectedCategory.includes(category)
-      ? selectedCategory.filter((cat) => cat !== category)
-      : [...selectedCategory, category];
-    setSelectedCategory(updatedCategories);
+    setSelectedCategory(category);
     onFilterChange({
-      categories: updatedCategories,
-      locations: selectedLocation,
-      prices: selectedPrice,
+      categories: [category],
+      locations: selectedLocation ? [selectedLocation] : [],
+      prices: selectedPrice ? [selectedPrice] : [],
     });
   };
 
   const handleLocationChange = (location: string) => {
-    const updatedLocations = selectedLocation.includes(location)
-      ? selectedLocation.filter((loc) => loc !== location)
-      : [...selectedLocation, location];
-    setSelectedLocation(updatedLocations);
+    setSelectedLocation(location);
     onFilterChange({
-      categories: selectedCategory,
-      locations: updatedLocations,
-      prices: selectedPrice,
+      categories: selectedCategory ? [selectedCategory] : [],
+      locations: [location],
+      prices: selectedPrice ? [selectedPrice] : [],
     });
   };
 
   const handlePriceChange = (price: string) => {
-    const updatedPrices = selectedPrice.includes(price)
-      ? selectedPrice.filter((p) => p !== price)
-      : [...selectedPrice, price];
-    setSelectedPrice(updatedPrices);
+    setSelectedPrice(price);
     onFilterChange({
-      categories: selectedCategory,
-      locations: selectedLocation,
-      prices: updatedPrices,
+      categories: selectedCategory ? [selectedCategory] : [],
+      locations: selectedLocation ? [selectedLocation] : [],
+      prices: [price],
     });
   };
 
@@ -62,12 +53,14 @@ function FilterComponent({
         {categories.map((category) => (
           <div key={category} className="filter-option mb-1 text-sm">
             <input
-              type="checkbox"
+              type="radio"
               id={`category-${category}`}
-              checked={selectedCategory.includes(category)}
+              checked={selectedCategory === category}
               onChange={() => handleCategoryChange(category)}
             />
-            <label htmlFor={`category-${category}`} className=" px-2">{category}</label>
+            <label htmlFor={`category-${category}`} className="px-2">
+              {category}
+            </label>
           </div>
         ))}
       </div>
@@ -77,12 +70,14 @@ function FilterComponent({
         {locations.map((location) => (
           <div key={location} className="filter-option mb-1 text-sm">
             <input
-              type="checkbox"
+              type="radio"
               id={`location-${location}`}
-              checked={selectedLocation.includes(location)}
+              checked={selectedLocation === location}
               onChange={() => handleLocationChange(location)}
             />
-            <label htmlFor={`location-${location}`} className=" px-2">{location}</label>
+            <label htmlFor={`location-${location}`} className="px-2">
+              {location}
+            </label>
           </div>
         ))}
       </div>
@@ -92,12 +87,14 @@ function FilterComponent({
         {["Free", "Paid"].map((price) => (
           <div key={price} className="filter-option mb-1 text-sm">
             <input
-              type="checkbox"
+              type="radio"
               id={`price-${price}`}
-              checked={selectedPrice.includes(price)}
+              checked={selectedPrice === price}
               onChange={() => handlePriceChange(price)}
             />
-            <label htmlFor={`price-${price}`} className=" px-2">{price}</label>
+            <label htmlFor={`price-${price}`} className="px-2">
+              {price}
+            </label>
           </div>
         ))}
       </div>

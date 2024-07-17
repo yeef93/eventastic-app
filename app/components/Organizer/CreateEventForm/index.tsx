@@ -3,6 +3,7 @@ import { Formik, FieldArray, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import categories from '@/utils/categories';
 import { useSession } from 'next-auth/react';
+import { useRouter, usePathname } from "next/navigation";
 
 // Define interfaces for TicketType and VoucherType
 interface TicketType {
@@ -95,8 +96,12 @@ const convertToHHMMSS = (time: string) => {
 // Component for CreateEventForm
 const CreateEventForm: React.FC = () => {
   const [isFree, setIsFree] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null); // State for success message
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || ''; // Adjust as necessary
   const { data: session } = useSession();
+  const pathname = usePathname();
+  const username = pathname.split('/')[2];
+  const router = useRouter();
 
   // Initial values for the form
   const initialValues: FormValues = {
@@ -176,7 +181,10 @@ const CreateEventForm: React.FC = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();      
+      const data = await response.json();   
+      // const eventId = data.eventId;
+      setSuccessMessage('Event created successfully!');
+      router.push(`/organizer/${username}/dashboard`);   
     } catch (error) {
       console.error('Error:', error);
     }
