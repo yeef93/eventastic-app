@@ -114,6 +114,7 @@ function ProfileSettings() {
           const data = await response.json();
           if (data.success) {
             alert("Profile updated successfully!");
+            // console.log(updatedData)
             window.location.href =`/users/${userName}/dashboard`;
           } else {
             alert("Failed to update profile. Please try again.");
@@ -141,6 +142,7 @@ function ProfileSettings() {
         const data = await response.json();
         if (data.success) {
           alert("Profile updated successfully!");
+          // console.log(updatedData)
           window.location.href =`/users/${userName}/dashboard`;
         } else {
           alert("Failed to update profile. Please try again.");

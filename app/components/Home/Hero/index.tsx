@@ -16,7 +16,7 @@ function Hero() {
   }, []);
 
   const handleChangeDebounce = debounce((value: string) => {
-    console.log(value);
+    // console.log(value);
   },500)
 
   return (

@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useContext, useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Logo from "@/public/assets/logo.png";
@@ -106,17 +107,17 @@ function Header() {
           <div className="flex md:order-2 space-x-3 md:space-x-0 relative">
             {status === "loading" ? (
               <span className="loader" />
-            ) : session ? (
+            ) : session && userData ? (
               <div className="relative group flex items-center justify-center">
                 <Image
-                  src={userData?.avatar?.imageUrl || "/assets/avatar.png"}
+                  src={userData.avatar?.imageUrl || "/assets/avatar.png"}
                   width={32}
                   height={32}
                   alt="User Avatar"
                   className="rounded-full border-2 w-8 h-8 cursor-pointer"
                   onClick={handleAvatarClick}
                 />
-                <span className="ml-2 text-gray-900">{userData?.username}</span>
+                <span className="ml-2 text-gray-900">{userData.username}</span>
                 {isDropdownOpen && (
                   <div
                     ref={dropdownRef}
@@ -124,14 +125,14 @@ function Header() {
                     style={{ top: "40px" }} // Adjust this value to position the dropdown below the avatar
                   >
                     <a
-                      href={`/users/${userData?.username}/dashboard`}
+                      href={`/users/${userData.username}/dashboard`}
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       Profile
                     </a>
-                    {userData?.organizer === true && (
+                    {userData.organizer === true && (
                       <a
-                        href={`/organizer/${userData?.username}/dashboard`}
+                        href={`/organizer/${userData.username}/dashboard`}
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
                         Organizer

@@ -20,9 +20,9 @@ function ProtectedLayout({ children }: ProtectedLayoutProps) {
           session?.user?.token || ""
         ) as JwtPayload | null;
         if (!decodedToken || decodedToken.scope !== "ROLE_ORGANIZER") {
-          router.push("/");
+          window.location.href = "/";
         } else {
-          console.log(decodedToken.exp)
+          console.log(decodedToken.exp);
           const tokenExpirationTime = decodedToken.exp
             ? decodedToken.exp * 1000
             : 0;
@@ -30,7 +30,7 @@ function ProtectedLayout({ children }: ProtectedLayoutProps) {
             if (Date.now() >= tokenExpirationTime) {
               signOut(); // Signs out the user if token is expired
               handleLogout(); // Initiates API logout
-              router.push("/"); // Redirects to login page
+              window.location.href = "/";
             }
           };
 
@@ -40,7 +40,8 @@ function ProtectedLayout({ children }: ProtectedLayoutProps) {
           return () => clearInterval(intervalId);
         }
       } else if (status === "unauthenticated") {
-        router.push("/");
+        // router.push("/")
+        router.push("/login"); // Redirect to login page if unauthenticated
       }
     };
 
@@ -60,8 +61,7 @@ function ProtectedLayout({ children }: ProtectedLayoutProps) {
       }
     };
 
-    
-    const intervalId = setInterval(handleSessionExpiration, 1000 * 60); // Check every minute
+    const intervalId = setInterval(handleSessionExpiration, 100 * 60); // Check every minute
 
     // Clean up the interval on component unmount
     return () => clearInterval(intervalId);

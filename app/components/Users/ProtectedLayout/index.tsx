@@ -18,15 +18,15 @@ function ProtectedLayout({ children }: ProtectedLayoutProps) {
       if (status === "authenticated" && session?.user?.token) {
         const decodedToken = jwt.decode(session.user.token) as JwtPayload | null;
         if (decodedToken) {
-          const tokenExpirationTime = decodedToken.exp ? decodedToken.exp * 1000 : 0;
+          const tokenExpirationTime = decodedToken.exp ? decodedToken.exp * 1000 : 0;          
           if (Date.now() >= tokenExpirationTime) {
             signOut(); // Signs out the user if token is expired
             handleLogout(); // Initiates API logout
-            router.push("/"); // Redirects to login page
+            window.location.href ="/";
           }
         }
       } else if (status === "unauthenticated") {
-        router.push("/"); // Redirects to login page if session is not authenticated
+        window.location.href ="/";
       }
     };
 
@@ -46,7 +46,7 @@ function ProtectedLayout({ children }: ProtectedLayoutProps) {
       }
     };
 
-    const intervalId = setInterval(handleSessionExpiration, 1000 * 60); // Check every minute
+    const intervalId = setInterval(handleSessionExpiration, 100 * 60); // Check
 
     // Clean up the interval on component unmount
     return () => clearInterval(intervalId);

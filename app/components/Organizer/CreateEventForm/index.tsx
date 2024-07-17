@@ -87,6 +87,11 @@ const getOneHourLaterTime = () => {
   return now.toTimeString().split(' ')[0].slice(0, 5); // HH:mm format
 };
 
+// Function to convert time to HH:mm:ss format
+const convertToHHMMSS = (time: string) => {
+  return `${time}:00`;
+};
+
 // Component for CreateEventForm
 const CreateEventForm: React.FC = () => {
   const [isFree, setIsFree] = useState(false);
@@ -124,8 +129,7 @@ const CreateEventForm: React.FC = () => {
 
   // Function to handle form submission
   const handleSubmit = async (values: FormValues) => {
-    console.log(values);
-
+    // console.log(values);
     const formData = {
       title: values.eventName,
       description: values.description,
@@ -135,8 +139,8 @@ const CreateEventForm: React.FC = () => {
       map: 'http://example.com/map.png', // Adjust as necessary
       imageId: '1', // Adjust as necessary
       eventDate: values.eventDate,
-      startTime: values.startTime,
-      endTime: values.endTime,
+      startTime: convertToHHMMSS(values.startTime),
+      endTime: convertToHHMMSS(values.endTime),
       isFree: values.isFree.toString(),
       referralVoucherUsageLimit: 100, // Example value, adjust as needed
       promoPercent: values.voucher.percentDiscount,
@@ -156,6 +160,7 @@ const CreateEventForm: React.FC = () => {
       })),
     };
 
+    console.log(formData, "end");
     try {
       const response = await fetch(`${apiUrl}/events/create`, {
         method: 'POST',
@@ -171,8 +176,7 @@ const CreateEventForm: React.FC = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
-      console.log(data);
+      const data = await response.json();      
     } catch (error) {
       console.error('Error:', error);
     }
@@ -234,24 +238,13 @@ const CreateEventForm: React.FC = () => {
                 <ErrorMessage name="description" component="div" className="text-red-500 text-sm" />
               </div>
               <div className="col-span-1 md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700">Image Upload</label>
-                <input
-                  type="file"
-                  className="mt-1 p-2 w-full border rounded"
-                  onChange={(event) => {
-                    setFieldValue('image', event.target.files?.[0] ?? null);
-                  }}
-                />
-                <ErrorMessage name="image" component="div" className="text-red-500 text-sm" />
-              </div>
-              <div>
                 <label className="block text-sm font-medium text-gray-700">Category*</label>
                 <Field
                   as="select"
                   className="mt-1 p-2 w-full border rounded"
                   name="category"
                 >
-                  <option value="">Select a category</option>
+                  <option value="">Select Category</option>
                   {categories.map((category) => (
                     <option key={category.id} value={category.id}>
                       {category.name}
@@ -260,7 +253,7 @@ const CreateEventForm: React.FC = () => {
                 </Field>
                 <ErrorMessage name="category" component="div" className="text-red-500 text-sm" />
               </div>
-              <div>
+              <div className="col-span-1 md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700">Location*</label>
                 <Field
                   type="text"
@@ -270,7 +263,7 @@ const CreateEventForm: React.FC = () => {
                 />
                 <ErrorMessage name="location" component="div" className="text-red-500 text-sm" />
               </div>
-              <div>
+              <div className="col-span-1 md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700">Venue*</label>
                 <Field
                   type="text"
@@ -281,190 +274,188 @@ const CreateEventForm: React.FC = () => {
                 <ErrorMessage name="venue" component="div" className="text-red-500 text-sm" />
               </div>
               <div className="col-span-1 md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700">Event Type</label>
-                <div className="mt-1">
-                  <label className="inline-flex items-center">
-                    <Field
-                      type="checkbox"
-                      className="form-checkbox h-5 w-5 text-indigo-600"
-                      name="isFree"
-                      checked={values.isFree}
-                      onChange={(e:any) => {
-                        setIsFree(e.target.checked);
-                        setFieldValue('isFree', e.target.checked);
-                      }}
-                    />
-                    <span className="ml-2">Free Event</span>
-                  </label>
-                </div>
+                <label className="block text-sm font-medium text-gray-700">Image</label>
+                <input
+                  type="file"
+                  className="mt-1 p-2 w-full border rounded"
+                  onChange={(event) => {
+                    if (event.currentTarget.files) {
+                      setFieldValue('image', event.currentTarget.files[0]);
+                    }
+                  }}
+                />
               </div>
-            </div>
-
-            {/* Ticket types section */}
-            {!values.isFree && (
-              <div className="mb-6">
-                <h3 className="text-lg font-medium mb-3">Ticket Types</h3>
-                <FieldArray name="tickets">
-                  {({ push, remove }) => (
-                    <div>
-                      {values.tickets.map((_, index) => (
-                        <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700">Ticket Name*</label>
-                            <Field
-                              type="text"
-                              className="mt-1 p-2 w-full border rounded"
-                              placeholder="Ticket Name"
-                              name={`tickets.${index}.ticketName`}
-                            />
-                            <ErrorMessage
-                              name={`tickets.${index}.ticketName`}
-                              component="div"
-                              className="text-red-500 text-sm"
-                            />
+              <div className="col-span-1 md:col-span-2">
+                <label className="inline-flex items-center mt-3">
+                  <Field
+                    type="checkbox"
+                    className="form-checkbox"
+                    name="isFree"
+                    onChange={() => {
+                      setFieldValue('isFree', !values.isFree);
+                      setIsFree(!isFree);
+                    }}
+                  />
+                  <span className="ml-2">Is this event free?</span>
+                </label>
+              </div>
+              {/* Ticket Type Fields */}
+              {!isFree && (
+                <div className="col-span-1 md:col-span-2">
+                  <FieldArray name="tickets">
+                    {({ remove, push }) => (
+                      <div>
+                        {values.tickets.map((ticket, index) => (
+                          <div key={index} className="mb-4">
+                            <h3 className="text-lg font-semibold mb-2">Ticket {index + 1}</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                  Ticket Name*
+                                </label>
+                                <Field
+                                  type="text"
+                                  className="mt-1 p-2 w-full border rounded"
+                                  placeholder="Ticket Name"
+                                  name={`tickets.${index}.ticketName`}
+                                />
+                                <ErrorMessage
+                                  name={`tickets.${index}.ticketName`}
+                                  component="div"
+                                  className="text-red-500 text-sm"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                  Ticket Description*
+                                </label>
+                                <Field
+                                  type="text"
+                                  className="mt-1 p-2 w-full border rounded"
+                                  placeholder="Ticket Description"
+                                  name={`tickets.${index}.ticketDescription`}
+                                />
+                                <ErrorMessage
+                                  name={`tickets.${index}.ticketDescription`}
+                                  component="div"
+                                  className="text-red-500 text-sm"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                  Ticket Price*
+                                </label>
+                                <Field
+                                  type="number"
+                                  className="mt-1 p-2 w-full border rounded"
+                                  placeholder="Ticket Price"
+                                  name={`tickets.${index}.ticketPrice`}
+                                />
+                                <ErrorMessage
+                                  name={`tickets.${index}.ticketPrice`}
+                                  component="div"
+                                  className="text-red-500 text-sm"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                  Ticket Limit*
+                                </label>
+                                <Field
+                                  type="number"
+                                  className="mt-1 p-2 w-full border rounded"
+                                  placeholder="Ticket Limit"
+                                  name={`tickets.${index}.ticketLimit`}
+                                />
+                                <ErrorMessage
+                                  name={`tickets.${index}.ticketLimit`}
+                                  component="div"
+                                  className="text-red-500 text-sm"
+                                />
+                              </div>
+                            </div>
+                            <div className="flex justify-end mt-2">
+                              <button
+                                type="button"
+                                className="bg-red-500 text-white px-4 py-2 rounded"
+                                onClick={() => remove(index)}
+                              >
+                                Remove Ticket
+                              </button>
+                            </div>
                           </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700">Ticket Description*</label>
-                            <Field
-                              type="text"
-                              className="mt-1 p-2 w-full border rounded"
-                              placeholder="Ticket Description"
-                              name={`tickets.${index}.ticketDescription`}
-                            />
-                            <ErrorMessage
-                              name={`tickets.${index}.ticketDescription`}
-                              component="div"
-                              className="text-red-500 text-sm"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700">Price*</label>
-                            <Field
-                              type="number"
-                              className="mt-1 p-2 w-full border rounded"
-                              placeholder="Price"
-                              name={`tickets.${index}.ticketPrice`}
-                            />
-                            <ErrorMessage
-                              name={`tickets.${index}.ticketPrice`}
-                              component="div"
-                              className="text-red-500 text-sm"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700">Limit*</label>
-                            <Field
-                              type="number"
-                              className="mt-1 p-2 w-full border rounded"
-                              placeholder="Limit"
-                              name={`tickets.${index}.ticketLimit`}
-                            />
-                            <ErrorMessage
-                              name={`tickets.${index}.ticketLimit`}
-                              component="div"
-                              className="text-red-500 text-sm"
-                            />
-                          </div>
-                          <div className="flex items-end justify-center md:justify-end mt-2 md:col-span-2">
-                            <button
-                              type="button"
-                              className="text-sm text-red-500"
-                              onClick={() => remove(index)}
-                            >
-                              Remove Ticket
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                      <div className="mt-4">
+                        ))}
                         <button
                           type="button"
-                          className="bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600"
-                          onClick={() =>
-                            push({
-                              ticketName: '',
-                              ticketDescription: '',
-                              ticketPrice: '',
-                              ticketLimit: '',
-                            })
-                          }
+                          className="bg-blue-500 text-white px-4 py-2 rounded"
+                          onClick={() => push({ ticketName: '', ticketDescription: '', ticketPrice: '', ticketLimit: '' })}
                         >
                           Add Ticket
                         </button>
                       </div>
-                    </div>
-                  )}
-                </FieldArray>
-              </div>
-            )}
-
-            {/* Voucher section */}
-            <div className="mb-6">
-              <h3 className="text-lg font-medium mb-3">Voucher</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Voucher Code*</label>
-                  <Field
-                    type="text"
-                    className="mt-1 p-2 w-full border rounded"
-                    placeholder="Voucher Code"
-                    name="voucher.code"
-                  />
-                  <ErrorMessage name="voucher.code" component="div" className="text-red-500 text-sm" />
+                    )}
+                  </FieldArray>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Voucher Description*</label>
-                  <Field
-                    type="text"
-                    className="mt-1 p-2 w-full border rounded"
-                    placeholder="Voucher Description"
-                    name="voucher.description"
-                  />
-                  <ErrorMessage name="voucher.description" component="div" className="text-red-500 text-sm" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Percent Discount*</label>
-                  <Field
-                    type="number"
-                    className="mt-1 p-2 w-full border rounded"
-                    placeholder="Percent Discount"
-                    name="voucher.percentDiscount"
-                  />
-                  <ErrorMessage
-                    name="voucher.percentDiscount"
-                    component="div"
-                    className="text-red-500 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Validity (in days)*</label>
-                  <Field
-                    type="number"
-                    className="mt-1 p-2 w-full border rounded"
-                    placeholder="Validity (in days)"
-                    name="voucher.validity"
-                  />
-                  <ErrorMessage name="voucher.validity" component="div" className="text-red-500 text-sm" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Use Limit*</label>
-                  <Field
-                    type="number"
-                    className="mt-1 p-2 w-full border rounded"
-                    placeholder="Use Limit"
-                    name="voucher.useLimit"
-                  />
-                  <ErrorMessage name="voucher.useLimit" component="div" className="text-red-500 text-sm" />
+              )}
+              {/* Voucher Fields */}
+              <div className="col-span-1 md:col-span-2">
+                <h3 className="text-lg font-semibold mb-2">Voucher</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Voucher Code*</label>
+                    <Field
+                      type="text"
+                      className="mt-1 p-2 w-full border rounded"
+                      placeholder="Voucher Code"
+                      name="voucher.code"
+                    />
+                    <ErrorMessage name="voucher.code" component="div" className="text-red-500 text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Voucher Description*</label>
+                    <Field
+                      type="text"
+                      className="mt-1 p-2 w-full border rounded"
+                      placeholder="Voucher Description"
+                      name="voucher.description"
+                    />
+                    <ErrorMessage name="voucher.description" component="div" className="text-red-500 text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Percent Discount*</label>
+                    <Field
+                      type="number"
+                      className="mt-1 p-2 w-full border rounded"
+                      placeholder="Percent Discount"
+                      name="voucher.percentDiscount"
+                    />
+                    <ErrorMessage name="voucher.percentDiscount" component="div" className="text-red-500 text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Validity (in days)*</label>
+                    <Field
+                      type="number"
+                      className="mt-1 p-2 w-full border rounded"
+                      placeholder="Validity"
+                      name="voucher.validity"
+                    />
+                    <ErrorMessage name="voucher.validity" component="div" className="text-red-500 text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Use Limit*</label>
+                    <Field
+                      type="number"
+                      className="mt-1 p-2 w-full border rounded"
+                      placeholder="Use Limit"
+                      name="voucher.useLimit"
+                    />
+                    <ErrorMessage name="voucher.useLimit" component="div" className="text-red-500 text-sm" />
+                  </div>
                 </div>
               </div>
             </div>
-
-            {/* Submit button */}
             <div className="flex justify-center">
-              <button
-                type="submit"
-                className="bg-indigo-500 text-white py-2 px-6 rounded hover:bg-indigo-600"
-              >
+              <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
                 Create Event
               </button>
             </div>
