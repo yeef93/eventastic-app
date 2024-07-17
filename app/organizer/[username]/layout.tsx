@@ -3,7 +3,7 @@ import Sidebar from "../../components/Organizer/SideBar";
 import ProtectedLayout from "@/app/components/Organizer/ProtectedLayout";
 
 export const metadata: Metadata = {
-  title: "Organizer",
+  title: "Eventastic | Organizer",
   description: "Organizer",
 };
 

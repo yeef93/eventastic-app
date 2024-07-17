@@ -10,8 +10,6 @@ import {
   LogoutIcon,
   PencilIcon,
   PresentationChartLineIcon,
-  TicketIcon,
-  UserIcon,
 } from "@heroicons/react/outline";
 import LogoutModal from "@/components/LogoutModal";
 import { useSession, signOut } from "next-auth/react";
@@ -41,10 +39,10 @@ function Sidebar() {
           });
           const data = await response.json();
           if (data.success) {
-            setAvatarUrl(data.data.avatar.imageUrl || "/assets/avatar.png"); // Use default if not available
-            setFullName(data.data.fullName);
-            setBio(data.data.bio);
-            setRefCode(data.data.ownedRefCode);
+            setAvatarUrl(data.data.avatar?.imageUrl || "/assets/avatar.png"); // Use default if not available
+            setFullName(data.data.fullName || "");
+            setBio(data.data.bio || "");
+            setRefCode(data.data.ownedRefCode || "");
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -60,13 +58,13 @@ function Sidebar() {
           });
           const data = await response.json();
           if (data.success) {
-            setPoints(data.data.points);
+            setPoints(data.data.points || 0);
             setExpiredDate(
               new Date(data.data.expiresAt).toLocaleString("en-US", {
                 day: "2-digit",
                 month: "short",
                 year: "numeric",
-              })
+              }) || ""
             );
           }
         } catch (error) {

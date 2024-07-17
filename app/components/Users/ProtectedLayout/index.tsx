@@ -26,7 +26,8 @@ function ProtectedLayout({ children }: ProtectedLayoutProps) {
           }
         }
       } else if (status === "unauthenticated") {
-        window.location.href ="/";
+        // window.location.href ="/";
+        router.push("/login"); // Redirect to login page if unauthenticated
       }
     };
 
@@ -34,7 +35,7 @@ function ProtectedLayout({ children }: ProtectedLayoutProps) {
       try {
         const response = await fetch(`${process.env.base_url}/auth/logout`, {
           method: "POST",
-          credentials: "include", // Optional, if you're using cookies
+          credentials: "include",
         });
         if (response.ok) {
           console.log("Logout successful"); // Optional: Handle success message
@@ -46,7 +47,7 @@ function ProtectedLayout({ children }: ProtectedLayoutProps) {
       }
     };
 
-    const intervalId = setInterval(handleSessionExpiration, 100 * 60); // Check
+    const intervalId = setInterval(handleSessionExpiration, 1000 * 60); // Check
 
     // Clean up the interval on component unmount
     return () => clearInterval(intervalId);

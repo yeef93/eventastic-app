@@ -3,6 +3,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Modal from "../Modal";
 import { signIn } from "next-auth/react";
+import { error } from 'console';
 
 interface SignUpModalProps {
   onClose: () => void;
@@ -43,7 +44,7 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
       username: values.username,
       email: values.email,
       password: values.password,
-      fullName: values.username,
+      fullName: values.fullName, // Use fullName here instead of username
       refCodeUsed: values.referralCode,
       isOrganizer: values.role === "Organizer",
     };
@@ -60,13 +61,14 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
       if (!response.ok) {
         const errorMessage = await response.text();
         const errorData = JSON.parse(errorMessage);
+        console.log(errorData.error);
 
-        if (errorData.statusCode === 400 && errorData.statusMessage.includes("DuplicateCredentialsException")) {
+        if (errorData.error === "UserNotFoundException") {
+          setRegisterError("No code found, make sure you've entered the right referral code");
+        } else if (errorData.error === "DuplicateCredentialsException") {
           setRegisterError("Username or email already exists");
-        } else if (errorData.statusCode === 404 && errorData.statusMessage.includes("UserNotFoundException")) {
-          setRegisterError("Referral code invalid");
         } else {
-          setRegisterError(null); // Clear any previous errors
+          setRegisterError("Registration failed. Please try again later."); // Generic error message
         }
 
         throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorMessage}`);
@@ -87,7 +89,7 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
       onClose();
     } catch (error) {
       console.error("Error during registration:", error);
-      // alert("Registration failed. Please try again later.");
+      setRegisterError("Registration failed. Please try again later."); // Catch-all error message
     } finally {
       setSubmitting(false);
     }

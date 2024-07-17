@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useContext, useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Logo from "@/public/assets/logo.png";
@@ -8,6 +7,7 @@ import Menu from "../Menu";
 import SignUpModal from "@/components/SignUpModal";
 import LoginModal from "@/components/LoginModal";
 import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 function Header() {
   const [showing, setShowing] = useState<boolean>(false);
@@ -17,7 +17,7 @@ function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const router = useRouter();
   const { setShowing: setGlobalMenuShowing } = useContext(MenuContext);
   const { data: session, status } = useSession();
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -25,6 +25,7 @@ function Header() {
   useEffect(() => {
     if (session) {
       const fetchUserData = async () => {
+        // console.log(session.user.token)
         try {
           const response = await fetch(`${apiUrl}/users/me`, {
             method: "GET",
@@ -74,6 +75,27 @@ function Header() {
 
   const handleAvatarClick = () => {
     setIsDropdownOpen((prev) => !prev);
+  };
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/auth/logout`, {
+        method: "GET", // Assuming POST method for logout
+        headers: {
+          Authorization: `Bearer ${session?.user.token}`,
+        },
+        credentials: "include", // Include cookies
+      });
+
+      if (response.ok) {
+        await signOut(); // Sign out from NextAuth session
+        window.location.href = "/"; // Redirect to main page after successful logout
+      } else {
+        console.error("Failed to logout");
+      }
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
   };
 
   const handleOutsideClick = (event: MouseEvent) => {
@@ -139,7 +161,7 @@ function Header() {
                       </a>
                     )}
                     <button
-                      onClick={() => signOut()}
+                      onClick={handleLogout}
                       className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       Logout

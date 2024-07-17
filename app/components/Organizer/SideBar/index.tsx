@@ -33,9 +33,10 @@ function Sidebar() {
           });
           const data = await response.json();
           if (data.success) {
-            setAvatarUrl(data.data.avatar.imageUrl || "/assets/avatar.png"); // Use default if not available
-            setFullName(data.data.fullName);
-            setBio(data.data.bio);
+            const avatar = data.data.avatar;
+            setAvatarUrl(avatar && avatar.imageUrl ? avatar.imageUrl : "/assets/avatar.png"); // Use default if not available
+            setFullName(data.data.fullName || "");
+            setBio(data.data.bio || "");
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -80,7 +81,7 @@ function Sidebar() {
   return (
     <div className="w-80 bg-white h-auto min-h-svh p-6">
       <div className="flex flex-col items-center pt-12 mb-5">
-      <Image
+        <Image
           className="h-24 w-24 rounded-full"
           src={avatarUrl}
           alt={fullName || "User Avatar"}
@@ -89,9 +90,9 @@ function Sidebar() {
         />
         <div className="mt-2 text-center">
           <h4 className="font-semibold text-lg text-gray-700 capitalize font-poppins tracking-wide">
-          {fullName}
-          </h4>    
-          <p className="text-md text-gray-500 capitalize">{bio}</p>      
+            {fullName}
+          </h4>
+          <p className="text-md text-gray-500 capitalize">{bio}</p>
         </div>
       </div>
       <ul className="space-y-2 text-sm">

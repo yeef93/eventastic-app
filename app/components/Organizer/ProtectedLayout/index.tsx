@@ -22,7 +22,7 @@ function ProtectedLayout({ children }: ProtectedLayoutProps) {
         if (!decodedToken || decodedToken.scope !== "ROLE_ORGANIZER") {
           window.location.href = "/";
         } else {
-          console.log(decodedToken.exp);
+          // console.log(decodedToken.exp);
           const tokenExpirationTime = decodedToken.exp
             ? decodedToken.exp * 1000
             : 0;
@@ -61,7 +61,7 @@ function ProtectedLayout({ children }: ProtectedLayoutProps) {
       }
     };
 
-    const intervalId = setInterval(handleSessionExpiration, 100 * 60); // Check every minute
+    const intervalId = setInterval(handleSessionExpiration, 1000 * 60); // Check
 
     // Clean up the interval on component unmount
     return () => clearInterval(intervalId);

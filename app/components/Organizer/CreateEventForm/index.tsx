@@ -197,6 +197,7 @@ const CreateEventForm: React.FC = () => {
                   className="mt-1 p-2 w-full border rounded"
                   placeholder="Event Name"
                   name="eventName"
+                  maxLength={255}
                 />
                 <ErrorMessage name="eventName" component="div" className="text-red-500 text-sm" />
               </div>
@@ -260,6 +261,7 @@ const CreateEventForm: React.FC = () => {
                   className="mt-1 p-2 w-full border rounded"
                   placeholder="Location"
                   name="location"
+                  maxLength={100}
                 />
                 <ErrorMessage name="location" component="div" className="text-red-500 text-sm" />
               </div>
@@ -270,6 +272,7 @@ const CreateEventForm: React.FC = () => {
                   className="mt-1 p-2 w-full border rounded"
                   placeholder="Venue"
                   name="venue"
+                  maxLength={255}
                 />
                 <ErrorMessage name="venue" component="div" className="text-red-500 text-sm" />
               </div>

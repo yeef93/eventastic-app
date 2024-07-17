@@ -3,7 +3,7 @@ import Sidebar from "../components/Users/SideBar";
 import ProtectedLayout from "../components/Users/ProtectedLayout";
 
 export const metadata: Metadata = {
-  title: "User",
+  title: "Eventastic | User",
   description: "User",
 };
 

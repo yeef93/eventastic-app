@@ -2,7 +2,8 @@ import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/outline";
 import React, { useState, useEffect } from "react";
 import Pagination from "@/components/Pagination";
 import EventTableSkeleton from "@/components/Skeleton/EventTableSkeleton";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
@@ -34,23 +35,25 @@ function EventTable() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const eventsPerPage = 10;
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {    
-    const token = session?.user?.token; // Get token from session
-    const decodedToken = jwt.decode(token || "") as JwtPayload | null;
-    const username = decodedToken?.sub; // Extract username from token
-    console.log(username);
-    if (!username) return; // Early return if username is not available
-    const url = `${apiUrl}/events?organizer=${username}&order=eventDate&direction=desc`;    
-    const fetchEvents = async () => {
+  useEffect(() => {
+    const fetchEvents = async (page: number) => {
+      const token = session?.user?.token; // Get token from session
+      const decodedToken = jwt.decode(token || "") as JwtPayload | null;
+      const username = decodedToken?.sub; // Extract username from token
+      if (!username) return; // Early return if username is not available
+
+      const url = `${apiUrl}/events?organizer=${username}&order=id&direction=desc&page=${page-1}&limit=${eventsPerPage}`;
       setLoading(true);
       try {
         const response = await fetch(url);
         const data = await response.json();
         setEvents(data.data.events);
+        setTotalPages(data.data.totalPages);
       } catch (error) {
         console.error("Error fetching events:", error);
       } finally {
@@ -58,8 +61,8 @@ function EventTable() {
       }
     };
 
-    fetchEvents();
-  }, [apiUrl, session]);
+    fetchEvents(currentPage);
+  }, [apiUrl, session, currentPage]);
 
   const handleEdit = (id: number) => {
     console.log("Edit event with id:", id);
@@ -73,12 +76,6 @@ function EventTable() {
     router.push(`${pathname}/create`);
     console.log("Create a new event");
   };
-
-  // Pagination logic
-  const indexOfLastEvent = currentPage * eventsPerPage;
-  const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
-  const currentEvents = events.slice(indexOfFirstEvent, indexOfLastEvent);
-  const totalPages = Math.ceil(events.length / eventsPerPage);
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -130,9 +127,9 @@ function EventTable() {
         </thead>
         {loading ? (
           <EventTableSkeleton />
-        ) : (
+        ) : events.length > 0 ? (
           <tbody>
-            {currentEvents.map((event) => {
+            {events.map((event) => {
               const totalAttendees = event.seatLimit - event.seatAvailability;
               const isEditable = totalAttendees === 0;
 
@@ -168,6 +165,14 @@ function EventTable() {
                 </tr>
               );
             })}
+          </tbody>
+        ) : (
+          <tbody>
+            <tr>
+              <td colSpan={6} className="py-2 px-4 border-b text-center">
+                No data available.
+              </td>
+            </tr>
           </tbody>
         )}
       </table>
