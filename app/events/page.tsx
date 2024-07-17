@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import EventListCard from "@/components/EventListCard";
 import EventListCardSkeleton from "@/components/Skeleton/EventListCardSkeleton";
 import Pagination from "@/components/Pagination";
@@ -37,6 +37,7 @@ interface Filters {
 
 function Events() {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+<<<<<<< HEAD
   const currentUrl = typeof window !== "undefined" ? window.location.href : ""; // Ensure window is defined
   // Parse the URL
   const parsedUrl = new URL(currentUrl);
@@ -45,8 +46,16 @@ function Events() {
   // Get the category parameter value
   const category = searchParams.get("category");
   const initialCategory = typeof category === "string" ? [category] : [];
+=======
+  const router = useRouter(); 
+  // const searchParams = useSearchParams() 
+  // const category = searchParams.get('category')
+  // const initialCategory = typeof category === "string" ? [category] : [];
+>>>>>>> dev
 
-  console.log(initialCategory);
+  // console.log(initialCategory);
+
+  
   
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,7 +63,7 @@ function Events() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [filters, setFilters] = useState<Filters>({
-    categories: initialCategory, // Initialize with category from URL
+    categories: [], // Initialize with category from URL
     locations: [],
     prices: [],
   });
