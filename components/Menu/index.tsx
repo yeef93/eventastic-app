@@ -1,15 +1,22 @@
 "use client";
 import React from "react";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 function Menu() {
   const pathname = usePathname();
+  const { data: session, status } = useSession();
+  const decodedToken = jwt.decode(
+    session?.user?.token || ""
+  ) as JwtPayload | null;
 
   const menuItems = [
-    {name: "Events", path:"/events"},
-    {name: "Create Events", path:"/organizer"},
-    {name: "FAQ", path:"/faq"},
-];
+    { name: "Events", path: "/events" },    
+    { name: "Create Event", path: `/organizer/${decodedToken?.scope.sub}/events` },
+    { name: "FAQ", path: "/faq" },
+  ];
 
   return (
     <ul
@@ -18,7 +25,7 @@ function Menu() {
     >
       {menuItems.map((item) => (
         <li key={item.path}>
-          <a
+          <Link
             href={item.path}
             className={`block py-2 px-3 text-gray-900 hover:bg-gray-100 md:hover:bg-transparent
               md:hover:text-purple-800 md:p-0 ${
@@ -26,7 +33,7 @@ function Menu() {
               }`}
           >
             {item.name}
-          </a>
+          </Link>
         </li>
       ))}
     </ul>
