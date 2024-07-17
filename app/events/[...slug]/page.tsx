@@ -36,9 +36,11 @@ type Event = {
   }[];
   category: string;
   description: string;
+  promoPercent?: number;
+  promoEndDate?: string;
 };
 
-function EventDetail () {
+function EventDetail() {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const router = useRouter();
   const pathname = usePathname();
@@ -53,6 +55,7 @@ function EventDetail () {
   }>({});
   const [isGetTicketModalOpen, setIsGetTicketModalOpen] =
     useState<boolean>(false);
+    
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -69,7 +72,7 @@ function EventDetail () {
               throw new Error("Failed to fetch event details");
             }
             const data = await response.json();
-            console.log("Fetched event data:", data);
+            // console.log("Fetched event data:", data);
 
             // Update to correctly access imageUrl from image object
             if (data.data.image && data.data.image.imageUrl) {
@@ -184,7 +187,17 @@ function EventDetail () {
   };
 
   const isGetTicketsButtonDisabled =
-    !selectedTicketType || ticketQuantities[selectedTicketType] === 0;
+  !selectedTicketType || (selectedTicketType && ticketQuantities[selectedTicketType] === 0);
+
+  const calculateDiscountedPrice = (price: number) => {
+    if (event.promoPercent && event.promoEndDate) {
+      const promoEndDate = new Date(event.promoEndDate);
+      if (currentDate <= promoEndDate) {
+        return price - (price * event.promoPercent) / 100;
+      }
+    }
+    return price;
+  };
 
   return (
     <div className="py-7">
@@ -206,7 +219,9 @@ function EventDetail () {
             <div className="mt-4">
               <h2 className="text-xl sm:text-2xl font-bold mb-2">Location</h2>
               <div className="flex items-center text-sm sm:text-base">
-                <p className="mr-2">{event.venue}, {event.location}</p>
+                <p className="mr-2">
+                  {event.venue}, {event.location}
+                </p>
                 <a
                   href={event.map}
                   target="_blank"
@@ -252,7 +267,9 @@ function EventDetail () {
             </div>
             <div className="flex items-center text-sm sm:text-base text-gray-600 mt-2">
               <LocationMarkerIcon className="w-4 h-4 mr-1 text-gray-500" />
-              <p className="whitespace-nowrap">{event.venue}, {event.location}</p>
+              <p className="whitespace-nowrap">
+                {event.venue}, {event.location}
+              </p>
               <a
                 href={event.map}
                 target="_blank"
@@ -353,7 +370,6 @@ function EventDetail () {
                 </div>
               </div>
             )}
-
             <button
               onClick={
                 isGetTicketsButtonDisabled || isEventPast
@@ -386,6 +402,6 @@ function EventDetail () {
       </div>
     </div>
   );
-};
+}
 
 export default EventDetail;

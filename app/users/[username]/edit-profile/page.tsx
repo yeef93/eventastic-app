@@ -55,6 +55,7 @@ function ProfileSettings() {
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
+      window.location.href = "/";
     }
   };
 
