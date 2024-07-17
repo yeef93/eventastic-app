@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import EventListCard from "@/components/EventListCard";
 import EventListCardSkeleton from "@/components/Skeleton/EventListCardSkeleton";
 import Pagination from "@/components/Pagination";
@@ -37,72 +37,72 @@ interface Filters {
 
 function Events() {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-// <<<<<<< HEAD
-//   const currentUrl = typeof window !== "undefined" ? window.location.href : ""; // Ensure window is defined
-//   // Parse the URL
-//   const parsedUrl = new URL(currentUrl);
-//   // Get the search params
-//   const searchParams = parsedUrl.searchParams;
-//   // Get the category parameter value
-//   const category = searchParams.get("category");
-//   const initialCategory = typeof category === "string" ? [category] : [];
-// =======
-//   const router = useRouter(); 
-//   // const searchParams = useSearchParams() 
-//   // const category = searchParams.get('category')
-//   // const initialCategory = typeof category === "string" ? [category] : [];
-// >>>>>>> dev
-
-  // console.log(initialCategory);
-
-  
-  
+  const router = useRouter();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [filters, setFilters] = useState<Filters>({
-    categories: [], // Initialize with category from URL
+    categories: [],
     locations: [],
     prices: [],
   });
 
   const eventsPerPage = 10;
 
+  // Set initial filters based on URL search parameters on the client side
   useEffect(() => {
-    const fetchEvents = async (page: number, filters: Filters) => {
-      setLoading(true);
-
-      const categoryFilter = filters.categories.length > 0 ? `&category=${filters.categories.join(",")}` : "";
-      const locationFilter = filters.locations.length > 0 ? `&location=${filters.locations.join(",")}` : "";
-      const priceFilter = filters.prices.length > 0
-        ? filters.prices.includes("Free") && !filters.prices.includes("Paid")
-          ? "&isFree=true"
-          : filters.prices.includes("Paid") && !filters.prices.includes("Free")
-          ? "&isFree=false"
-          : ""
-        : "";
-
-      const url = `${apiUrl}/events?page=${page - 1}&limit=${eventsPerPage}&order=eventDate&direction=desc${categoryFilter}${locationFilter}${priceFilter}`;
-
-      try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error("Failed to fetch events");
-        }
-        const data = await response.json();
-        setEvents(data.data.events || []);
-        setTotalPages(data.data.totalPages || 1);
-        setLoading(false);
-      } catch (err: any) {
-        console.error("Fetching events error:", err);
-        setError(err.message);
-        setLoading(false);
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      const category = searchParams.get("category");
+      if (category) {
+        setFilters((prevFilters) => ({
+          ...prevFilters,
+          categories: [category],
+        }));
       }
-    };
+    }
+  }, []);
 
-    fetchEvents(currentPage, filters);
+  useEffect(() => {
+    // Fetch events only after a delay to ensure filters are set
+    const delayFetch = setTimeout(() => {
+      const fetchEvents = async (page: number, filters: Filters) => {
+        setLoading(true);
+
+        const categoryFilter = filters.categories.length > 0 ? `&category=${filters.categories.join(",")}` : "";
+        const locationFilter = filters.locations.length > 0 ? `&location=${filters.locations.join(",")}` : "";
+        const priceFilter = filters.prices.length > 0
+          ? filters.prices.includes("Free") && !filters.prices.includes("Paid")
+            ? "&isFree=true"
+            : filters.prices.includes("Paid") && !filters.prices.includes("Free")
+            ? "&isFree=false"
+            : ""
+          : "";
+
+        const url = `${apiUrl}/events?page=${page - 1}&limit=${eventsPerPage}&order=eventDate&direction=desc${categoryFilter}${locationFilter}${priceFilter}`;
+
+        try {
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error("Failed to fetch events");
+          }
+          const data = await response.json();
+          setEvents(data.data.events || []);
+          setTotalPages(data.data.totalPages || 1);
+          setLoading(false);
+        } catch (err: any) {
+          console.error("Fetching events error:", err);
+          setError(err.message || "An unknown error occurred");
+          setLoading(false);
+        }
+      };
+
+      fetchEvents(currentPage, filters);
+    }, 500); // 500ms delay to ensure filters are set
+
+    return () => clearTimeout(delayFetch);
   }, [apiUrl, currentPage, filters]);
 
   const handlePageChange = (page: number) => {
@@ -111,12 +111,12 @@ function Events() {
 
   const handleFilterChange = (newFilters: Filters) => {
     setFilters(newFilters);
-    setCurrentPage(1); // Reset to first page on filter change
+    setCurrentPage(1);
   };
 
   const handleResetFilters = () => {
     setFilters({ categories: [], locations: [], prices: [] });
-    setCurrentPage(1); // Reset to first page on filter change
+    setCurrentPage(1);
   };
 
   if (error) {
@@ -129,7 +129,7 @@ function Events() {
         <FilterComponent
           onFilterChange={handleFilterChange}
           onResetFilters={handleResetFilters}
-          initialFilters={filters} // Pass initialFilters to set default selection in the FilterComponent
+          initialFilters={filters}
         />
       </div>
       <div className="w-full md:w-3/4 mt-4 md:mt-0">

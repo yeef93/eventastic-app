@@ -30,6 +30,8 @@ function FilterComponent({
   const [selectedPrice, setSelectedPrice] = useState<string>(
     initialFilters.prices.length > 0 ? initialFilters.prices[0] : ""
   );
+  const [showMoreCategories, setShowMoreCategories] = useState<boolean>(false);
+  const [showMoreLocations, setShowMoreLocations] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -39,10 +41,9 @@ function FilterComponent({
           throw new Error("Failed to fetch locations");
         }
         const data = await response.json();
-        // Filter locations to only include those that contain "Kota"
         const fetchedLocations = data.result
           .filter((location: any) => location.text.includes("Kota "))
-          .map((location: any) => location.text);
+          .map((location: any) => location.text.replace("Kota ", ""));
         setLocations(fetchedLocations);
       } catch (err: any) {
         console.error("Fetching locations error:", err);
@@ -102,7 +103,7 @@ function FilterComponent({
     <div className="filter-component">
       <div className="filter-section mb-4 border-t-2 px-4">
         <h3 className="font-semibold text-lg py-2">Category</h3>
-        {categoriesData.map((category) => (
+        {categoriesData.slice(0, showMoreCategories ? categoriesData.length : 3).map((category) => (
           <div key={category.id} className="filter-option mb-1 text-sm">
             <input
               type="radio"
@@ -115,11 +116,19 @@ function FilterComponent({
             </label>
           </div>
         ))}
+        {categoriesData.length > 3 && (
+          <button
+            className="text-blue-500 text-sm"
+            onClick={() => setShowMoreCategories(!showMoreCategories)}
+          >
+            {showMoreCategories ? "Show Less" : "Show More"}
+          </button>
+        )}
       </div>
 
       <div className="filter-section mb-4 border-t-2 px-4">
         <h3 className="font-semibold text-lg py-2">Location</h3>
-        {locations.map((location) => (
+        {locations.slice(0, showMoreLocations ? locations.length : 3).map((location) => (
           <div key={location} className="filter-option mb-1 text-sm">
             <input
               type="radio"
@@ -132,6 +141,14 @@ function FilterComponent({
             </label>
           </div>
         ))}
+        {locations.length > 3 && (
+          <button
+            className="text-blue-500 text-sm"
+            onClick={() => setShowMoreLocations(!showMoreLocations)}
+          >
+            {showMoreLocations ? "Show Less" : "Show More"}
+          </button>
+        )}
       </div>
 
       <div className="filter-section mb-4 border-t-2 px-4">
