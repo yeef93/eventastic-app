@@ -37,21 +37,21 @@ interface Filters {
 
 function Events() {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-<<<<<<< HEAD
-  const currentUrl = typeof window !== "undefined" ? window.location.href : ""; // Ensure window is defined
-  // Parse the URL
-  const parsedUrl = new URL(currentUrl);
-  // Get the search params
-  const searchParams = parsedUrl.searchParams;
-  // Get the category parameter value
-  const category = searchParams.get("category");
-  const initialCategory = typeof category === "string" ? [category] : [];
-=======
-  const router = useRouter(); 
-  // const searchParams = useSearchParams() 
-  // const category = searchParams.get('category')
-  // const initialCategory = typeof category === "string" ? [category] : [];
->>>>>>> dev
+// <<<<<<< HEAD
+//   const currentUrl = typeof window !== "undefined" ? window.location.href : ""; // Ensure window is defined
+//   // Parse the URL
+//   const parsedUrl = new URL(currentUrl);
+//   // Get the search params
+//   const searchParams = parsedUrl.searchParams;
+//   // Get the category parameter value
+//   const category = searchParams.get("category");
+//   const initialCategory = typeof category === "string" ? [category] : [];
+// =======
+//   const router = useRouter(); 
+//   // const searchParams = useSearchParams() 
+//   // const category = searchParams.get('category')
+//   // const initialCategory = typeof category === "string" ? [category] : [];
+// >>>>>>> dev
 
   // console.log(initialCategory);
 
