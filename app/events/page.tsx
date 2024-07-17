@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import EventListCard from "@/components/EventListCard";
@@ -36,7 +37,6 @@ interface Filters {
 
 function Events() {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-  const router = useRouter(); 
   const currentUrl = typeof window !== "undefined" ? window.location.href : ""; // Ensure window is defined
   // Parse the URL
   const parsedUrl = new URL(currentUrl);
