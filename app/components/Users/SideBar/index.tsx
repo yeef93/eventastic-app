@@ -111,11 +111,6 @@ function Sidebar() {
       label: "My events",
       icon: CalendarIcon,
     },
-    {
-      href: `/users/${username}/change-password`,
-      label: "Change password",
-      icon: LockClosedIcon,
-    },
   ];
 
   return (
