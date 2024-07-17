@@ -1,23 +1,68 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import categoriesData from "@/utils/categories";
 
 interface FilterComponentProps {
-  categories: string[];
-  locations: string[];
+  initialFilters: {
+    categories: string[];
+    locations: string[];
+    prices: string[];
+  };
   onFilterChange: (filters: {
     categories: string[];
     locations: string[];
     prices: string[];
   }) => void;
+  onResetFilters: () => void;
 }
 
 function FilterComponent({
-  categories,
-  locations,
+  initialFilters,
   onFilterChange,
+  onResetFilters,
 }: FilterComponentProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [selectedLocation, setSelectedLocation] = useState<string>("");
-  const [selectedPrice, setSelectedPrice] = useState<string>("");
+  const [locations, setLocations] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    initialFilters.categories.length > 0 ? initialFilters.categories[0] : ""
+  );
+  const [selectedLocation, setSelectedLocation] = useState<string>(
+    initialFilters.locations.length > 0 ? initialFilters.locations[0] : ""
+  );
+  const [selectedPrice, setSelectedPrice] = useState<string>(
+    initialFilters.prices.length > 0 ? initialFilters.prices[0] : ""
+  );
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const response = await fetch("https://alamat.thecloudalert.com/api/kabkota/get");
+        if (!response.ok) {
+          throw new Error("Failed to fetch locations");
+        }
+        const data = await response.json();
+        // Filter locations to only include those that contain "Kota"
+        const fetchedLocations = data.result
+          .filter((location: any) => location.text.includes("Kota "))
+          .map((location: any) => location.text);
+        setLocations(fetchedLocations);
+      } catch (err: any) {
+        console.error("Fetching locations error:", err);
+      }
+    };
+
+    fetchLocations();
+  }, []);
+
+  useEffect(() => {
+    setSelectedCategory(
+      initialFilters.categories.length > 0 ? initialFilters.categories[0] : ""
+    );
+    setSelectedLocation(
+      initialFilters.locations.length > 0 ? initialFilters.locations[0] : ""
+    );
+    setSelectedPrice(
+      initialFilters.prices.length > 0 ? initialFilters.prices[0] : ""
+    );
+  }, [initialFilters]);
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
@@ -46,20 +91,27 @@ function FilterComponent({
     });
   };
 
+  const handleResetFilters = () => {
+    setSelectedCategory("");
+    setSelectedLocation("");
+    setSelectedPrice("");
+    onResetFilters();
+  };
+
   return (
     <div className="filter-component">
       <div className="filter-section mb-4 border-t-2 px-4">
         <h3 className="font-semibold text-lg py-2">Category</h3>
-        {categories.map((category) => (
-          <div key={category} className="filter-option mb-1 text-sm">
+        {categoriesData.map((category) => (
+          <div key={category.id} className="filter-option mb-1 text-sm">
             <input
               type="radio"
-              id={`category-${category}`}
-              checked={selectedCategory === category}
-              onChange={() => handleCategoryChange(category)}
+              id={`category-${category.id}`}
+              checked={selectedCategory === category.name}
+              onChange={() => handleCategoryChange(category.name)}
             />
-            <label htmlFor={`category-${category}`} className="px-2">
-              {category}
+            <label htmlFor={`category-${category.id}`} className="px-2">
+              {category.name}
             </label>
           </div>
         ))}
@@ -97,6 +149,15 @@ function FilterComponent({
             </label>
           </div>
         ))}
+      </div>
+
+      <div className="px-4">
+        <button
+          className="bg-red-500 text-white py-2 px-4 rounded"
+          onClick={handleResetFilters}
+        >
+          Reset Filters
+        </button>
       </div>
     </div>
   );

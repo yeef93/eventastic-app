@@ -1,6 +1,6 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import EventListCard from "@/components/EventListCard";
 import EventListCardSkeleton from "@/components/Skeleton/EventListCardSkeleton";
 import Pagination from "@/components/Pagination";
@@ -36,47 +36,30 @@ interface Filters {
 
 function Events() {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const router = useRouter(); 
+  const currentUrl = typeof window !== "undefined" ? window.location.href : ""; // Ensure window is defined
+  // Parse the URL
+  const parsedUrl = new URL(currentUrl);
+  // Get the search params
+  const searchParams = parsedUrl.searchParams;
+  // Get the category parameter value
+  const category = searchParams.get("category");
+  const initialCategory = typeof category === "string" ? [category] : [];
+
+  console.log(initialCategory);
+  
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [locations, setLocations] = useState<string[]>([]);
   const [filters, setFilters] = useState<Filters>({
-    categories: [],
+    categories: initialCategory, // Initialize with category from URL
     locations: [],
     prices: [],
   });
 
   const eventsPerPage = 10;
-
-  useEffect(() => {
-    const fetchFilters = async () => {
-      try {
-        const response = await fetch(`${apiUrl}/events`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch event filters");
-        }
-        const data = await response.json();
-
-        // Extract categories and locations from fetched events
-        const fetchedCategories = Array.from(
-          new Set(data.data.events.map((event: Event) => event.category))
-        ) as string[];
-        const fetchedLocations = Array.from(
-          new Set(data.data.events.map((event: Event) => event.location))
-        ) as string[];
-        setCategories(fetchedCategories);
-        setLocations(fetchedLocations);
-      } catch (err: any) {
-        console.error("Fetching filters error:", err);
-        setError(err.message);
-      }
-    };
-
-    fetchFilters();
-  }, [apiUrl]);
 
   useEffect(() => {
     const fetchEvents = async (page: number, filters: Filters) => {
@@ -104,7 +87,7 @@ function Events() {
         setTotalPages(data.data.totalPages || 1);
         setLoading(false);
       } catch (err: any) {
-        console.error("Fetching error:", err);
+        console.error("Fetching events error:", err);
         setError(err.message);
         setLoading(false);
       }
@@ -122,17 +105,22 @@ function Events() {
     setCurrentPage(1); // Reset to first page on filter change
   };
 
+  const handleResetFilters = () => {
+    setFilters({ categories: [], locations: [], prices: [] });
+    setCurrentPage(1); // Reset to first page on filter change
+  };
+
   if (error) {
     return <div>{error}</div>;
   }
 
   return (
     <div className="flex flex-col md:flex-row px-2 md:px-4 xl:px-12 py-12">
-      <div className="w-full md:w-1/4 md:sticky md:top-20 xl:h-screen md:h-fit bg-white p-4">
+      <div className="w-full md:w-1/4 md:sticky md:top-20 h-auto bg-white p-4">
         <FilterComponent
-          categories={categories}
-          locations={locations}
           onFilterChange={handleFilterChange}
+          onResetFilters={handleResetFilters}
+          initialFilters={filters} // Pass initialFilters to set default selection in the FilterComponent
         />
       </div>
       <div className="w-full md:w-3/4 mt-4 md:mt-0">
