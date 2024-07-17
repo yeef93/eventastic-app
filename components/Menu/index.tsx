@@ -14,7 +14,7 @@ function Menu() {
 
   const menuItems = [
     { name: "Events", path: "/events" },    
-    { name: "Create Event", path: `/organizer/${decodedToken?.scope.sub}/events` },
+    // { name: "Create Event", path: `/organizer/${decodedToken?.scope.sub}/events` },
     { name: "FAQ", path: "/faq" },
   ];
 
