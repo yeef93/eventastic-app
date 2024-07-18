@@ -55,7 +55,6 @@ function EventDetail() {
   }>({});
   const [isGetTicketModalOpen, setIsGetTicketModalOpen] =
     useState<boolean>(false);
-    
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -187,7 +186,8 @@ function EventDetail() {
   };
 
   const isGetTicketsButtonDisabled =
-  !selectedTicketType || (selectedTicketType && ticketQuantities[selectedTicketType] === 0);
+    !selectedTicketType ||
+    (selectedTicketType && ticketQuantities[selectedTicketType] === 0);
 
   const calculateDiscountedPrice = (price: number) => {
     if (event.promoPercent && event.promoEndDate) {
@@ -396,7 +396,7 @@ function EventDetail() {
         </div>
         {isEventPast && (
           <div className="py-8">
-            <ReviewForm onSubmit={handleReviewSubmit} />
+            <ReviewForm eventId={event.id} onSubmit={handleReviewSubmit} />
           </div>
         )}
       </div>
