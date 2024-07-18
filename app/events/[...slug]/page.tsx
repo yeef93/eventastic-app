@@ -13,6 +13,7 @@ import {
 import ReviewForm from "@/app/components/Events/ReviewForm";
 import TicketModal from "@/app/components/Events/TicketModal";
 import EventDetailSkeleton from "@/components/Skeleton/EventDetailSkeleton";
+import ReviewList from "@/app/components/Events/ReviewList";
 
 type Event = {
   id: number;
@@ -399,6 +400,7 @@ function EventDetail() {
             <ReviewForm eventId={event.id} onSubmit={handleReviewSubmit} />
           </div>
         )}
+        <ReviewList eventId={event.id} />
       </div>
     </div>
   );
