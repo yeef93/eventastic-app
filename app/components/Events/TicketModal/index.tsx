@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Switch from "react-switch"; // Import the Switch component
 import paymentMethods from "@/utils/paymentMethods";
+import Image from "next/image";
 
 interface TicketModalProps {
   onClose: () => void;
@@ -8,7 +9,7 @@ interface TicketModalProps {
   onGetTotalPrice: (totalPrice: number) => void;
 }
 
-function TicketModal ({ onClose, event, onGetTotalPrice }:TicketModalProps) {
+function TicketModal({ onClose, event, onGetTotalPrice }: TicketModalProps) {
   const [ticketQuantities, setTicketQuantities] = useState<number[]>([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
@@ -60,7 +61,6 @@ function TicketModal ({ onClose, event, onGetTotalPrice }:TicketModalProps) {
     return Math.max(totalPrice - discount, 0);
   };
 
-
   return (
     <div className="fixed inset-0 flex xl:items-center xl:justify-center md:items-start md:justify-start z-50 text-gray-500">
       <div className="fixed inset-0 bg-gray-600 bg-opacity-50"></div>
@@ -83,10 +83,27 @@ function TicketModal ({ onClose, event, onGetTotalPrice }:TicketModalProps) {
             />
           </svg>
         </button>
-        <div className="p-6">
-          <h2 className="text-2xl font-bold mb-4 text-center">{event.title}</h2>
-          <p className="text-center mb-4">{event.dateTime}</p>
-          <p className="text-center mb-4">{event.location}</p>
+        <div className="p-6 ">
+          <div className=" flex flex-row">
+            <div>
+              <Image
+                src={event.image.imageUrl}
+                alt={event.name}
+                layout="responsive"
+                width={5}
+                height={5}
+                className="h-5 w-5"
+              />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold mb-4 text-center">
+                {event.title}
+              </h2>
+              <p className="text-center mb-4">{event.dateTime}</p>
+              <p className="text-center mb-4">{event.location}</p>
+            </div>
+          </div>
+
           <div>
             <div className="flex justify-between items-center">
               <p className="font-bold py-8">Total</p>
@@ -164,6 +181,6 @@ function TicketModal ({ onClose, event, onGetTotalPrice }:TicketModalProps) {
       </div>
     </div>
   );
-};
+}
 
 export default TicketModal;
