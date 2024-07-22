@@ -90,9 +90,9 @@ function SignUpModal({ onClose, openLogin, onSuccess }: SignUpModalProps) {
 
       onSuccess();
       onClose();
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error during registration:", error);
-      setRegisterError("Registration failed. Please try again later."); // Catch-all error message
+      // setRegisterError("Registration failed. Please try again later."); // Catch-all error message
     } finally {
       setSubmitting(false);
     }

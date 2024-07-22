@@ -14,6 +14,8 @@ import ReviewForm from "@/app/components/Events/ReviewForm";
 import TicketModal from "@/app/components/Events/TicketModal";
 import EventDetailSkeleton from "@/components/Skeleton/EventDetailSkeleton";
 import ReviewList from "@/app/components/Events/ReviewList";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 type Event = {
   id: number;
@@ -43,6 +45,8 @@ type Event = {
 
 function EventDetail() {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const { status } = useSession();
+  const isAuthenticated = status === "authenticated";
   const router = useRouter();
   const pathname = usePathname();
   const [event, setEvent] = useState<Event | null>(null);
@@ -223,14 +227,14 @@ function EventDetail() {
                 <p className="mr-2">
                   {event.venue}, {event.location}
                 </p>
-                <a
+                <Link
                   href={event.map}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-500 hover:underline"
                 >
                   maps
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -395,12 +399,16 @@ function EventDetail() {
             )}
           </div>
         </div>
-        {isEventPast && (
+        {isAuthenticated && (
           <div className="py-8">
             <ReviewForm eventId={event.id} onSubmit={handleReviewSubmit} />
           </div>
         )}
-        <ReviewList eventId={event.id} />
+        {isEventPast && (
+          <div className="py-8">
+            <ReviewList eventId={event.id} />
+          </div>
+        )}
       </div>
     </div>
   );

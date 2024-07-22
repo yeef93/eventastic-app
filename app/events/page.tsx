@@ -67,54 +67,53 @@ function Events() {
 
   useEffect(() => {
     // Fetch events only after a delay to ensure filters are set
-    const fetchEvents = async () => {
-      setLoading(true);
+    const delayFetch = setTimeout(() => {
+      const fetchEvents = async (page: number, filters: Filters) => {
+        setLoading(true);
 
-      const categoryFilter =
-        filters.categories.length > 0
-          ? `&category=${filters.categories.join(",")}`
-          : "";
-      const locationFilter =
-        filters.locations.length > 0
-          ? `&location=${filters.locations.join(",")}`
-          : "";
-      const priceFilter =
-        filters.prices.length > 0
-          ? filters.prices.includes("Free") && !filters.prices.includes("Paid")
-            ? "&isFree=true"
-            : filters.prices.includes("Paid") &&
-              !filters.prices.includes("Free")
-            ? "&isFree=false"
-            : ""
-          : "";
+        const categoryFilter =
+          filters.categories.length > 0
+            ? `&category=${filters.categories.join(",")}`
+            : "";
+        const locationFilter =
+          filters.locations.length > 0
+            ? `&location=${filters.locations.join(",")}`
+            : "";
+        const priceFilter =
+          filters.prices.length > 0
+            ? filters.prices.includes("Free") &&
+              !filters.prices.includes("Paid")
+              ? "&isFree=true"
+              : filters.prices.includes("Paid") &&
+                !filters.prices.includes("Free")
+              ? "&isFree=false"
+              : ""
+            : "";
 
-      const url = `${apiUrl}/events?page=${
-        currentPage - 1
-      }&limit=${eventsPerPage}&order=eventDate&direction=desc${categoryFilter}${locationFilter}${priceFilter}`;
+        const url = `${apiUrl}/events?page=${
+          page - 1
+        }&limit=${eventsPerPage}&order=eventDate&direction=desc${categoryFilter}${locationFilter}${priceFilter}`;
 
-      try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error("Failed to fetch events");
+        try {
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error("Failed to fetch events");
+          }
+          const data = await response.json();
+          setEvents(data.data.events || []);
+          setTotalPages(data.data.totalPages || 1);
+          setLoading(false);
+        } catch (err: any) {
+          console.error("Fetching events error:", err);
+          setError(err.message || "An unknown error occurred");
+          setLoading(false);
         }
-        const data = await response.json();
-        setEvents(data.data.events || []);
-        setTotalPages(data.data.totalPages || 1);
-        setLoading(false);
-        setError(null); // Reset error state if successful
-      } catch (err: any) {
-        console.error("Fetching events error:", err);
-        setError(err.message || "An unknown error occurred");
-        setLoading(false);
-        setEvents([]); // Clear events on error
-        setTotalPages(1); // Reset total pages
-      }
-    };
+      };
 
-    // Fetch events immediately on mount and whenever currentPage or filters change
-    fetchEvents();
+      fetchEvents(currentPage, filters);
+    }, 500); // 500ms delay to ensure filters are set
 
-    return () => {}; // Clean-up function
+    return () => clearTimeout(delayFetch);
   }, [apiUrl, currentPage, filters]);
 
   const handlePageChange = (page: number) => {
@@ -123,12 +122,12 @@ function Events() {
 
   const handleFilterChange = (newFilters: Filters) => {
     setFilters(newFilters);
-    setCurrentPage(1); // Reset to the first page when filters change
+    setCurrentPage(1);
   };
 
   const handleResetFilters = () => {
     setFilters({ categories: [], locations: [], prices: [] });
-    setCurrentPage(1); // Reset to the first page when filters are reset
+    setCurrentPage(1);
   };
 
   if (error) {
@@ -142,8 +141,8 @@ function Events() {
             initialFilters={filters}
           />
         </div>
-        <div className="w-full md:w-3/4 mt-4 md:mt-0">
-          <div className=" text-center">No data available</div>
+        <div className="w-full md:w-3/4 mt-4 md:mt-0 text-center">
+          <div className=" text-sm py-8">Sorry, there are no event results that match these filters.</div>
         </div>
       </div>
     );
