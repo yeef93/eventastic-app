@@ -4,7 +4,13 @@ import ProtectedLayout from "@/app/components/Users/ProtectedLayout";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
-import { CalendarIcon, ClockIcon, LocationMarkerIcon, TicketIcon, UserIcon } from "@heroicons/react/outline";
+import {
+  CalendarIcon,
+  ClockIcon,
+  LocationMarkerIcon,
+  TicketIcon,
+  UserIcon,
+} from "@heroicons/react/outline";
 import Pagination from "@/components/Pagination"; // Adjust the import path accordingly
 import { usePathname } from "next/navigation";
 
@@ -55,10 +61,20 @@ type Event = {
   }[];
 };
 
+type Ticket = {
+  id: number;
+  issuedAt: string;
+  attendee: string;
+  eventTitle: string;
+  ticketType: string;
+  ticketCode: string;
+};
+
 // Define the Events component
 function Events() {
   const { data: session } = useSession();
   const [events, setEvents] = useState<Event[]>([]);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [currentTab, setCurrentTab] = useState<"upcoming" | "past">("upcoming");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -96,21 +112,63 @@ function Events() {
     }
   }, [session, apiUrl]);
 
+  useEffect(() => {
+    const fetchTickets = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/users/me/tickets`, {
+          headers: {
+            Authorization: `Bearer ${session?.user?.token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          const errorMessage = await response.json();
+          throw new Error(
+            errorMessage.statusMessage || "Failed to fetch tickets"
+          );
+        }
+
+        const data = await response.json();
+        setTickets(data.data);
+      } catch (error: any) {
+        setError(error.message);
+      }
+    };
+
+    if (session) {
+      fetchTickets();
+    }
+  }, [session, apiUrl]);
+
   const formatDate = (dateStr: string) => {
-    const options: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
     return new Date(dateStr).toLocaleDateString(undefined, options);
   };
 
   const formatTime = (timeStr: string) => {
-    const [hours, minutes] = timeStr.split(':');
+    const [hours, minutes] = timeStr.split(":");
     const date = new Date();
     date.setHours(parseInt(hours));
     date.setMinutes(parseInt(minutes));
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+    return date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
   };
 
-  const upcomingEvents = events.filter(event => new Date(event.eventDate) >= new Date());
-  const pastEvents = events.filter(event => new Date(event.eventDate) < new Date());
+  const upcomingEvents = events.filter(
+    (event) => new Date(event.eventDate) >= new Date()
+  );
+  const pastEvents = events.filter(
+    (event) => new Date(event.eventDate) < new Date()
+  );
 
   const handleTabChange = (tab: "upcoming" | "past") => {
     setCurrentTab(tab);
@@ -120,10 +178,17 @@ function Events() {
   // Get current events
   const indexOfLastEvent = currentPage * eventsPerPage;
   const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
-  const currentEvents = currentTab === "upcoming" ? upcomingEvents.slice(indexOfFirstEvent, indexOfLastEvent) : pastEvents.slice(indexOfFirstEvent, indexOfLastEvent);
+  const currentEvents =
+    currentTab === "upcoming"
+      ? upcomingEvents.slice(indexOfFirstEvent, indexOfLastEvent)
+      : pastEvents.slice(indexOfFirstEvent, indexOfLastEvent);
 
   // Change page
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
+  // Count tickets per event
+  const countTicketsForEvent = (eventTitle: string) =>
+    tickets.filter((ticket) => ticket.eventTitle === eventTitle).length;
 
   return (
     <ProtectedLayout>
@@ -133,13 +198,21 @@ function Events() {
         {error && <p className="text-red-500">{error}</p>}
         <div className="mb-6">
           <button
-            className={`px-4 py-2 mr-2 ${currentTab === "upcoming" ? "bg-purple-700 text-white" : "bg-gray-200 text-gray-700"}`}
+            className={`px-4 py-2 mr-2 ${
+              currentTab === "upcoming"
+                ? "bg-purple-700 text-white"
+                : "bg-gray-200 text-gray-700"
+            }`}
             onClick={() => handleTabChange("upcoming")}
           >
             Upcoming Events
           </button>
           <button
-            className={`px-4 py-2 ${currentTab === "past" ? "bg-purple-700 text-white" : "bg-gray-200 text-gray-700"}`}
+            className={`px-4 py-2 ${
+              currentTab === "past"
+                ? "bg-purple-700 text-white"
+                : "bg-gray-200 text-gray-700"
+            }`}
             onClick={() => handleTabChange("past")}
           >
             Past Events
@@ -152,8 +225,16 @@ function Events() {
                 key={event.id}
                 className="max-w-sm rounded overflow-hidden shadow-lg"
               >
-                <Link href={`/users/${username}/events/${event.title}`} className="block">
-                  <div className={`relative w-full h-48 ${currentTab === "past" ? "grayscale" : ""}`}>
+                <Link
+                  href={`/users/${username}/events/${event.title}`}
+                  className="block"
+                  target="_self"
+                >
+                  <div
+                    className={`relative w-full h-48 ${
+                      currentTab === "past" ? "grayscale" : ""
+                    }`}
+                  >
                     <Image
                       src={event.image.imageUrl}
                       alt={event.title}
@@ -182,29 +263,22 @@ function Events() {
                         {formatTime(event.startTime)} -{" "}
                         {formatTime(event.endTime)}
                       </p>
-                    </div>                    
+                    </div>
                     <div className="flex items-center text-base text-gray-600 mt-2">
                       <LocationMarkerIcon className="w-4 h-4 mr-1 text-purple-700" />
                       <p>{event.venue} </p>
-                      <Link
-                        href={event.map}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 hover:underline"
-                      >
-                        &nbsp;maps
-                      </Link>
                     </div>
                     <div className="flex items-center text-base text-gray-600 mt-2">
                       <TicketIcon className="w-4 h-4 mr-1 text-purple-700" />
-                      <Link
+                      <p>Total Tickets: {countTicketsForEvent(event.title)}</p>
+                      
+                      <a
                         href={`/users/${username}/events/${event.title}`}
-                        target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-500 hover:underline"
+                        className="text-purple-700 underline ml-2"
                       >
-                        Tickets
-                      </Link>
+                        Details
+                      </a>
                     </div>
                   </div>
                   <div className="px-6 pt-4 pb-2">
@@ -219,11 +293,17 @@ function Events() {
         ) : (
           <p>No events available.</p>
         )}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={Math.ceil((currentTab === "upcoming" ? upcomingEvents.length : pastEvents.length) / eventsPerPage)}
-          onPageChange={paginate}
-        />
+        <div className="mt-4">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.ceil(
+              (currentTab === "upcoming"
+                ? upcomingEvents.length
+                : pastEvents.length) / eventsPerPage
+            )}
+            onPageChange={paginate}
+          />
+        </div>
       </div>
     </ProtectedLayout>
   );

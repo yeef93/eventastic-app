@@ -94,7 +94,7 @@ const convertToHHMMSS = (time: string) => {
 };
 
 // Component for CreateEventForm
-const CreateEventForm: React.FC = () => {
+function CreateEventForm (){
   const [isFree, setIsFree] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null); // State for success message
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || ''; // Adjust as necessary
