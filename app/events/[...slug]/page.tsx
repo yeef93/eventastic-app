@@ -136,20 +136,6 @@ function EventDetail() {
     (a, b) => a.price - b.price
   );
 
-  const getTotalPrice = () => {
-    if (selectedTicketType && ticketQuantities[selectedTicketType]) {
-      const ticket = sortedTicketTypes.find(
-        (ticket) => ticket.name === selectedTicketType
-      );
-      if (ticket) {
-        return ticket.price * ticketQuantities[selectedTicketType];
-      }
-    }
-    return 0;
-  };
-
-  const totalTicketPrice = getTotalPrice();
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -170,7 +156,7 @@ function EventDetail() {
       hour12: true,
     });
   };
-
+  
   const formattedEventDate = formatDate(event.eventDate);
   const formattedStartTime = formatTime(event.startTime);
   const formattedEndTime = formatTime(event.endTime);
@@ -178,6 +164,36 @@ function EventDetail() {
   const eventDate = new Date(event.eventDate);
   const currentDate = new Date();
   const isEventPast = currentDate > eventDate;
+  
+  const calculateDiscountedPrice = (price: number) => {
+    if (event.promoPercent && event.promoEndDate) {
+      const promoEndDate = new Date(event.promoEndDate);
+      if (currentDate <= promoEndDate) {
+        return price - (price * event.promoPercent) / 100;
+      }
+    }
+    return price;
+  };
+
+  const getTotalPrice = () => {
+    if (selectedTicketType && ticketQuantities[selectedTicketType]) {
+      const ticket = sortedTicketTypes.find(
+        (ticket) => ticket.name === selectedTicketType
+      );
+      if (ticket) {
+        return (
+          calculateDiscountedPrice(ticket.price) *
+          ticketQuantities[selectedTicketType]
+        );
+      }
+    }
+    return 0;
+  };
+
+  const totalTicketPrice = getTotalPrice();
+
+  
+
 
   const handleReviewSubmit = (review: any) => {
     console.log("Review submitted:", review);
@@ -194,15 +210,7 @@ function EventDetail() {
     !selectedTicketType ||
     (selectedTicketType && ticketQuantities[selectedTicketType] === 0);
 
-  const calculateDiscountedPrice = (price: number) => {
-    if (event.promoPercent && event.promoEndDate) {
-      const promoEndDate = new Date(event.promoEndDate);
-      if (currentDate <= promoEndDate) {
-        return price - (price * event.promoPercent) / 100;
-      }
-    }
-    return price;
-  };
+  
 
   return (
     <div className="py-7">
@@ -291,77 +299,105 @@ function EventDetail() {
             {!isEventPast && (
               <div>
                 <div className="mt-10 text-gray-600">
-                  {sortedTicketTypes.map((ticketType) => (
-                    <div
-                      key={ticketType.name}
-                      className={`mb-4 p-4 border rounded ${
-                        selectedTicketType === ticketType.name
-                          ? "bg-gray-100"
-                          : "bg-white"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <input
-                            type="radio"
-                            name="ticketType"
-                            value={ticketType.name}
-                            onChange={() =>
-                              setSelectedTicketType(ticketType.name)
-                            }
-                            checked={selectedTicketType === ticketType.name}
-                            className="mr-2"
-                            disabled={isEventPast}
-                          />
-                          <span className="font-bold text-lg uppercase">
-                            {ticketType.name}
-                          </span>
+                  {sortedTicketTypes.map((ticketType) => {
+                    const discountedPrice = calculateDiscountedPrice(
+                      ticketType.price
+                    );
+                    return (
+                      <div
+                        key={ticketType.name}
+                        className={`mb-4 p-4 border rounded ${
+                          selectedTicketType === ticketType.name
+                            ? "bg-gray-100"
+                            : "bg-white"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            <input
+                              type="radio"
+                              name="ticketType"
+                              value={ticketType.name}
+                              onChange={() =>
+                                setSelectedTicketType(ticketType.name)
+                              }
+                              checked={selectedTicketType === ticketType.name}
+                              className="mr-2"
+                              disabled={isEventPast}
+                            />
+                            <span className="font-bold text-lg uppercase">
+                              {ticketType.name}
+                            </span>
+                          </div>
+                          <div className="flex items-center ml-4">
+                            <button
+                              onClick={() => decrementQuantity(ticketType.name)}
+                              className="bg-gray-200 text-gray-700 py-1 px-3 rounded"
+                              disabled={
+                                !selectedTicketType ||
+                                selectedTicketType !== ticketType.name ||
+                                isEventPast
+                              }
+                            >
+                              -
+                            </button>
+                            <input
+                              type="number"
+                              min="0"
+                              value={ticketQuantities[ticketType.name] || 0}
+                              readOnly
+                              className="w-16 text-center"
+                              disabled={
+                                !selectedTicketType ||
+                                selectedTicketType !== ticketType.name
+                              }
+                            />
+                            <button
+                              onClick={() => incrementQuantity(ticketType.name)}
+                              className="bg-gray-200 text-gray-700 py-1 px-3 rounded"
+                              disabled={
+                                !selectedTicketType ||
+                                selectedTicketType !== ticketType.name ||
+                                isEventPast
+                              }
+                            >
+                              +
+                            </button>
+                          </div>
                         </div>
-                        <div className="flex items-center ml-4">
-                          <button
-                            onClick={() => decrementQuantity(ticketType.name)}
-                            className="bg-gray-200 text-gray-700 py-1 px-3 rounded"
-                            disabled={
-                              !selectedTicketType ||
-                              selectedTicketType !== ticketType.name ||
-                              isEventPast
-                            }
-                          >
-                            -
-                          </button>
-                          <input
-                            type="number"
-                            min="0"
-                            value={ticketQuantities[ticketType.name] || 0}
-                            readOnly
-                            className="w-16 text-center"
-                            disabled={
-                              !selectedTicketType ||
-                              selectedTicketType !== ticketType.name
-                            }
-                          />
-                          <button
-                            onClick={() => incrementQuantity(ticketType.name)}
-                            className="bg-gray-200 text-gray-700 py-1 px-3 rounded"
-                            disabled={
-                              !selectedTicketType ||
-                              selectedTicketType !== ticketType.name ||
-                              isEventPast
-                            }
-                          >
-                            +
-                          </button>
-                        </div>
+                        <div className=" flex flex-col items-end">
+                        {discountedPrice === ticketType.price ? (
+                          <p className="text-sm font-semibold sm:text-base text-gray-700">
+                            {ticketType.price.toLocaleString("id-ID", {
+                              style: "currency",
+                              currency: "IDR",
+                              minimumFractionDigits: 2,
+                            })}
+                          </p>
+                        ) : (
+                          <>
+                          <p className="text-sm sm:text-base text-gray-700">
+                            <span className="line-through mr-2 text-gray-500">
+                            {ticketType.price.toLocaleString("id-ID", {
+                              style: "currency",
+                              currency: "IDR",
+                              minimumFractionDigits: 2,
+                            })}
+                            </span>                            
+                          </p>
+                          <p className="text-sm font-semibold sm:text-base text-gray-700">
+                            <span>{discountedPrice.toLocaleString("id-ID", {
+                              style: "currency",
+                              currency: "IDR",
+                              minimumFractionDigits: 2,
+                            })}</span>
+                          </p>
+                          </>                          
+                        )}
+                        </div>                        
                       </div>
-                      <p className="text-gray-600 mb-2">
-                        {ticketType.price.toLocaleString("id-ID", {
-                          style: "currency",
-                          currency: "IDR",
-                          minimumFractionDigits: 2,
-                        })}
-                      </p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 <div className="mt-4">
                   <p className="text-xl font-bold">
