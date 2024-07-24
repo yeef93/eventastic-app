@@ -8,6 +8,7 @@ import {
 } from "@heroicons/react/outline";
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter, usePathname } from "next/navigation";
 
 function Dashboard() {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -16,6 +17,9 @@ function Dashboard() {
   const [totalEvents, setTotalEvents] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const { data: session } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
+  const username = pathname.split('/')[2];
 
   useEffect(() => {
     const fetchPoints = async () => {
@@ -62,12 +66,18 @@ function Dashboard() {
 
     fetchPoints();
     fetchTickets();
-  }, [apiUrl]);
+  }, [apiUrl, session?.user?.token]);
 
   const formatPoints = (points: number) => {
     return new Intl.NumberFormat("id-ID", { minimumFractionDigits: 2 }).format(
       points
     );
+  };
+
+  const handleCardClick = (path: string) => {
+    if (session && session.user) {
+      router.push(`/users/${username}/events`);
+    }
   };
 
   if (error) {
@@ -87,7 +97,10 @@ function Dashboard() {
               <p className="text-lg font-semibold text-white">Rp. {formatPoints(points)}</p>
             </div>
           </div>
-          <div className="flex items-center p-4 bg-gradient-to-r from-fuchsia-600 to-purple-600 rounded-lg shadow-xs">
+          <div
+            onClick={() => handleCardClick('events')}
+            className="cursor-pointer flex items-center p-4 bg-gradient-to-r from-fuchsia-600 to-purple-600 rounded-lg shadow-xs"
+          >
             <div className="p-3 mr-4 text-purple-500 bg-blue-100 rounded-full">
               <CalendarIcon className="w-6 h-6 mr-1 text-purple-500"></CalendarIcon>
             </div>
@@ -98,7 +111,10 @@ function Dashboard() {
               <p className="text-lg font-semibold text-white">{totalEvents}</p>
             </div>
           </div>
-          <div className="flex items-center p-4 bg-gradient-to-r from-emerald-500 to-lime-600 rounded-lg shadow-xs">
+          <div
+            onClick={() => handleCardClick('tickets')}
+            className="cursor-pointer flex items-center p-4 bg-gradient-to-r from-emerald-500 to-lime-600 rounded-lg shadow-xs"
+          >
             <div className="p-3 mr-4 text-green-500 bg-green-100 rounded-full">
               <TicketIcon className="w-6 h-6 mr-1 text-green-500"></TicketIcon>
             </div>

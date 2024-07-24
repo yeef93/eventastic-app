@@ -192,7 +192,7 @@ function Events() {
 
   return (
     <ProtectedLayout>
-      <div className="h-auto">
+      <div className="p-4">
         <h1 className="text-2xl font-bold">My Events</h1>
         <p className="mb-4">Events and Tickets</p>
         {error && <p className="text-red-500">{error}</p>}
@@ -271,7 +271,7 @@ function Events() {
                     <div className="flex items-center text-base text-gray-600 mt-2">
                       <TicketIcon className="w-4 h-4 mr-1 text-purple-700" />
                       <p>Total Tickets: {countTicketsForEvent(event.title)}</p>
-                      
+
                       <a
                         href={`/users/${username}/events/${event.title}`}
                         rel="noopener noreferrer"
