@@ -435,7 +435,7 @@ function EventDetail() {
             )}
           </div>
         </div>
-        {isAuthenticated && (
+        {isAuthenticated || isEventPast && (
           <div className="py-8">
             <ReviewForm eventId={event.id} onSubmit={handleReviewSubmit} />
           </div>
