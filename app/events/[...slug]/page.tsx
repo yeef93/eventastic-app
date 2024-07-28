@@ -192,9 +192,6 @@ function EventDetail() {
 
   const totalTicketPrice = getTotalPrice();
 
-  
-
-
   const handleReviewSubmit = (review: any) => {
     console.log("Review submitted:", review);
   };
@@ -428,10 +425,14 @@ function EventDetail() {
             </button>
             {isGetTicketModalOpen && !isEventPast && (
               <TicketModal
-                onClose={closeGetTicketModal}
-                onGetTotalPrice={handleGetTotalPrice}
-                event={event}
-              />
+              isOpen={isGetTicketModalOpen}
+              onClose={closeGetTicketModal}
+              selectedTicketType={selectedTicketType}
+              ticketQuantities={ticketQuantities}
+              handleQuantityChange={handleQuantityChange}
+              handleGetTotalPrice={handleGetTotalPrice}              
+              event={event}
+            />
             )}
           </div>
         </div>

@@ -4,53 +4,81 @@ import paymentMethods from "@/utils/paymentMethods";
 import Image from "next/image";
 
 interface TicketModalProps {
+  isOpen: boolean;
   onClose: () => void;
   event: any;
-  onGetTotalPrice: (totalPrice: number) => void;
+  selectedTicketType: string | null;
+  ticketQuantities: { [key: string]: number };
+  handleQuantityChange: (ticketType: string, quantity: number) => void;
+  handleGetTotalPrice: () => number;
 }
 
-function TicketModal({ onClose, event, onGetTotalPrice }: TicketModalProps) {
-  const [ticketQuantities, setTicketQuantities] = useState<number[]>([]);
+function TicketModal({
+  isOpen,
+  onClose,
+  event,
+  selectedTicketType,
+  ticketQuantities,
+  handleQuantityChange,
+  handleGetTotalPrice,
+}: TicketModalProps) {
   const [totalPrice, setTotalPrice] = useState(0);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
+    number | null
+  >(null);
   const [useCoin, setUseCoin] = useState(false);
   const coinBalance = 100000;
 
-  useEffect(() => {
-    setTicketQuantities(event.ticketTypes.map(() => 0));
-  }, [event]);
+  const [loading, setLoading] = useState(false);
 
-  const handleIncrement = (index: number) => {
-    if (ticketQuantities[index] < event.ticketTypes[index].availableSeat) {
-      const newQuantities = [...ticketQuantities];
-      newQuantities[index] += 1;
-      setTicketQuantities(newQuantities);
-      updateTotalPrice(newQuantities);
+  const handlePurchase = async () => {
+    setLoading(true);
+    try {
+      // Add your purchase logic here
+      console.log("Purchasing tickets...");
+    } catch (error) {
+      console.error("Error purchasing tickets:", error);
+    } finally {
+      setLoading(false);
+      onClose();
     }
   };
 
-  const handleDecrement = (index: number) => {
-    if (ticketQuantities[index] > 0) {
-      const newQuantities = [...ticketQuantities];
-      newQuantities[index] -= 1;
-      setTicketQuantities(newQuantities);
-      updateTotalPrice(newQuantities);
-    }
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   };
 
-  const updateTotalPrice = (quantities: number[]) => {
-    const newTotalPrice = quantities.reduce((total, quantity, index) => {
-      return total + quantity * event.ticketTypes[index].price;
-    }, 0);
-    setTotalPrice(newTotalPrice);
-    onGetTotalPrice(newTotalPrice); // Send total price back to parent component
+  const formatTime = (timeString: string) => {
+    const [hours, minutes] = timeString.split(":");
+    const date = new Date();
+    date.setHours(parseInt(hours, 10), parseInt(minutes, 10));
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
   };
+
+  const formattedEventDate = formatDate(event.eventDate);
+  const formattedStartTime = formatTime(event.startTime);
+  const formattedEndTime = formatTime(event.endTime);
 
   const handlePaymentMethodChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    setSelectedPaymentMethod(event.target.value);
+    const methodId = parseInt(event.target.value, 10);
+    setSelectedPaymentMethod(methodId);
   };
+
+  const selectedMethodDetail = paymentMethods.find(
+    (method) => method.id === selectedPaymentMethod
+  )?.detail;
 
   const toggleUseCoin = () => {
     setUseCoin((prevUseCoin) => !prevUseCoin);
@@ -61,8 +89,10 @@ function TicketModal({ onClose, event, onGetTotalPrice }: TicketModalProps) {
     return Math.max(totalPrice - discount, 0);
   };
 
+  if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 flex xl:items-center xl:justify-center md:items-start md:justify-start z-50 text-gray-500">
+    <div className="fixed inset-0 flex items-center justify-center z-50 text-gray-500 p-4">
       <div className="fixed inset-0 bg-gray-600 bg-opacity-50"></div>
       <div className="bg-white rounded-lg shadow-lg overflow-hidden relative z-50 max-w-3xl w-full">
         <button
@@ -84,31 +114,40 @@ function TicketModal({ onClose, event, onGetTotalPrice }: TicketModalProps) {
           </svg>
         </button>
         <div className="p-6 ">
-          <div className=" flex flex-row">
-            <div>
+          <div className=" flex flex-row gap-8">
+            <div className=" h-48 w-80">
               <Image
                 src={event.image.imageUrl}
                 alt={event.name}
                 layout="responsive"
                 width={5}
                 height={5}
-                className="h-5 w-5"
+                className=" rounded-lg"
               />
             </div>
-            <div>
-              <h2 className="text-2xl font-bold mb-4 text-center">
-                {event.title}
-              </h2>
-              <p className="text-center mb-4">{event.dateTime}</p>
-              <p className="text-center mb-4">{event.location}</p>
+            <div className=" text-left">
+              <h2 className="text-2xl font-bold mb-4">{event.title}</h2>
+              <p>{formattedEventDate}</p>
+              <p>
+                {formattedStartTime}-{formattedEndTime}
+              </p>
+              <p>
+                {event.venue}, {event.location}
+              </p>
+              {selectedTicketType && (
+                <>
+                  <p className="font-semibold">
+                    Selected Ticket: {selectedTicketType} x {ticketQuantities[selectedTicketType]}
+                  </p>
+                </>
+              )}
             </div>
           </div>
-
           <div>
             <div className="flex justify-between items-center">
               <p className="font-bold py-8">Total</p>
               <p className="font-bold">
-                {totalPrice.toLocaleString("id-ID", {
+                {handleGetTotalPrice().toLocaleString("id-ID", {
                   style: "currency",
                   currency: "IDR",
                   minimumFractionDigits: 2,
@@ -148,14 +187,15 @@ function TicketModal({ onClose, event, onGetTotalPrice }: TicketModalProps) {
                 })}
               </p>
             </div>
+
             <div className="mt-4">
               <select
-                value={selectedPaymentMethod}
+                value={selectedPaymentMethod || ""}
                 onChange={handlePaymentMethodChange}
                 className="border rounded w-full py-2 px-3"
               >
                 <option value="">Select a payment method</option>
-                {paymentMethods.map((method: any) => (
+                {paymentMethods.map((method) => (
                   <option key={method.id} value={method.id}>
                     {method.name}
                   </option>
@@ -163,18 +203,16 @@ function TicketModal({ onClose, event, onGetTotalPrice }: TicketModalProps) {
               </select>
               {selectedPaymentMethod && (
                 <div className="mt-4 p-4 border rounded">
-                  <p className="font-bold">
-                    {
-                      paymentMethods.find(
-                        (method: any) => method.id === selectedPaymentMethod
-                      )?.detail
-                    }
-                  </p>
+                  <p className="font-bold">{selectedMethodDetail}</p>
                 </div>
               )}
             </div>
-            <button className="mt-4 bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded w-full">
-              Checkout
+            <button
+              className="mt-4 bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded w-full"
+              onClick={handlePurchase}
+              disabled={loading}
+            >
+              {loading ? "Processing..." : "Purchase"}
             </button>
           </div>
         </div>
