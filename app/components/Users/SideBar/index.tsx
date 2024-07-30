@@ -83,10 +83,26 @@ function Sidebar() {
     setIsLogoutModalOpen(true);
   };
 
-  const handleLogoutConfirm = () => {
+  const handleLogoutConfirm = async () => {
     setIsLogoutModalOpen(false);
-    signOut();
-    router.push("/");
+    try {
+      const response = await fetch(`${apiUrl}/auth/logout`, {
+        method: "GET", // Assuming POST method for logout
+        headers: {
+          Authorization: `Bearer ${session?.user.token}`,
+        },
+        credentials: "include", // Include cookies
+      });
+
+      if (response.ok) {
+        await signOut(); // Sign out from NextAuth session
+        window.location.href = "/"; // Redirect to main page after successful logout
+      } else {
+        console.error("Failed to logout");
+      }
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
   };
 
   const formatPoints = (points: number) => {

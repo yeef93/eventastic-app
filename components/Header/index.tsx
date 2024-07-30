@@ -8,6 +8,7 @@ import SignUpModal from "@/components/SignUpModal";
 import LoginModal from "@/components/LoginModal";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import LogoutModal from "../LogoutModal";
 
 function Header() {
   const [showing, setShowing] = useState<boolean>(false);
@@ -15,6 +16,7 @@ function Header() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
   const [userData, setUserData] = useState<any>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -77,7 +79,14 @@ function Header() {
     setIsDropdownOpen((prev) => !prev);
   };
 
-  const handleLogout = async () => {
+  const handleLogoutClick = (e: any) => {
+    e.preventDefault();
+    setIsLogoutModalOpen(true);
+  };
+
+
+  const handleLogoutConfirm = async () => {
+    setIsLogoutModalOpen(false);
     try {
       const response = await fetch(`${apiUrl}/auth/logout`, {
         method: "GET", // Assuming POST method for logout
@@ -161,7 +170,7 @@ function Header() {
                       </a>
                     )}
                     <button
-                      onClick={handleLogout}
+                      onClick={handleLogoutClick}
                       className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       Logout
@@ -236,6 +245,11 @@ function Header() {
           openSignUp={handleSignUpClick}
         />
       )}
+      <LogoutModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={handleLogoutConfirm}
+      />
     </>
   );
 }
