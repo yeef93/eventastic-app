@@ -1,4 +1,4 @@
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeSVG } from "qrcode.react";
 
 interface Ticket {
   title: string;
@@ -23,7 +23,10 @@ function TicketList({ tickets }: TicketListProps) {
           >
             <div className="flex flex-row justify-between items-center">
               <div>
-                <p className=' text-purple-700 text-sm '>
+                <p className="text-sm font-semibold text-gray-600">
+                  #{index + 1}
+                </p>
+                <p className=" text-purple-700 text-sm ">
                   <strong>{ticket.title}</strong>
                 </p>
                 <p>

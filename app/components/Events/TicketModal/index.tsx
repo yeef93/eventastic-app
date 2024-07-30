@@ -114,7 +114,7 @@ function TicketModal({
           </svg>
         </button>
         <div className="p-6 ">
-          <div className=" flex flex-row gap-8">
+          <div className=" flex flex-row gap-8 text-sm">
             <div className=" h-48 w-80">
               <Image
                 src={event.image.imageUrl}
@@ -125,22 +125,27 @@ function TicketModal({
                 className=" rounded-lg"
               />
             </div>
-            <div className=" text-left">
-              <h2 className="text-2xl font-bold mb-4">{event.title}</h2>
-              <p>{formattedEventDate}</p>
-              <p>
-                {formattedStartTime}-{formattedEndTime}
-              </p>
-              <p>
-                {event.venue}, {event.location}
-              </p>
-              {selectedTicketType && (
-                <>
-                  <p className="font-semibold">
-                    Selected Ticket: {selectedTicketType} x {ticketQuantities[selectedTicketType]}
-                  </p>
-                </>
-              )}
+            <div className=" text-left flex flex-col gap-10">
+              <div>
+                <h2 className="text-2xl font-bold mb-4">{event.title}</h2>
+                <p>{formattedEventDate}</p>
+                <p>
+                  {formattedStartTime}-{formattedEndTime}
+                </p>
+                <p>
+                  {event.venue}, {event.location}
+                </p>
+              </div>
+              <div>
+                {selectedTicketType && (
+                  <>
+                    <p className="font-semibold">
+                      {selectedTicketType} x{" "}
+                      {ticketQuantities[selectedTicketType]}
+                    </p>
+                  </>
+                )}
+              </div>
             </div>
           </div>
           <div>
