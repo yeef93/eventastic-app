@@ -7,7 +7,7 @@ interface TicketModalProps {
   isOpen: boolean;
   onClose: () => void;
   event: any;
-  selectedTicketType: string | null;
+  selectedTicketType: { name: string; price: number } | null;
   ticketQuantities: { [key: string]: number };
   handleQuantityChange: (ticketType: string, quantity: number) => void;
   handleGetTotalPrice: () => number;
@@ -19,7 +19,6 @@ function TicketModal({
   event,
   selectedTicketType,
   ticketQuantities,
-  handleQuantityChange,
   handleGetTotalPrice,
 }: TicketModalProps) {
   const [totalPrice, setTotalPrice] = useState(0);
@@ -140,8 +139,8 @@ function TicketModal({
                 {selectedTicketType && (
                   <>
                     <p className="font-semibold">
-                      {selectedTicketType} x{" "}
-                      {ticketQuantities[selectedTicketType]}
+                      {selectedTicketType.name} x{" "}
+                      {ticketQuantities[selectedTicketType.name]} @{selectedTicketType.price} 
                     </p>
                   </>
                 )}

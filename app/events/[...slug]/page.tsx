@@ -43,18 +43,21 @@ type Event = {
   promoEndDate?: string;
 };
 
+type SelectedTicketType = {
+  name: string;
+  price: number;
+} | null;
+
+
 function EventDetail() {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const { status } = useSession();
   const isAuthenticated = status === "authenticated";
-  const router = useRouter();
   const pathname = usePathname();
   const [event, setEvent] = useState<Event | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTicketType, setSelectedTicketType] = useState<string | null>(
-    null
-  );
+  const [selectedTicketType, setSelectedTicketType] = useState<SelectedTicketType>(null);
   const [ticketQuantities, setTicketQuantities] = useState<{
     [key: string]: number;
   }>({});
@@ -176,14 +179,14 @@ function EventDetail() {
   };
 
   const getTotalPrice = () => {
-    if (selectedTicketType && ticketQuantities[selectedTicketType]) {
+    if (selectedTicketType && ticketQuantities[selectedTicketType.name]) {
       const ticket = sortedTicketTypes.find(
-        (ticket) => ticket.name === selectedTicketType
+        (ticket) => ticket.name === selectedTicketType.name
       );
       if (ticket) {
         return (
           calculateDiscountedPrice(ticket.price) *
-          ticketQuantities[selectedTicketType]
+          ticketQuantities[selectedTicketType.name]
         );
       }
     }
@@ -205,7 +208,7 @@ function EventDetail() {
 
   const isGetTicketsButtonDisabled =
     !selectedTicketType ||
-    (selectedTicketType && ticketQuantities[selectedTicketType] === 0);
+    (selectedTicketType && ticketQuantities[selectedTicketType.name] || 0) <= 0;
 
   
 
@@ -304,7 +307,7 @@ function EventDetail() {
                       <div
                         key={ticketType.name}
                         className={`mb-4 p-4 border rounded ${
-                          selectedTicketType === ticketType.name
+                          selectedTicketType?.name === ticketType.name
                             ? "bg-gray-100"
                             : "bg-white"
                         }`}
@@ -316,9 +319,9 @@ function EventDetail() {
                               name="ticketType"
                               value={ticketType.name}
                               onChange={() =>
-                                setSelectedTicketType(ticketType.name)
+                                setSelectedTicketType(ticketType)
                               }
-                              checked={selectedTicketType === ticketType.name}
+                              checked={selectedTicketType?.name === ticketType.name}
                               className="mr-2"
                               disabled={isEventPast}
                             />
@@ -332,7 +335,7 @@ function EventDetail() {
                               className="bg-gray-200 text-gray-700 py-1 px-3 rounded"
                               disabled={
                                 !selectedTicketType ||
-                                selectedTicketType !== ticketType.name ||
+                                selectedTicketType.name !== ticketType.name ||
                                 isEventPast
                               }
                             >
@@ -346,7 +349,7 @@ function EventDetail() {
                               className="w-16 text-center"
                               disabled={
                                 !selectedTicketType ||
-                                selectedTicketType !== ticketType.name
+                                selectedTicketType.name !== ticketType.name
                               }
                             />
                             <button
@@ -354,7 +357,7 @@ function EventDetail() {
                               className="bg-gray-200 text-gray-700 py-1 px-3 rounded"
                               disabled={
                                 !selectedTicketType ||
-                                selectedTicketType !== ticketType.name ||
+                                selectedTicketType.name !== ticketType.name ||
                                 isEventPast
                               }
                             >
