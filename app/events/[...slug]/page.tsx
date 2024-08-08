@@ -34,8 +34,10 @@ type Event = {
   seatLimit: number;
   isFree: boolean;
   ticketTypes: {
+    id:number;
     name: string;
     price: number;
+    promoPrice: number;
   }[];
   category: string;
   description: string;
@@ -44,8 +46,10 @@ type Event = {
 };
 
 type SelectedTicketType = {
+  id:number;
   name: string;
   price: number;
+  promoPrice: number;
 } | null;
 
 
@@ -199,7 +203,18 @@ function EventDetail() {
     console.log("Review submitted:", review);
   };
 
-  const openGetTicketModal = () => setIsGetTicketModalOpen(true);
+  const openGetTicketModal = () => {
+    const ticket = sortedTicketTypes.find(
+      (t) => t.name === selectedTicketType?.name
+    );
+    if (ticket) {
+      setSelectedTicketType({
+        ...selectedTicketType!,
+        promoPrice: calculateDiscountedPrice(ticket.price),
+      });
+    }
+    setIsGetTicketModalOpen(true);
+  };
   const closeGetTicketModal = () => setIsGetTicketModalOpen(false);
 
   const handleGetTotalPrice = () => {
@@ -318,9 +333,7 @@ function EventDetail() {
                               type="radio"
                               name="ticketType"
                               value={ticketType.name}
-                              onChange={() =>
-                                setSelectedTicketType(ticketType)
-                              }
+                              onChange={() => setSelectedTicketType(ticketType)}
                               checked={selectedTicketType?.name === ticketType.name}
                               className="mr-2"
                               disabled={isEventPast}
